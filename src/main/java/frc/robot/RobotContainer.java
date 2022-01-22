@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.SlewRateLimiter;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -26,6 +27,11 @@ public class RobotContainer {
 
   private final XboxController m_controller = new XboxController(0);
 
+  
+  private static final SlewRateLimiter xRateLimiter = new SlewRateLimiter(.7);
+  private static final SlewRateLimiter yRateLimiter = new SlewRateLimiter(.7);
+  private static final SlewRateLimiter rotRateLimiter = new SlewRateLimiter(.5);
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -37,9 +43,9 @@ public class RobotContainer {
     // Right stick X axis -> rotation
     m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
             m_drivetrainSubsystem,
-            () -> -modifyAxis(m_controller.getY(GenericHID.Hand.kLeft)) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-            () -> -modifyAxis(m_controller.getX(GenericHID.Hand.kLeft)) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-            () -> -modifyAxis(m_controller.getX(GenericHID.Hand.kRight)) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
+            () -> -modifyAxis(xRateLimiter.calculate(m_controller.getY(GenericHID.Hand.kLeft))) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+            () -> -modifyAxis(yRateLimiter.calculate(m_controller.getX(GenericHID.Hand.kLeft))) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+            () -> -modifyAxis(rotRateLimiter.calculate(m_controller.getX(GenericHID.Hand.kRight))) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
     ));
 
     // Configure the button bindings
