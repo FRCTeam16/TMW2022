@@ -38,9 +38,9 @@ public class RobotContainer {
   private final Joystick leftJoy = new Joystick(0);
   private final Joystick rightJoy = new Joystick(1);
 
-  private static final SlewRateLimiter xRateLimiter = new SlewRateLimiter(.9);
-  private static final SlewRateLimiter yRateLimiter = new SlewRateLimiter(.9);
-  private static final SlewRateLimiter rotRateLimiter = new SlewRateLimiter(.5);
+  private static final SlewRateLimiter xRateLimiter = new SlewRateLimiter(1);
+  private static final SlewRateLimiter yRateLimiter = new SlewRateLimiter(1);
+  private static final SlewRateLimiter rotRateLimiter = new SlewRateLimiter(.7);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -67,15 +67,22 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
 
+    //Zero Out the Gyroscope
+    m_drivetrainSubsystem.zeroGyroscope();
+
     // Debug telemetry
     CommandScheduler.getInstance().schedule(new CommandBase()  {
       @Override
       public void execute() {
+        /*
         SmartDashboard.putNumber("LX", rightJoy.getX());
         SmartDashboard.putNumber("LY", rightJoy.getY());
 
         SmartDashboard.putNumber("GX", gamepad.getX(Hand.kLeft));
         SmartDashboard.putNumber("GY", gamepad.getY(Hand.kLeft));
+        */
+
+        SmartDashboard.putNumber("Gyro", m_drivetrainSubsystem.getGyroscopeRotation().getDegrees());
       }
 
       @Override

@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -26,11 +28,9 @@ public final class Constants {
      */
     public static final double DRIVETRAIN_WHEELBASE_METERS = 0.60; // FIXME Measure and set wheelbase
 
-    public static final int INTAKE_MOTOR = 9;
-    public static final int DRIVETRAIN_PIGEON_ID = INTAKE_MOTOR; // FIXME Set Pigeon ID
+    public static final int INTAKE_MOTOR_ID = 9;
+    public static final int BEATER_MOTOR_ID = 10;
     
-    
-
     public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 3; // FIXME Set front left module drive motor ID
     public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 8; // FIXME Set front left module steer motor ID
     public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 0; // FIXME Set front left steer encoder ID
@@ -50,4 +50,8 @@ public final class Constants {
     public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 2; // FIXME Set back right steer motor ID
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 1; // FIXME Set back right steer encoder ID
     public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(170.0); // FIXME Measure and set back right steer offset
+
+    public static class Objects {
+        public static final WPI_TalonSRX INTAKE_MOTOR = new WPI_TalonSRX(INTAKE_MOTOR_ID); // FIXME Set Pigeon ID
+    }
 }
