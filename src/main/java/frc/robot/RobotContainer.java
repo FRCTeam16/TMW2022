@@ -17,9 +17,13 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ClimberSubsystem.ClimberState;
+import frc.robot.subsystems.ClimberSubsystem;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -32,11 +36,14 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
-
+  private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
+  
 
   private final XboxController gamepad = new XboxController(2);
   private final Joystick leftJoy = new Joystick(0);
   private final Joystick rightJoy = new Joystick(1);
+  private final JoystickButton rButton = new JoystickButton(leftJoy, 5);
+
 
   private static final SlewRateLimiter xRateLimiter = new SlewRateLimiter(1);
   private static final SlewRateLimiter yRateLimiter = new SlewRateLimiter(1);
@@ -89,7 +96,6 @@ public class RobotContainer {
         public boolean runsWhenDisabled() {
           return true;
         }
-
     });
   }
 
@@ -108,6 +114,14 @@ public class RobotContainer {
     new Button(rightJoy::getTrigger)
       .whenPressed(m_intakeSubsystem::enable)
       .whenReleased(m_intakeSubsystem::disable);
+    
+    new Button(gamepad::getYButton)
+      .whenPressed(()-> m_climberSubsystem.setClimberState(ClimberState.kExtend))
+      .whenReleased(()-> m_climberSubsystem.setClimberState(ClimberState.kDisabled));
+
+    new Button(gamepad::getAButton)
+      .whenPressed(()-> m_climberSubsystem.setClimberState(ClimberState.kClimb))
+      .whenReleased(()-> m_climberSubsystem.setClimberState(ClimberState.kHold));
 
   }
 

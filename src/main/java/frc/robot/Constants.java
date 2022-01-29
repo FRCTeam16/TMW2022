@@ -30,6 +30,13 @@ public final class Constants {
 
     public static final int INTAKE_MOTOR_ID = 9;
     public static final int BEATER_MOTOR_ID = 10;
+    //public static final int BEATER2?_MOTOR_ID = X;
+
+    public static final int CLIMBER_MOTOR_ID = 12;
+
+    //public static final int SHOOTERWHEEL1_MOTOR_ID = X; // Motor ID for One of the shooter motors
+    //public static final int SHOOTERWHEEL2_MOTOR_ID = X; // Motor ID for one of the shooter motors
+    //public static final int SHOOTERFEEDER_MOTOR_ID = X; // Motor ID for the feeder for the shooter
     
     public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 3; // FIXME Set front left module drive motor ID
     public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 8; // FIXME Set front left module steer motor ID
@@ -53,5 +60,6 @@ public final class Constants {
 
     public static class Objects {
         public static final WPI_TalonSRX INTAKE_MOTOR = new WPI_TalonSRX(INTAKE_MOTOR_ID); // FIXME Set Pigeon ID
+        public static final WPI_TalonSRX CLIMBER_MOTOR= new WPI_TalonSRX(CLIMBER_MOTOR_ID);
     }
 }
