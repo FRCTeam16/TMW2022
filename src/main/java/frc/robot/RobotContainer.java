@@ -54,22 +54,20 @@ public class RobotContainer {
    */
   public RobotContainer() {
     // Set up the default command for the drivetrain.
-    // The controls are for field-oriented driving:
-    // Left stick Y axis -> forward and backwards movement
-    // Left stick X axis -> left and right movement
-    // Right stick X axis -> rotation
-
+   
     // m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(m_drivetrainSubsystem,
     //     () -> -modifyAxis(xRateLimiter.calculate(gamepad.getY(Hand.kLeft))) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
     //     () -> -modifyAxis(yRateLimiter.calculate(gamepad.getX(Hand.kLeft))) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
     //     () -> -modifyAxis(rotRateLimiter.calculate(gamepad.getX(Hand.kRight)))
     //         * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND));
 
-    m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(m_drivetrainSubsystem,
-        () -> -modifyAxis(xRateLimiter.calculate(rightJoy.getY())) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-        () -> -modifyAxis(yRateLimiter.calculate(rightJoy.getX())) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-        () -> -modifyAxis(rotRateLimiter.calculate(leftJoy.getX()))
-            * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND));
+    m_drivetrainSubsystem.setDefaultCommand(
+      new DefaultDriveCommand(m_drivetrainSubsystem,
+        () -> -OIUtil.modifyAxis(xRateLimiter.calculate(rightJoy.getY())) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+        () -> -OIUtil.modifyAxis(yRateLimiter.calculate(rightJoy.getX())) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+        () -> -OIUtil.modifyAxis(rotRateLimiter.calculate(leftJoy.getX())) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
+        () -> !leftJoy.getRawButton(13))
+    );
 
     // Configure the button bindings
     configureButtonBindings();
@@ -81,13 +79,13 @@ public class RobotContainer {
     CommandScheduler.getInstance().schedule(new CommandBase()  {
       @Override
       public void execute() {
-        /*
+        
         SmartDashboard.putNumber("LX", rightJoy.getX());
         SmartDashboard.putNumber("LY", rightJoy.getY());
 
         SmartDashboard.putNumber("GX", gamepad.getX(Hand.kLeft));
         SmartDashboard.putNumber("GY", gamepad.getY(Hand.kLeft));
-        */
+        
 
         SmartDashboard.putNumber("Gyro", m_drivetrainSubsystem.getGyroscopeRotation().getDegrees());
       }
@@ -135,25 +133,4 @@ public class RobotContainer {
     return new InstantCommand();
   }
 
-  private static double deadband(double value, double deadband) {
-    if (Math.abs(value) > deadband) {
-      if (value > 0.0) {
-        return (value - deadband) / (1.0 - deadband);
-      } else {
-        return (value + deadband) / (1.0 - deadband);
-      }
-    } else {
-      return 0.0;
-    }
-  }
-
-  private static double modifyAxis(double value) {
-    // Deadband
-    value = deadband(value, 0.05);
-
-    // Square the axis
-    value = Math.copySign(value * value, value);
-
-    return value;
-  }
 }
