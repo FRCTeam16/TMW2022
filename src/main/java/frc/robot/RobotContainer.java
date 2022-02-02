@@ -24,8 +24,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ClimberSubsystem.ClimberState;
 import frc.robot.subsystems.ClimberSubsystem;
 
-
-/**
+/*
  * This class is where the bulk of the robot should be declared. Since
  * Command-based is a "declarative" paradigm, very little robot logic should
  * actually be handled in the {@link Robot} periodic methods (other than the
@@ -37,63 +36,63 @@ public class RobotContainer {
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
   private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
-  
 
   private final XboxController gamepad = new XboxController(2);
   private final Joystick leftJoy = new Joystick(0);
   private final Joystick rightJoy = new Joystick(1);
   private final JoystickButton rButton = new JoystickButton(leftJoy, 5);
 
-
   private static final SlewRateLimiter xRateLimiter = new SlewRateLimiter(1);
   private static final SlewRateLimiter yRateLimiter = new SlewRateLimiter(1);
-  private static final SlewRateLimiter rotRateLimiter = new SlewRateLimiter(.7);
+  private static final SlewRateLimiter rotRateLimiter = new SlewRateLimiter(1);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
     // Set up the default command for the drivetrain.
-   
-    // m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(m_drivetrainSubsystem,
-    //     () -> -modifyAxis(xRateLimiter.calculate(gamepad.getY(Hand.kLeft))) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-    //     () -> -modifyAxis(yRateLimiter.calculate(gamepad.getX(Hand.kLeft))) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-    //     () -> -modifyAxis(rotRateLimiter.calculate(gamepad.getX(Hand.kRight)))
-    //         * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND));
 
-    m_drivetrainSubsystem.setDefaultCommand(
-      new DefaultDriveCommand(m_drivetrainSubsystem,
-        () -> -OIUtil.modifyAxis(xRateLimiter.calculate(rightJoy.getY())) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-        () -> -OIUtil.modifyAxis(yRateLimiter.calculate(rightJoy.getX())) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-        () -> -OIUtil.modifyAxis(rotRateLimiter.calculate(leftJoy.getX())) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
-        () -> !leftJoy.getRawButton(13))
-    );
+    // m_drivetrainSubsystem.setDefaultCommand(
+    // new DefaultDriveCommand(m_drivetrainSubsystem,
+    // () -> -OIUtil.modifyAxis(xRateLimiter.calculate(rightJoy.getY())) *
+    // DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+    // () -> -OIUtil.modifyAxis(yRateLimiter.calculate(rightJoy.getX())) *
+    // DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+    // () -> -OIUtil.modifyAxis(rotRateLimiter.calculate(leftJoy.getX())) *
+    // DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
+    // () -> !leftJoy.getRawButton(13))
+    // );
+
+    m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(m_drivetrainSubsystem,
+        () -> -OIUtil.modifyAxis((rightJoy.getY())) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+        () -> -OIUtil.modifyAxis((rightJoy.getX())) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+        () -> -OIUtil.modifyAxis((leftJoy.getX())) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
+        () -> !leftJoy.getRawButton(13)));
 
     // Configure the button bindings
     configureButtonBindings();
 
-    //Zero Out the Gyroscope
+    // Zero Out the Gyroscope
     m_drivetrainSubsystem.zeroGyroscope();
 
     // Debug telemetry
-    CommandScheduler.getInstance().schedule(new CommandBase()  {
+    CommandScheduler.getInstance().schedule(new CommandBase() {
       @Override
       public void execute() {
-        
+
         SmartDashboard.putNumber("LX", rightJoy.getX());
         SmartDashboard.putNumber("LY", rightJoy.getY());
 
         SmartDashboard.putNumber("GX", gamepad.getX(Hand.kLeft));
         SmartDashboard.putNumber("GY", gamepad.getY(Hand.kLeft));
-        
 
         SmartDashboard.putNumber("Gyro", m_drivetrainSubsystem.getGyroscopeRotation().getDegrees());
       }
 
       @Override
-        public boolean runsWhenDisabled() {
-          return true;
-        }
+      public boolean runsWhenDisabled() {
+        return true;
+      }
     });
   }
 
@@ -109,17 +108,16 @@ public class RobotContainer {
         // No requirements because we don't need to interrupt anything
         .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
 
-    new Button(rightJoy::getTrigger)
-      .whenPressed(m_intakeSubsystem::enable)
-      .whenReleased(m_intakeSubsystem::disable);
-    
+    new Button(leftJoy::getTrigger).whenPressed(m_intakeSubsystem::enable)
+        .whenReleased(m_intakeSubsystem::disable);
+
     new Button(gamepad::getYButton)
-      .whenPressed(()-> m_climberSubsystem.setClimberState(ClimberState.kExtend))
-      .whenReleased(()-> m_climberSubsystem.setClimberState(ClimberState.kDisabled));
+        .whenPressed(() -> m_climberSubsystem.setClimberState(ClimberState.kExtend))
+        .whenReleased(() -> m_climberSubsystem.setClimberState(ClimberState.kDisabled));
 
     new Button(gamepad::getAButton)
-      .whenPressed(()-> m_climberSubsystem.setClimberState(ClimberState.kClimb))
-      .whenReleased(()-> m_climberSubsystem.setClimberState(ClimberState.kHold));
+        .whenPressed(() -> m_climberSubsystem.setClimberState(ClimberState.kClimb))
+        .whenReleased(() -> m_climberSubsystem.setClimberState(ClimberState.kHold));
 
   }
 

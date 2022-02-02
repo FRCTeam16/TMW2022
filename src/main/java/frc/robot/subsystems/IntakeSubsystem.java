@@ -25,15 +25,16 @@ public class IntakeSubsystem extends SubsystemBase {
   private static final String BEATERBAR_SPEED_KEY = "Beater Bar Speed";
 
   // Calling CANSpark motor 
-  /*
-   * private final CANSparkMax beaterMotor = new
-   * CANSparkMax(Constants.BEATER_MOTOR_ID, MotorType.kBrushless); private final
-   * double DEFAULT_BEATERBAR_SPEED = 0.5; private static final String
-   * BEATERBAR_SPEED_KEY = "Beater Bar Speed";
-   */
+
+   //private final CANSparkMax beaterMotor = new
+   //CANSparkMax(Constants.BEATER_MOTOR_ID, MotorType.kBrushless); private final
+   //double DEFAULT_BEATERBAR_SPEED = 0.5; private static final String
+   //BEATERBAR_SPEED_KEY = "Beater Bar Speed";
+   
 
 
   /** Creates a new IntakeSubsystem. */
+ 
   public IntakeSubsystem() {
     SmartDashboard.setDefaultNumber(INTAKE_SPEED_KEY, DEFAULT_INTAKE_SPEED);
     SmartDashboard.setDefaultNumber(BEATERBAR_SPEED_KEY, DEFAULT_BEATERBAR_SPEED);
