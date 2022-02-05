@@ -6,10 +6,9 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.SlewRateLimiter;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
-import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -83,8 +82,8 @@ public class RobotContainer {
         SmartDashboard.putNumber("LX", rightJoy.getX());
         SmartDashboard.putNumber("LY", rightJoy.getY());
 
-        SmartDashboard.putNumber("GX", gamepad.getX(Hand.kLeft));
-        SmartDashboard.putNumber("GY", gamepad.getY(Hand.kLeft));
+        SmartDashboard.putNumber("GX", gamepad.getLeftX());
+        SmartDashboard.putNumber("GY", gamepad.getLeftY());
 
         SmartDashboard.putNumber("Gyro", m_drivetrainSubsystem.getGyroscopeRotation().getDegrees());
       }
