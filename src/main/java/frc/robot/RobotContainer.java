@@ -35,7 +35,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
-  private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
+  // private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
 
   private final XboxController gamepad = new XboxController(2);
   private final Joystick leftJoy = new Joystick(0);
@@ -111,13 +111,13 @@ public class RobotContainer {
     new Button(leftJoy::getTrigger).whenPressed(m_intakeSubsystem::enable)
         .whenReleased(m_intakeSubsystem::disable);
 
-    new Button(gamepad::getYButton)
-        .whenPressed(() -> m_climberSubsystem.setClimberState(ClimberState.kExtend))
-        .whenReleased(() -> m_climberSubsystem.setClimberState(ClimberState.kDisabled));
+  //   new Button(gamepad::getYButton)
+  //       .whenPressed(() -> m_climberSubsystem.setClimberState(ClimberState.kExtend))
+  //       .whenReleased(() -> m_climberSubsystem.setClimberState(ClimberState.kDisabled));
 
-    new Button(gamepad::getAButton)
-        .whenPressed(() -> m_climberSubsystem.setClimberState(ClimberState.kClimb))
-        .whenReleased(() -> m_climberSubsystem.setClimberState(ClimberState.kHold));
+  //   new Button(gamepad::getAButton)
+  //       .whenPressed(() -> m_climberSubsystem.setClimberState(ClimberState.kClimb))
+  //       .whenReleased(() -> m_climberSubsystem.setClimberState(ClimberState.kHold));
 
   }
 

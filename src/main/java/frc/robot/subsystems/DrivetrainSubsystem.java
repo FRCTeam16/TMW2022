@@ -21,6 +21,8 @@ import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -95,8 +97,14 @@ public class DrivetrainSubsystem extends SubsystemBase {
   private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
   private SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(m_kinematics, this.getGyroscopeRotation());
 
+private final Field2d m_field = new Field2d();
+
+
+
   public DrivetrainSubsystem() {
     ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
+    SmartDashboard.putData("Field", m_field);
+
 
     m_frontLeftModule = Mk4SwerveModuleHelper.createFalcon500(
             // This parameter is optional, but will allow you to see the current state of the module on the dashboard.
@@ -211,6 +219,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     m_backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
 
     m_odometry.update(this.getGyroscopeRotation(), states);
+    m_field.setRobotPose(m_odometry.getPoseMeters());
   }
 
   public Pose2d getPose() {
@@ -220,5 +229,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
   public void resetOdometry(Pose2d pose) {
     m_odometry.resetPosition(pose, this.getGyroscopeRotation());
   }
+
+
 
 }

@@ -20,7 +20,7 @@ public class IntakeSubsystem extends SubsystemBase {
   private final double DEFAULT_INTAKE_SPEED = -0.5;
   private static final String INTAKE_SPEED_KEY = "Intake Speed";
 
-  private final WPI_TalonSRX beaterMotor = new WPI_TalonSRX(Constants.BEATER_MOTOR_ID);
+  // private final WPI_TalonSRX beaterMotor = new WPI_TalonSRX(Constants.BEATER_MOTOR_ID);
   private final double DEFAULT_BEATERBAR_SPEED = -1;
   private static final String BEATERBAR_SPEED_KEY = "Beater Bar Speed";
 
@@ -57,6 +57,6 @@ public class IntakeSubsystem extends SubsystemBase {
       beaterSpeed = SmartDashboard.getNumber(BEATERBAR_SPEED_KEY, DEFAULT_BEATERBAR_SPEED);
     }
     intakeMotor.set(intakeSpeed);
-    beaterMotor.set(beaterSpeed);
+    // beaterMotor.set(beaterSpeed);
   }
 }
