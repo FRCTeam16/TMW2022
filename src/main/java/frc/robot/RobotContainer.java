@@ -7,6 +7,8 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -18,10 +20,14 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.commands.DriveToDistanceProfiled;
+import frc.robot.commands.TurnToAngleProfiled;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ClimberSubsystem.ClimberState;
 import frc.robot.subsystems.ClimberSubsystem;
+import frc.robot.commands.TurnToAngleProfiled;
+
 
 /*
  * This class is where the bulk of the robot should be declared. Since
@@ -50,6 +56,7 @@ public class RobotContainer {
    */
   public RobotContainer() {
     // Set up the default command for the drivetrain.
+    m_drivetrainSubsystem.resetOdometry(new Pose2d(5,4.2, new Rotation2d(0)));
 
     // m_drivetrainSubsystem.setDefaultCommand(
     // new DefaultDriveCommand(m_drivetrainSubsystem,
@@ -78,13 +85,6 @@ public class RobotContainer {
     CommandScheduler.getInstance().schedule(new CommandBase() {
       @Override
       public void execute() {
-
-        SmartDashboard.putNumber("LX", rightJoy.getX());
-        SmartDashboard.putNumber("LY", rightJoy.getY());
-
-        SmartDashboard.putNumber("GX", gamepad.getLeftX());
-        SmartDashboard.putNumber("GY", gamepad.getLeftY());
-
         SmartDashboard.putNumber("Gyro", m_drivetrainSubsystem.getGyroscopeRotation().getDegrees());
       }
 
@@ -109,6 +109,15 @@ public class RobotContainer {
 
     new Button(leftJoy::getTrigger).whenPressed(m_intakeSubsystem::enable)
         .whenReleased(m_intakeSubsystem::disable);
+
+
+    new Button(() -> rightJoy.getRawButton(11))
+      .whenPressed(new TurnToAngleProfiled(45, m_drivetrainSubsystem).withTimeout(20));
+
+    new Button(rightJoy::getTrigger)
+        .whenPressed(new DriveToDistanceProfiled(1, m_drivetrainSubsystem));
+
+
 
   //   new Button(gamepad::getYButton)
   //       .whenPressed(() -> m_climberSubsystem.setClimberState(ClimberState.kExtend))

@@ -50,7 +50,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
           SdsModuleConfigurations.MK4_L2.getDriveReduction() *
           SdsModuleConfigurations.MK4_L2.getWheelDiameter() * Math.PI;
 
-  public static final double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 1;
+  public static final double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 2.5;
           
   /**
    * The maximum angular velocity of the robot in radians per second.
@@ -64,7 +64,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
   public static final double MAX_ANGULAR_VELOCITY_DEGREES_PER_SECOND = 
         MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND * 180.0 / Math.PI;
   
-  public static final double MAX_ANGULAR_ACCELERATION_DEGREES_PER_SECOND_SQUARED = 30.0;
+  public static final double MAX_ANGULAR_ACCELERATION_DEGREES_PER_SECOND_SQUARED = 720.0;
   public static final double MAX_ANGULAR_ACCELERATION_RADIANS_PER_SECOND_SQUARED =
         MAX_ANGULAR_ACCELERATION_DEGREES_PER_SECOND_SQUARED * Math.PI / 180.0;
 
