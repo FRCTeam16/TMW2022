@@ -2,7 +2,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -46,11 +45,11 @@ public class DriveToDistanceProfiled extends ProfiledPIDCommand {
             ChassisSpeeds.fromFieldRelativeSpeeds(
               output, 
               0, //
-              0, // FIXME: seeems to need inputs for controlling gyro
+              drivetrain.getRotationController().calculate(drivetrain.getGyroscopeRotation().getDegrees()) * Math.PI/ 180.0,
               drivetrain.getGyroscopeRotation()));
         });
-    // Use addRequirements() here to declare subsystem dependencies.
-    // Configure additional PID options by calling `getController` here.
+    // Use current heading
+    drivetrain.getRotationController().setSetpoint(drivetrain.getGyroscopeRotation().getDegrees());
     getController().setTolerance(0.1);
     SmartDashboard.putNumber("DDP Goal", getController().getGoal().position);
   }
