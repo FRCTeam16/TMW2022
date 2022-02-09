@@ -21,12 +21,14 @@ import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.DriveToDistanceProfiled;
+import frc.robot.commands.TrackTargetCommand;
 import frc.robot.commands.TurnToAngleProfiled;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ClimberSubsystem.ClimberState;
+import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
-import frc.robot.commands.TurnToAngleProfiled;
+import frc.robot.commands.SimpleTrackTargetCommand;
 
 
 /*
@@ -41,6 +43,7 @@ public class RobotContainer {
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
   // private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
+  private final VisionSubsystem m_visionSubsystem = new VisionSubsystem();
 
   private final XboxController gamepad = new XboxController(2);
   private final Joystick leftJoy = new Joystick(0);
@@ -115,6 +118,10 @@ public class RobotContainer {
 
     new Button(rightJoy::getTrigger)
         .whenPressed(new DriveToDistanceProfiled(1, m_drivetrainSubsystem));
+
+    new Button(() -> rightJoy.getRawButton(14))
+      .whenPressed(new SimpleTrackTargetCommand(m_visionSubsystem, m_drivetrainSubsystem));
+
 
 
 

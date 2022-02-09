@@ -54,5 +54,5 @@ public class VisionSubsystem extends SubsystemBase {
   /**
    * Vision Information
    */
-  static class VisionInfo extends SceneInfo {}
+  public static class VisionInfo extends SceneInfo {}
 }

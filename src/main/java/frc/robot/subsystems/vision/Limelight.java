@@ -2,6 +2,7 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /** 
  * Limelight operation support 
@@ -28,6 +29,9 @@ public class Limelight {
         si.xOffset = dataTable.getEntry("tx").getDouble(0.0);
         si.yOffset = dataTable.getEntry("ty").getDouble(0.0);
         si.targetArea = dataTable.getEntry("ta").getDouble(0.0);
+
+        SmartDashboard.putBoolean("SceneInfo.hasTarget", si.hasTarget);
+        SmartDashboard.putNumber("SceneInfo.xOffset", si.xOffset);
 
         // Optional items
         si.skew = dataTable.getEntry("ts").getDouble(0.0);
@@ -109,7 +113,7 @@ public class Limelight {
     /**
      * Information about the scene 
      */
-    static class SceneInfo {
+    public static class SceneInfo {
         /* Whether the limelight has any valid targets */
         public boolean hasTarget = false;
         /* Horizontal Offset From Crosshair To Target (-27 degrees to 27 degrees) */

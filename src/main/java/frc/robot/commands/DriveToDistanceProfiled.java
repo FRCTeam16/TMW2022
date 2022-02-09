@@ -46,7 +46,6 @@ public class DriveToDistanceProfiled extends ProfiledPIDCommand {
         (output, setpoint) -> {
           // Use the output (and setpoint, if desired) here
           drivetrain.drive(
-<<<<<<< HEAD
             ChassisSpeeds.fromFieldRelativeSpeeds(
               output, 
               0, //
@@ -55,27 +54,7 @@ public class DriveToDistanceProfiled extends ProfiledPIDCommand {
         });
     // Use current heading
     drivetrain.getRotationController().setSetpoint(drivetrain.getGyroscopeRotation().getDegrees());
-=======
-              ChassisSpeeds.fromFieldRelativeSpeeds(
-                  output,
-                  0, //
-                  0, // FIXME: seeems to need inputs for controlling gyro
-                  drivetrain.getGyroscopeRotation()));
 
-       // new ProfiledPIDController(
-          //kPy,
-          //kIy,
-          //kDy,
-          
-        
-        
-
-
-        });
-
-    // Use addRequirements() here to declare subsystem dependencies.
-    // Configure additional PID options by calling `getController` here.
->>>>>>> master
     getController().setTolerance(0.1);
     SmartDashboard.putNumber("DDP Goal", getController().getGoal().position);
 
