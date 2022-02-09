@@ -120,10 +120,11 @@ public class RobotContainer {
         .whenPressed(new DriveToDistanceProfiled(1, m_drivetrainSubsystem));
 
     new Button(() -> rightJoy.getRawButton(14))
-      .whenPressed(new SimpleTrackTargetCommand(m_visionSubsystem, m_drivetrainSubsystem));
+      .whenPressed(new SimpleTrackTargetCommand(m_visionSubsystem, m_drivetrainSubsystem).withTimeout(20));
 
 
-
+    new Button(() -> rightJoy.getRawButton(13))
+    .whenPressed(() -> m_drivetrainSubsystem.resetOdometry(new Pose2d(5, 5, new Rotation2d())));
 
   //   new Button(gamepad::getYButton)
   //       .whenPressed(() -> m_climberSubsystem.setClimberState(ClimberState.kExtend))
