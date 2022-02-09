@@ -110,7 +110,6 @@ public class RobotContainer {
     new Button(leftJoy::getTrigger).whenPressed(m_intakeSubsystem::enable)
         .whenReleased(m_intakeSubsystem::disable);
 
-
     new Button(() -> rightJoy.getRawButton(11))
       .whenPressed(new TurnToAngleProfiled(45, m_drivetrainSubsystem).withTimeout(20));
 

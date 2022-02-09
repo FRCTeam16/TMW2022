@@ -57,6 +57,6 @@ public class IntakeSubsystem extends SubsystemBase {
       beaterSpeed = SmartDashboard.getNumber(BEATERBAR_SPEED_KEY, DEFAULT_BEATERBAR_SPEED);
     }
     intakeMotor.set(intakeSpeed);
-    // beaterMotor.set(beaterSpeed);
+    //beaterMotor.set(beaterSpeed);
   }
 }

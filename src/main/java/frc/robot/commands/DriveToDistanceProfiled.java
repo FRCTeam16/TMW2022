@@ -18,8 +18,12 @@ public class DriveToDistanceProfiled extends ProfiledPIDCommand {
   private static final double kI = 0.01;
   private static final double kD = 0.0;
 
+  // private static final double kPy = 10.0;
+  // private static final double kIy = 0.01;
+  // private static final double kDy = 0.0;
+
   /** Creates a new DriveToDistanceProfiled. */
-  
+
   public DriveToDistanceProfiled(double distanceInMeters, DrivetrainSubsystem drivetrain) {
     super(
         // The ProfiledPIDController used by the command
@@ -30,29 +34,42 @@ public class DriveToDistanceProfiled extends ProfiledPIDCommand {
             kD,
             // The motion profile constraints
             new TrapezoidProfile.Constraints(
-              DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-              DrivetrainSubsystem.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED)),
+                DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+                DrivetrainSubsystem.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED)),
         // This should return the measurement
         () -> drivetrain.getPose().getX(),
         // This should return the goal (can also be a constant)
         drivetrain.getPose().transformBy(
-          new Transform2d(
-            new Translation2d(distanceInMeters, 0.0), 
-            new Rotation2d())).getX(),
+            new Transform2d(
+                new Translation2d(distanceInMeters, 0.0),
+                new Rotation2d())).getX(),
         // This uses the output
         (output, setpoint) -> {
           // Use the output (and setpoint, if desired) here
           drivetrain.drive(
-            ChassisSpeeds.fromFieldRelativeSpeeds(
-              output, 
-              0, //
-              0, // FIXME: seeems to need inputs for controlling gyro
-              drivetrain.getGyroscopeRotation()));
+              ChassisSpeeds.fromFieldRelativeSpeeds(
+                  output,
+                  0, //
+                  0, // FIXME: seeems to need inputs for controlling gyro
+                  drivetrain.getGyroscopeRotation()));
+
+       // new ProfiledPIDController(
+          //kPy,
+          //kIy,
+          //kDy,
+          
+        
+        
+
+
         });
+
     // Use addRequirements() here to declare subsystem dependencies.
     // Configure additional PID options by calling `getController` here.
     getController().setTolerance(0.1);
     SmartDashboard.putNumber("DDP Goal", getController().getGoal().position);
+
+
   }
 
   // Returns true when the command should end.
