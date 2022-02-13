@@ -5,6 +5,9 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+//import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -28,8 +31,8 @@ public final class Constants {
      */
     public static final double DRIVETRAIN_WHEELBASE_METERS = 0.52; // FIXME Measure and set wheelbase
 
-    public static final int INTAKE_MOTOR_ID = 9;
-    public static final int BEATER_MOTOR_ID = 10;
+    public static final int INTAKE_MOTOR_ID = 15;
+    //public static final int BEATER_MOTOR_ID = 10;
     //public static final int BEATER2?_MOTOR_ID = X;
 
     public static final int CLIMBER_MOTOR_ID = 12;
@@ -59,8 +62,9 @@ public final class Constants {
     public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(348.12); // FIXME Measure and set back right steer offset
 
     public static class Objects {
-        public static final WPI_TalonSRX INTAKE_MOTOR = new WPI_TalonSRX(INTAKE_MOTOR_ID); // FIXME Set Pigeon ID
-        public static final WPI_TalonSRX CLIMBER_MOTOR= new WPI_TalonSRX(CLIMBER_MOTOR_ID);
+       // public static final CANSparkMax INTAKE_MOTOR = new CANSparkMax(); // FIXME Set Pigeon ID
+    public static final WPI_TalonSRX CLIMBER_MOTOR= new WPI_TalonSRX(CLIMBER_MOTOR_ID);
+    public static final CANSparkMax INTAKE_MOTOR = new CANSparkMax(INTAKE_MOTOR_ID, MotorType.kBrushless);
     }
 
     public static final int PIGEON_ID = 00;

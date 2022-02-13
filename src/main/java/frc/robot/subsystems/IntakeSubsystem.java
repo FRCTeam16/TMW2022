@@ -4,40 +4,48 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+//import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
+//import static edu.wpi.first.wpilibj.DoubleSolenoid.Value.*;
+
 public class IntakeSubsystem extends SubsystemBase {
 
   private boolean enabled = false;
 
-  private final WPI_TalonSRX intakeMotor = Constants.Objects.INTAKE_MOTOR;
-  private final double DEFAULT_INTAKE_SPEED = -0.5;
-  private static final String INTAKE_SPEED_KEY = "Intake Speed";
+  //private final WPI_TalonSRX intakeMotor = Constants.Objects.INTAKE_MOTOR;
+  //private final double DEFAULT_INTAKE_SPEED = -0.5;
+  //private static final String INTAKE_SPEED_KEY = "Intake Speed";
 
   // private final WPI_TalonSRX beaterMotor = new WPI_TalonSRX(Constants.BEATER_MOTOR_ID);
-  private final double DEFAULT_BEATERBAR_SPEED = -1;
-  private static final String BEATERBAR_SPEED_KEY = "Beater Bar Speed";
+  //private final double DEFAULT_BEATERBAR_SPEED = -1;
+  //private static final String BEATERBAR_SPEED_KEY = "Beater Bar Speed";
 
   // Calling CANSpark motor 
 
-   //private final CANSparkMax beaterMotor = new
-   //CANSparkMax(Constants.BEATER_MOTOR_ID, MotorType.kBrushless); private final
-   //double DEFAULT_BEATERBAR_SPEED = 0.5; private static final String
-   //BEATERBAR_SPEED_KEY = "Beater Bar Speed";
-   
+   private final CANSparkMax intakeMotor = new CANSparkMax(Constants.INTAKE_MOTOR_ID, MotorType.kBrushless);
+   private final double DEFAULT_INTAKE_SPEED = -0.5;
+   private static final String INTAKE_SPEED_KEY = "Intake Speed";
 
+
+  //  Solenoid exampleSolenoidPCM = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
+  //  Solenoid exampleSolenoidPH = new Solenoid(PneumaticsModuleType.REVPH, 1);
+   
+  //  exampleSolenoidPCM.set(true);
+  //  exampleSolenoidPCM.set(false);
 
   /** Creates a new IntakeSubsystem. */
  
   public IntakeSubsystem() {
     SmartDashboard.setDefaultNumber(INTAKE_SPEED_KEY, DEFAULT_INTAKE_SPEED);
-    SmartDashboard.setDefaultNumber(BEATERBAR_SPEED_KEY, DEFAULT_BEATERBAR_SPEED);
+    //SmartDashboard.setDefaultNumber(BEATERBAR_SPEED_KEY, DEFAULT_BEATERBAR_SPEED);
+     
   }
 
   public void enable() {
@@ -51,12 +59,17 @@ public class IntakeSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     double intakeSpeed = 0.0;
-    double beaterSpeed = 0.0;
+    //double beaterSpeed = 0.0;
     if (enabled) {
       intakeSpeed = SmartDashboard.getNumber(INTAKE_SPEED_KEY, DEFAULT_INTAKE_SPEED);
-      beaterSpeed = SmartDashboard.getNumber(BEATERBAR_SPEED_KEY, DEFAULT_BEATERBAR_SPEED);
+      
+      //beaterSpeed = SmartDashboard.getNumber(BEATERBAR_SPEED_KEY, DEFAULT_BEATERBAR_SPEED);
     }
     intakeMotor.set(intakeSpeed);
     //beaterMotor.set(beaterSpeed);
+
+  
   }
+
+
 }

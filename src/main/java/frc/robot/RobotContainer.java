@@ -4,31 +4,38 @@
 
 package frc.robot;
 
+//import edu.wpi.first.wpilibj.Compressor;
+//import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
+//import edu.wpi.first.wpilibj.PneumaticHub;
+//import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
+//import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+//import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.DefaultDriveCommand;
-import frc.robot.commands.DriveToDistanceProfiled;
-import frc.robot.commands.TrackTargetCommand;
+//import frc.robot.commands.DriveToDistanceProfiled;
+//import frc.robot.commands.TrackTargetCommand;
 import frc.robot.commands.TurnToAngleProfiled;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.ClimberSubsystem.ClimberState;
+//import frc.robot.subsystems.ShooterSubsystem;
+//import frc.robot.subsystems.ClimberSubsystem.ClimberState;
 import frc.robot.subsystems.vision.VisionSubsystem;
-import frc.robot.subsystems.ClimberSubsystem;
+//import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.commands.SimpleTrackTargetCommand;
+//import com.revrobotics.CANSparkMax;
+//import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 
 /*
@@ -44,6 +51,8 @@ public class RobotContainer {
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
   // private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
   private final VisionSubsystem m_visionSubsystem = new VisionSubsystem();
+  //private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
+
 
   private final XboxController gamepad = new XboxController(2);
   private final Joystick leftJoy = new Joystick(0);
@@ -53,6 +62,12 @@ public class RobotContainer {
   private static final SlewRateLimiter xRateLimiter = new SlewRateLimiter(1);
   private static final SlewRateLimiter yRateLimiter = new SlewRateLimiter(1);
   private static final SlewRateLimiter rotRateLimiter = new SlewRateLimiter(1);
+
+
+  //private static final PneumaticsModuleType PneumaticHub = null;
+
+  //Solenoid for Intake
+  //private final DoubleSolenoid solenoid = new DoubleSolenoid(PneumaticHub, 0,1);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -110,21 +125,38 @@ public class RobotContainer {
         // No requirements because we don't need to interrupt anything
         .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
 
+
+       //Intake Trigger
     new Button(leftJoy::getTrigger).whenPressed(m_intakeSubsystem::enable)
         .whenReleased(m_intakeSubsystem::disable);
 
+
+       //Turn to angle button
     new Button(() -> rightJoy.getRawButton(11))
       .whenPressed(new TurnToAngleProfiled(45, m_drivetrainSubsystem).withTimeout(20));
 
-    new Button(rightJoy::getTrigger)
-        .whenPressed(new DriveToDistanceProfiled(1, m_drivetrainSubsystem));
+       //Drive to Distance button
+    // new Button(rightJoy::getTrigger)
+    //     .whenPressed(new DriveToDistanceProfiled(1, m_drivetrainSubsystem));
 
+        //Track Goal limelight button
     new Button(() -> rightJoy.getRawButton(14))
       .whenPressed(new SimpleTrackTargetCommand(m_visionSubsystem, m_drivetrainSubsystem).withTimeout(20));
 
-
+        //Drive to distance button
     new Button(() -> rightJoy.getRawButton(13))
     .whenPressed(() -> m_drivetrainSubsystem.resetOdometry(new Pose2d(5, 5, new Rotation2d())));
+
+    // new Button(()-> leftJoy.getRawButton(11))
+    // .whenPressed(() -> solenoid.set(DoubleSolenoid.Value.kReverse));
+
+    // new Button(()-> leftJoy.getRawButton(12))
+    // .whenPressed(()-> solenoid.set(DoubleSolenoid.Value.kOff));
+
+    // new Button(rightJoy::getTrigger)
+    // .whenPressed(m_shooterSubsystem::enable)
+    // .whenReleased(m_shooterSubsystem::disable);
+
 
   //   new Button(gamepad::getYButton)
   //       .whenPressed(() -> m_climberSubsystem.setClimberState(ClimberState.kExtend))
@@ -144,6 +176,9 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
     return new InstantCommand();
+
+  
+  
   }
 
 }
