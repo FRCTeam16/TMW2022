@@ -63,7 +63,7 @@ public final class Constants {
 
     public static class Objects {
        // public static final CANSparkMax INTAKE_MOTOR = new CANSparkMax(); // FIXME Set Pigeon ID
-    public static final WPI_TalonSRX CLIMBER_MOTOR= new WPI_TalonSRX(CLIMBER_MOTOR_ID);
+    //public static final WPI_TalonSRX CLIMBER_MOTOR= new WPI_TalonSRX(CLIMBER_MOTOR_ID);
     public static final CANSparkMax INTAKE_MOTOR = new CANSparkMax(INTAKE_MOTOR_ID, MotorType.kBrushless);
     }
 

@@ -29,7 +29,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   // Calling CANSpark motor 
 
-   private final CANSparkMax intakeMotor = new CANSparkMax(Constants.INTAKE_MOTOR_ID, MotorType.kBrushless);
+  // private final CANSparkMax intakeMotor = new CANSparkMax(Constants.INTAKE_MOTOR_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
    private final double DEFAULT_INTAKE_SPEED = -0.5;
    private static final String INTAKE_SPEED_KEY = "Intake Speed";
 
@@ -64,8 +64,9 @@ public class IntakeSubsystem extends SubsystemBase {
       intakeSpeed = SmartDashboard.getNumber(INTAKE_SPEED_KEY, DEFAULT_INTAKE_SPEED);
       
       //beaterSpeed = SmartDashboard.getNumber(BEATERBAR_SPEED_KEY, DEFAULT_BEATERBAR_SPEED);
+      Constants.Objects.INTAKE_MOTOR.set(1);
     }
-    intakeMotor.set(intakeSpeed);
+    //set(intakeSpeed);
     //beaterMotor.set(beaterSpeed);
 
   
