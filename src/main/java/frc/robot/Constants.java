@@ -61,11 +61,6 @@ public final class Constants {
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 3; // FIXME Set back right steer encoder ID
     public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(348.12); // FIXME Measure and set back right steer offset
 
-    public static class Objects {
-       // public static final CANSparkMax INTAKE_MOTOR = new CANSparkMax(); // FIXME Set Pigeon ID
-    //public static final WPI_TalonSRX CLIMBER_MOTOR= new WPI_TalonSRX(CLIMBER_MOTOR_ID);
-    public static final CANSparkMax INTAKE_MOTOR = new CANSparkMax(INTAKE_MOTOR_ID, MotorType.kBrushless);
-    }
 
     public static final int PIGEON_ID = 00;
 }

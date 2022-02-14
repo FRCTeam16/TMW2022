@@ -47,7 +47,7 @@ import frc.robot.commands.SimpleTrackTargetCommand;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
+  // private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
   // private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
   private final VisionSubsystem m_visionSubsystem = new VisionSubsystem();
@@ -74,7 +74,7 @@ public class RobotContainer {
    */
   public RobotContainer() {
     // Set up the default command for the drivetrain.
-    m_drivetrainSubsystem.resetOdometry(new Pose2d(5,4.2, new Rotation2d(0)));
+    // m_drivetrainSubsystem.resetOdometry(new Pose2d(5,4.2, new Rotation2d(0)));
 
     // m_drivetrainSubsystem.setDefaultCommand(
     // new DefaultDriveCommand(m_drivetrainSubsystem,
@@ -87,30 +87,30 @@ public class RobotContainer {
     // () -> !leftJoy.getRawButton(13))
     // );
 
-    m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(m_drivetrainSubsystem,
-        () -> -OIUtil.modifyAxis((rightJoy.getY())) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-        () -> -OIUtil.modifyAxis((rightJoy.getX())) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-        () -> -OIUtil.modifyAxis((leftJoy.getX())) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
-        () -> !leftJoy.getRawButton(13)));
+    // m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(m_drivetrainSubsystem,
+    //     () -> -OIUtil.modifyAxis((rightJoy.getY())) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+    //     () -> -OIUtil.modifyAxis((rightJoy.getX())) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+    //     () -> -OIUtil.modifyAxis((leftJoy.getX())) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
+    //     () -> !leftJoy.getRawButton(13)));
 
     // Configure the button bindings
     configureButtonBindings();
 
     // Zero Out the Gyroscope
-    m_drivetrainSubsystem.zeroGyroscope();
+    // m_drivetrainSubsystem.zeroGyroscope();
 
     // Debug telemetry
-    CommandScheduler.getInstance().schedule(new CommandBase() {
-      @Override
-      public void execute() {
-        SmartDashboard.putNumber("Gyro", m_drivetrainSubsystem.getGyroscopeRotation().getDegrees());
-      }
+  //   CommandScheduler.getInstance().schedule(new CommandBase() {
+  //     @Override
+  //     public void execute() {
+  //       SmartDashboard.putNumber("Gyro", m_drivetrainSubsystem.getGyroscopeRotation().getDegrees());
+  //     }
 
-      @Override
-      public boolean runsWhenDisabled() {
-        return true;
-      }
-    });
+  //     @Override
+  //     public boolean runsWhenDisabled() {
+  //       return true;
+  //     }
+  //   });
   }
 
   /**
@@ -120,16 +120,11 @@ public class RobotContainer {
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    /*
     // Back button zeros the gyroscope
     new Button(gamepad::getBackButton)
         // No requirements because we don't need to interrupt anything
         .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
-
-
-       //Intake Trigger
-    new Button(leftJoy::getTrigger).whenPressed(m_intakeSubsystem::enable)
-        .whenReleased(m_intakeSubsystem::disable);
-
 
        //Turn to angle button
     new Button(() -> rightJoy.getRawButton(11))
@@ -146,6 +141,12 @@ public class RobotContainer {
         //Drive to distance button
     new Button(() -> rightJoy.getRawButton(13))
     .whenPressed(() -> m_drivetrainSubsystem.resetOdometry(new Pose2d(5, 5, new Rotation2d())));
+    */
+
+    //Intake Trigger
+    new Button(leftJoy::getTrigger).whenPressed(m_intakeSubsystem::enable)
+      .whenReleased(m_intakeSubsystem::disable);
+ 
 
     // new Button(()-> leftJoy.getRawButton(11))
     // .whenPressed(() -> solenoid.set(DoubleSolenoid.Value.kReverse));
@@ -176,9 +177,6 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
     return new InstantCommand();
-
-  
-  
   }
 
 }
