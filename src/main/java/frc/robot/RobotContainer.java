@@ -47,7 +47,7 @@ import frc.robot.commands.SimpleTrackTargetCommand;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  // private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
+  private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
   // private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
   private final VisionSubsystem m_visionSubsystem = new VisionSubsystem();
@@ -59,9 +59,6 @@ public class RobotContainer {
   private final Joystick rightJoy = new Joystick(1);
   private final JoystickButton rButton = new JoystickButton(leftJoy, 5);
 
-  private static final SlewRateLimiter xRateLimiter = new SlewRateLimiter(1);
-  private static final SlewRateLimiter yRateLimiter = new SlewRateLimiter(1);
-  private static final SlewRateLimiter rotRateLimiter = new SlewRateLimiter(1);
 
 
   //private static final PneumaticsModuleType PneumaticHub = null;
@@ -74,43 +71,32 @@ public class RobotContainer {
    */
   public RobotContainer() {
     // Set up the default command for the drivetrain.
-    // m_drivetrainSubsystem.resetOdometry(new Pose2d(5,4.2, new Rotation2d(0)));
+    m_drivetrainSubsystem.resetOdometry(new Pose2d(5,4.2, new Rotation2d(0)));
 
-    // m_drivetrainSubsystem.setDefaultCommand(
-    // new DefaultDriveCommand(m_drivetrainSubsystem,
-    // () -> -OIUtil.modifyAxis(xRateLimiter.calculate(rightJoy.getY())) *
-    // DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-    // () -> -OIUtil.modifyAxis(yRateLimiter.calculate(rightJoy.getX())) *
-    // DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-    // () -> -OIUtil.modifyAxis(rotRateLimiter.calculate(leftJoy.getX())) *
-    // DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
-    // () -> !leftJoy.getRawButton(13))
-    // );
-
-    // m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(m_drivetrainSubsystem,
-    //     () -> -OIUtil.modifyAxis((rightJoy.getY())) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-    //     () -> -OIUtil.modifyAxis((rightJoy.getX())) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-    //     () -> -OIUtil.modifyAxis((leftJoy.getX())) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
-    //     () -> !leftJoy.getRawButton(13)));
+    m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(m_drivetrainSubsystem,
+        () -> -OIUtil.modifyAxis((rightJoy.getY())) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+        () -> -OIUtil.modifyAxis((rightJoy.getX())) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+        () -> -OIUtil.modifyAxis((leftJoy.getX())) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
+        () -> !leftJoy.getRawButton(13)));
 
     // Configure the button bindings
     configureButtonBindings();
 
     // Zero Out the Gyroscope
-    // m_drivetrainSubsystem.zeroGyroscope();
+    m_drivetrainSubsystem.zeroGyroscope();
 
     // Debug telemetry
-  //   CommandScheduler.getInstance().schedule(new CommandBase() {
-  //     @Override
-  //     public void execute() {
-  //       SmartDashboard.putNumber("Gyro", m_drivetrainSubsystem.getGyroscopeRotation().getDegrees());
-  //     }
+    CommandScheduler.getInstance().schedule(new CommandBase() {
+      @Override
+      public void execute() {
+        SmartDashboard.putNumber("Gyro", m_drivetrainSubsystem.getGyroscopeRotation().getDegrees());
+      }
 
-  //     @Override
-  //     public boolean runsWhenDisabled() {
-  //       return true;
-  //     }
-  //   });
+      @Override
+      public boolean runsWhenDisabled() {
+        return true;
+      }
+    });
   }
 
   /**
@@ -120,7 +106,7 @@ public class RobotContainer {
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    /*
+    
     // Back button zeros the gyroscope
     new Button(gamepad::getBackButton)
         // No requirements because we don't need to interrupt anything
@@ -141,7 +127,7 @@ public class RobotContainer {
         //Drive to distance button
     new Button(() -> rightJoy.getRawButton(13))
     .whenPressed(() -> m_drivetrainSubsystem.resetOdometry(new Pose2d(5, 5, new Rotation2d())));
-    */
+    
 
     //Intake Trigger
     new Button(leftJoy::getTrigger).whenPressed(m_intakeSubsystem::enable)
