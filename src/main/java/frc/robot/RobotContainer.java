@@ -29,7 +29,7 @@ import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.TurnToAngleProfiled;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-//import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 //import frc.robot.subsystems.ClimberSubsystem.ClimberState;
 import frc.robot.subsystems.vision.VisionSubsystem;
 //import frc.robot.subsystems.ClimberSubsystem;
@@ -51,7 +51,7 @@ public class RobotContainer {
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
   // private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
   private final VisionSubsystem m_visionSubsystem = new VisionSubsystem();
-  //private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
+  // private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
 
 
   private final XboxController gamepad = new XboxController(2);
@@ -119,6 +119,10 @@ public class RobotContainer {
        //Drive to Distance button
     // new Button(rightJoy::getTrigger)
     //     .whenPressed(new DriveToDistanceProfiled(1, m_drivetrainSubsystem));
+
+    // new Button(rightJoy::getTrigger).whenPressed(m_shooterSubsystem::enable)
+    // .whenReleased(m_shooterSubsystem::disable);
+
 
         //Track Goal limelight button
     new Button(() -> rightJoy.getRawButton(14))

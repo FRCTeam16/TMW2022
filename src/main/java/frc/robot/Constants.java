@@ -37,9 +37,9 @@ public final class Constants {
 
     public static final int CLIMBER_MOTOR_ID = 12;
 
-    //public static final int SHOOTERWHEEL1_MOTOR_ID = X; // Motor ID for One of the shooter motors
-    //public static final int SHOOTERWHEEL2_MOTOR_ID = X; // Motor ID for one of the shooter motors
-    //public static final int SHOOTERFEEDER_MOTOR_ID = X; // Motor ID for the feeder for the shooter
+    public static final int SHOOTERWHEELRIGHT_MOTOR_ID = 16; // Motor ID for One of the shooter motors
+    public static final int SHOOTERWHEELLEFT_MOTOR_ID = 17; // Motor ID for one of the shooter motors
+    public static final int SHOOTERFEEDER_MOTOR_ID = 11; // Motor ID for the feeder for the shooter
     
     public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 1; // FIXME Set front left module drive motor ID
     public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 2; // FIXME Set front left module steer motor ID

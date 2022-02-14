@@ -23,7 +23,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   // Calling CANSpark motor
   private final CANSparkMax intakeMotor;
-  private final double DEFAULT_INTAKE_SPEED = -0.5;
+  private final double DEFAULT_INTAKE_SPEED = -1;
   private static final String INTAKE_SPEED_KEY = "Intake Speed";
 
   // Solenoid exampleSolenoidPCM = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
