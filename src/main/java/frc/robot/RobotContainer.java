@@ -4,10 +4,14 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 //import edu.wpi.first.wpilibj.Compressor;
 //import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PneumaticHub;
+import edu.wpi.first.wpilibj.PneumaticsBase;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 //import edu.wpi.first.wpilibj.PneumaticHub;
 //import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -29,6 +33,7 @@ import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.TurnToAngleProfiled;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterFeederSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 //import frc.robot.subsystems.ClimberSubsystem.ClimberState;
 import frc.robot.subsystems.vision.VisionSubsystem;
@@ -36,7 +41,7 @@ import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.commands.SimpleTrackTargetCommand;
 //import com.revrobotics.CANSparkMax;
 //import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
+import edu.wpi.first.wpilibj.PneumaticsBase;
 
 /*
  * This class is where the bulk of the robot should be declared. Since
@@ -46,32 +51,37 @@ import frc.robot.commands.SimpleTrackTargetCommand;
  * commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+  // private static final PneumaticsModuleType PneumaticHub = null;
   // The robot's subsystems and commands are defined here...
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
   // private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
   private final VisionSubsystem m_visionSubsystem = new VisionSubsystem();
-  // private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
-
+  private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
+  private final ShooterFeederSubsystem m_feederSubsystem = new ShooterFeederSubsystem();
 
   private final XboxController gamepad = new XboxController(2);
   private final Joystick leftJoy = new Joystick(0);
   private final Joystick rightJoy = new Joystick(1);
   private final JoystickButton rButton = new JoystickButton(leftJoy, 5);
 
+  private final static double minPressure = 110;
+  private final static double maxPressure = 120;
 
+  private final PneumaticHub pneuHub = new PneumaticHub();
 
-  //private static final PneumaticsModuleType PneumaticHub = null;
+  // private static final PneumaticsModuleType PneumaticHub = null;
 
-  //Solenoid for Intake
-  //private final DoubleSolenoid solenoid = new DoubleSolenoid(PneumaticHub, 0,1);
+  // Solenoid for Intake
+  // private final DoubleSolenoid solenoid = new DoubleSolenoid(PneumaticHub,
+  // 6,2);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
     // Set up the default command for the drivetrain.
-    m_drivetrainSubsystem.resetOdometry(new Pose2d(5,4.2, new Rotation2d(0)));
+    m_drivetrainSubsystem.resetOdometry(new Pose2d(5, 4.2, new Rotation2d(0)));
 
     m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(m_drivetrainSubsystem,
         () -> -OIUtil.modifyAxis((rightJoy.getY())) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
@@ -84,6 +94,8 @@ public class RobotContainer {
 
     // Zero Out the Gyroscope
     m_drivetrainSubsystem.zeroGyroscope();
+
+    pneuHub.enableCompressorAnalog(minPressure, maxPressure);
 
     // Debug telemetry
     CommandScheduler.getInstance().schedule(new CommandBase() {
@@ -106,37 +118,42 @@ public class RobotContainer {
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    
+
     // Back button zeros the gyroscope
     new Button(gamepad::getBackButton)
         // No requirements because we don't need to interrupt anything
         .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
 
-       //Turn to angle button
-    new Button(() -> rightJoy.getRawButton(11))
-      .whenPressed(new TurnToAngleProfiled(45, m_drivetrainSubsystem).withTimeout(20));
+    // Turn to angle button
+    // new Button(() -> rightJoy.getRawButton(11))
+    // .whenPressed(new TurnToAngleProfiled(45,
+    // m_drivetrainSubsystem).withTimeout(20));
 
-       //Drive to Distance button
+    // Drive to Distance button
     // new Button(rightJoy::getTrigger)
-    //     .whenPressed(new DriveToDistanceProfiled(1, m_drivetrainSubsystem));
+    // .whenPressed(new DriveToDistanceProfiled(1, m_drivetrainSubsystem));
 
     // new Button(rightJoy::getTrigger).whenPressed(m_shooterSubsystem::enable)
     // .whenReleased(m_shooterSubsystem::disable);
 
+    // Track Goal limelight button
+    // new Button(() -> rightJoy.getRawButton(14))
+    // .whenPressed(new SimpleTrackTargetCommand(m_visionSubsystem,
+    // m_drivetrainSubsystem).withTimeout(20));
 
-        //Track Goal limelight button
-    new Button(() -> rightJoy.getRawButton(14))
-      .whenPressed(new SimpleTrackTargetCommand(m_visionSubsystem, m_drivetrainSubsystem).withTimeout(20));
+    // //Drive to distance button
+    // new Button(() -> rightJoy.getRawButton(13))
+    // .whenPressed(() -> m_drivetrainSubsystem.resetOdometry(new Pose2d(5, 5, new
+    // Rotation2d())));
 
-        //Drive to distance button
-    new Button(() -> rightJoy.getRawButton(13))
-    .whenPressed(() -> m_drivetrainSubsystem.resetOdometry(new Pose2d(5, 5, new Rotation2d())));
-    
-
-    //Intake Trigger
+    // Intake Trigger
     new Button(leftJoy::getTrigger).whenPressed(m_intakeSubsystem::enable)
-      .whenReleased(m_intakeSubsystem::disable);
- 
+        .whenReleased(m_intakeSubsystem::disable);
+
+    //new Button(() -> rightJoy.getRawButton(5)).whenPressed(m_intakeSubsystem::RaiseIntake)
+    //    .whenReleased(m_intakeSubsystem::DropIntake);
+
+
 
     // new Button(()-> leftJoy.getRawButton(11))
     // .whenPressed(() -> solenoid.set(DoubleSolenoid.Value.kReverse));
@@ -144,18 +161,21 @@ public class RobotContainer {
     // new Button(()-> leftJoy.getRawButton(12))
     // .whenPressed(()-> solenoid.set(DoubleSolenoid.Value.kOff));
 
-    // new Button(rightJoy::getTrigger)
-    // .whenPressed(m_shooterSubsystem::enable)
-    // .whenReleased(m_shooterSubsystem::disable);
+    new Button(rightJoy::getTrigger)
+        .whenPressed(m_feederSubsystem::enable)
+        .whenReleased(m_feederSubsystem::disable);
 
+    new Button(() -> rightJoy.getRawButton(8)).whenPressed(m_shooterSubsystem::enable)
+        .whenReleased(m_shooterSubsystem::disable);
 
-  //   new Button(gamepad::getYButton)
-  //       .whenPressed(() -> m_climberSubsystem.setClimberState(ClimberState.kExtend))
-  //       .whenReleased(() -> m_climberSubsystem.setClimberState(ClimberState.kDisabled));
+    // new Button(gamepad::getYButton)
+    // .whenPressed(() -> m_climberSubsystem.setClimberState(ClimberState.kExtend))
+    // .whenReleased(() ->
+    // m_climberSubsystem.setClimberState(ClimberState.kDisabled));
 
-  //   new Button(gamepad::getAButton)
-  //       .whenPressed(() -> m_climberSubsystem.setClimberState(ClimberState.kClimb))
-  //       .whenReleased(() -> m_climberSubsystem.setClimberState(ClimberState.kHold));
+    // new Button(gamepad::getAButton)
+    // .whenPressed(() -> m_climberSubsystem.setClimberState(ClimberState.kClimb))
+    // .whenReleased(() -> m_climberSubsystem.setClimberState(ClimberState.kHold));
 
   }
 
