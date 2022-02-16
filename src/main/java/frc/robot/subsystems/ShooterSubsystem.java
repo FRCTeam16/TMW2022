@@ -66,7 +66,7 @@ public class ShooterSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Shooter/Feed Forward", kFF);
     SmartDashboard.putNumber("Shooter/Max Output", kMaxOutput);
     SmartDashboard.putNumber("Shooter/Min Output", kMinOutput);
-    SmartDashboard.putNumber("Shooter/TargetRPM", targetRPM);
+    SmartDashboard.setDefaultNumber("Shooter/TargetRPM", targetRPM);
 
   }
 

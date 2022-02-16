@@ -26,8 +26,8 @@ public class PigeonGyro implements BSGyro {
     @Override
     public Rotation2d getGyroscopeRotation() {
         // temporarily hard code to 0 for robot-centric
-        return new Rotation2d();
-        // return Rotation2d.fromDegrees(m_pigeon.getYaw());
+        // return new Rotation2d();
+        return Rotation2d.fromDegrees(m_pigeon.getYaw());
         // m_pigeon.get
         // return m_pigeon.getRotation2d();
     }
