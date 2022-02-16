@@ -35,12 +35,12 @@ public class ShooterFeederSubsystem extends SubsystemBase {
     feederMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
     SmartDashboard.setDefaultNumber(FEEDER_SPEED_KEY, DEFAULT_FEEDER_SPEED);
   }
-  public void enable() {
+  public void pull() {
     this.enabled = true;
    
   }
 
-  public void disable() {
+  public void dontPull() {
     this.enabled = false;
   
   }

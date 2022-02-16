@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 //import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.DefaultDriveCommand;
@@ -162,11 +163,12 @@ public class RobotContainer {
     // .whenPressed(()-> solenoid.set(DoubleSolenoid.Value.kOff));
 
     new Button(rightJoy::getTrigger)
-        .whenPressed(m_feederSubsystem::enable)
-        .whenReleased(m_feederSubsystem::disable);
+        .whenPressed(m_feederSubsystem::pull)
+        .whenReleased(m_feederSubsystem::dontPull);
 
-    new Button(() -> rightJoy.getRawButton(8)).whenPressed(m_shooterSubsystem::enable)
-        .whenReleased(m_shooterSubsystem::disable);
+    new Button(()-> rightJoy.getRawButton(8)).toggleWhenPressed(
+      new StartEndCommand(m_shooterSubsystem::enable,m_shooterSubsystem::disable ,m_shooterSubsystem)
+      );
 
     // new Button(gamepad::getYButton)
     // .whenPressed(() -> m_climberSubsystem.setClimberState(ClimberState.kExtend))
@@ -177,6 +179,12 @@ public class RobotContainer {
     // .whenPressed(() -> m_climberSubsystem.setClimberState(ClimberState.kClimb))
     // .whenReleased(() -> m_climberSubsystem.setClimberState(ClimberState.kHold));
 
+    new Button(()-> rightJoy.getRawButton(5)).whenPressed(m_intakeSubsystem::RaiseIntake)
+    .whenReleased(m_intakeSubsystem::DropIntake);
+
+    new Button(()-> rightJoy.getRawButton(6)).whenPressed(m_shooterSubsystem::shortShot);
+
+    new Button(()-> rightJoy.getRawButton(7)).whenPressed(m_shooterSubsystem::longShot);
   }
 
   /**
