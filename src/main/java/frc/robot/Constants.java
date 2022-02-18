@@ -31,11 +31,16 @@ public final class Constants {
      */
     public static final double DRIVETRAIN_WHEELBASE_METERS = 0.52; // FIXME Measure and set wheelbase
 
+
+
     public static final int INTAKE_MOTOR_ID = 15;
     //public static final int BEATER_MOTOR_ID = 10;
     //public static final int BEATER2?_MOTOR_ID = X;
 
-    public static final int CLIMBER_MOTOR_ID = 12;
+
+        //Climber motors 
+    public static final int RIGHTCLIMBER_MOTOR_ID = 81;
+    public static final int LEFTCLIMBER_MOTOR_ID = 80;
 
     public static final int SHOOTERWHEELRIGHT_MOTOR_ID = 16; // Motor ID for One of the shooter motors
     public static final int SHOOTERWHEELLEFT_MOTOR_ID = 17; // Motor ID for one of the shooter motors
