@@ -12,12 +12,16 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsBase;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+
+import com.revrobotics.ColorSensorV3;
+
 //import edu.wpi.first.wpilibj.PneumaticHub;
 //import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.I2C.Port;
 //import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -29,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.commands.DetectBallColorCommand;
 //import frc.robot.commands.DriveToDistanceProfiled;
 //import frc.robot.commands.TrackTargetCommand;
 import frc.robot.commands.TurnToAngleProfiled;
@@ -70,6 +75,7 @@ public class RobotContainer {
   private final static double maxPressure = 120;
 
   private final PneumaticHub pneuHub = new PneumaticHub();
+  private final ColorSensorV3 colorSensor = new ColorSensorV3(Port.kOnboard);
 
   // private static final PneumaticsModuleType PneumaticHub = null;
 
@@ -110,6 +116,9 @@ public class RobotContainer {
         return true;
       }
     });
+
+    // Color Sensor Debug
+    CommandScheduler.getInstance().schedule(new DetectBallColorCommand(colorSensor));
   }
 
   /**
