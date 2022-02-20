@@ -4,9 +4,13 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+
+
 
 
 /**
@@ -20,6 +24,8 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
 
+  
+  
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -46,23 +52,7 @@ public class Robot extends TimedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
   }
-  public void updateLEDbuffer() {
-    LEDbuffer[0] = 254;       //  initialize
-    LEDbuffer[1] = FLD;
-    LEDbuffer[2] = FLS;
-    LEDbuffer[3] = FRD;
-    LEDbuffer[4] = FRS;
-    LEDbuffer[5] = RLD;
-    LEDbuffer[6] = RLS;
-    LEDbuffer[7] = RRD;
-    LEDbuffer[8] = RRS;
-    LEDbuffer[9] = commStatus;
-    LEDbuffer[10] = allianceColor;
-    LEDbuffer[11] = a;
-    LEDbuffer[12] = b;
-    LEDbuffer[13] = c;
-    LEDbuffer[14] = 255;     //  terminate
-  }
+  
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
