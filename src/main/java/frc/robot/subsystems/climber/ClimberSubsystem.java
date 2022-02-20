@@ -14,7 +14,10 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.subsystems.climber.OpenLoopClimbCommand.ElevatorAction;
+
 import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.CANSparkMax.IdleMode;
 
 public class ClimberSubsystem extends SubsystemBase {
 
@@ -68,14 +71,14 @@ public class ClimberSubsystem extends SubsystemBase {
 
   }
 
-  private final CANSparkMax climberMotor = new CANSparkMax(Constants.RIGHTCLIMBER_MOTOR_ID, MotorType.kBrushless);
-  private final CANSparkMax followerMotor = new CANSparkMax(Constants.LEFTCLIMBER_MOTOR_ID, MotorType.kBrushless);
-  private final DoubleSolenoid climberSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 2, 6);
+  private final CANSparkMax climberMotor = new CANSparkMax(Constants.LEFTCLIMBER_MOTOR_ID, MotorType.kBrushless);
+  private final CANSparkMax followerMotor = new CANSparkMax(Constants.RIGHTCLIMBER_MOTOR_ID, MotorType.kBrushless);
+ // private final DoubleSolenoid climberSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 2, 6);
 
   private ClimberStep climberStep = ClimberStep.kStep1;
   private CurrentBar currentBar = CurrentBar.kMid;
 
-  private DoubleSolenoid.Value currentSolenoidValue = DoubleSolenoid.Value.kOff;
+  //private DoubleSolenoid.Value currentSolenoidValue = DoubleSolenoid.Value.kOff;
 
   enum RunState {
     OpenLoop, ClosedLoop
@@ -83,12 +86,19 @@ public class ClimberSubsystem extends SubsystemBase {
   private RunState currentState = RunState.OpenLoop;
   // private double openLoopOutput = 0.0;
 
+  private double openLoopValue = 0.0;
+
 
   public ClimberSubsystem() {
-
+    climberMotor.restoreFactoryDefaults();
+    followerMotor.restoreFactoryDefaults();
+    climberMotor.setIdleMode(IdleMode.kBrake);
+    followerMotor.setIdleMode(IdleMode.kBrake);
     followerMotor.follow(climberMotor, true);
+    
+    OpenLoopClimbCommand.ConfigSmartDashboard();
 
-   
+  //  this.setDefaultCommand(new OpenLoopClimbCommand(ElevatorAction.Disabled, this));
 
     CommandScheduler.getInstance().schedule(new CommandBase() {
       @Override
@@ -106,17 +116,21 @@ public class ClimberSubsystem extends SubsystemBase {
 
   }
 
+  public void setOpenLoopSpeed(double value) {
+    this.openLoopValue = value;
+  }
+
   public void setClimberState(ClimberStep state) {
     this.climberStep = state;
   }
 
-  public void SolonoidFWD() {
-    currentSolenoidValue = Value.kForward;
-  }
+  // public void SolonoidFWD() {
+  //   currentSolenoidValue = Value.kForward;
+  // }
 
-  public void SolonoidREV() {
-    currentSolenoidValue = Value.kReverse;
-  }
+  // public void SolonoidREV() {
+  //   currentSolenoidValue = Value.kReverse;
+  // }
 
   /**
    * Main method for performing climb steps
@@ -137,39 +151,15 @@ public class ClimberSubsystem extends SubsystemBase {
     } else {
       // this.currentBar = CurrentBar.fromValue()
     }
-
   }
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
-    // double solenoidFWD =
-    // solenoidREV = SolonoidREV();
-
-    // climberSolenoid.set(currentSolenoidValue);
-
-   
-    switch (climberStep) {
-
-      case kStep1:
-        break;
-
-      case kStep2:
-        // climberOutput = solenoidFWD;
-        break;
-
-      case kStep3:
-        break;
-
-      case kStep4:
-        break;
-
-      case kStep5:
-        break;
-
-      default:
-
-    }
+    SmartDashboard.putNumber("Climber/Simple/Target", openLoopValue);
+    SmartDashboard.putNumber("Climber/Simple/Output", climberMotor.getAppliedOutput());
+    SmartDashboard.putNumber("Climber/Simple/CAmps", climberMotor.getOutputCurrent());
+    SmartDashboard.putNumber("Climber/Simple/FAmps", followerMotor.getOutputCurrent());
+    this.climberMotor.set(openLoopValue);
   }
 
 CANSparkMax getClimberMotor() {

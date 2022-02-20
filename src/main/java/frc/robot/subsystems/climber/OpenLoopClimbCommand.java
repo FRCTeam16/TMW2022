@@ -6,31 +6,34 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 public class OpenLoopClimbCommand extends CommandBase {
 
   public enum ElevatorAction {
-    Pull, Release, Extend, Hold
+    Pull, Extend, Hold, Disabled
   }
 
-  private final double DEFAULT_ELEVDOWN_SPEED = -0.35;
-  private static final String ELEVDOWN_SPEED_KEY = "Climber Speed";
+  private static final double DEFAULT_ELEVDOWN_SPEED = 0.2;
+  private static final String ELEVDOWN_SPEED_KEY = "Climber/OpenLoop/Pull Speed";
 
-  private final double DEFAULT_ELEVUP_SPEED = 0.20;
-  private static final String ELEVUP_SPEED_KEY = "Extend Speed";
+  private static final double DEFAULT_ELEVUP_SPEED = -0.35;
+  private static final String ELEVUP_SPEED_KEY = "Climber/OpenLoop/Extend Speed";
 
-  private final double DEFAULT_ELEVHOLD_SPEED = -0.15;
-  private static final String ELEVHOLD_SPEED_KEY = "Hold Speed";
+  private static final double DEFAULT_ELEVHOLD_SPEED = 0.0; //-0.15
+  private static final String ELEVHOLD_SPEED_KEY = "Climber/OpenLoop/Hold Speed";
 
-  private final double DEFAULT_DISABLED_SPEED = 0;
-  private static final String DISABLED_SPEED_KEY = "DISABLED Speed";
+  private static final double DEFAULT_DISABLED_SPEED = 0;
+  private static final String DISABLED_SPEED_KEY = "Climber/OpenLoop/DISABLED Speed";
 
   private ElevatorAction targetAction = ElevatorAction.Hold;
   private final ClimberSubsystem climberSystem;
 
-
-  /** Creates a new OpenLoopClimbCommand. */
-  public OpenLoopClimbCommand(ElevatorAction targetAction, ClimberSubsystem climberSubsystem) {
+  public static void ConfigSmartDashboard() {
     SmartDashboard.setDefaultNumber(ELEVDOWN_SPEED_KEY, DEFAULT_ELEVDOWN_SPEED);
     SmartDashboard.setDefaultNumber(ELEVUP_SPEED_KEY, DEFAULT_ELEVUP_SPEED);
     SmartDashboard.setDefaultNumber(ELEVHOLD_SPEED_KEY, DEFAULT_ELEVHOLD_SPEED);
     SmartDashboard.setDefaultNumber(DISABLED_SPEED_KEY, DEFAULT_DISABLED_SPEED);
+  }
+
+  /** Creates a new OpenLoopClimbCommand. */
+  public OpenLoopClimbCommand(ElevatorAction targetAction, ClimberSubsystem climberSubsystem) {
+    ConfigSmartDashboard();
 
     this.climberSystem = climberSubsystem;
     this.targetAction = targetAction;
@@ -45,7 +48,7 @@ public class OpenLoopClimbCommand extends CommandBase {
   @Override
   public void execute() {
     double pullSpeed = SmartDashboard.getNumber(ELEVDOWN_SPEED_KEY, DEFAULT_ELEVDOWN_SPEED);
-    double releaseSpeed = SmartDashboard.getNumber(ELEVHOLD_SPEED_KEY, DEFAULT_ELEVHOLD_SPEED);
+    double holdSpeed = SmartDashboard.getNumber(ELEVHOLD_SPEED_KEY, DEFAULT_ELEVHOLD_SPEED);
     double extendSpeed = SmartDashboard.getNumber(ELEVUP_SPEED_KEY, DEFAULT_ELEVUP_SPEED);
     double defaultSpeed = SmartDashboard.getNumber(DISABLED_SPEED_KEY, DEFAULT_DISABLED_SPEED);
 
@@ -54,18 +57,18 @@ public class OpenLoopClimbCommand extends CommandBase {
       case Pull:
         climberOutput = pullSpeed;
         break;
-      case Release:
-        climberOutput = releaseSpeed;
-        break;
       case Extend:
         climberOutput = extendSpeed;
         break;
       case Hold:
-        climberOutput = defaultSpeed;
+        climberOutput = holdSpeed;
         break;
       default:
         climberOutput = defaultSpeed;
     }
+    SmartDashboard.putString("Climber/OpenLoop/State2", this.targetAction.name());
+    SmartDashboard.putNumber("Climber/OpenLoop/Target2", climberOutput);
+    SmartDashboard.putNumber("Climber/OpenLoop/Output2", this.climberSystem.getClimberMotor().getAppliedOutput());
 
     this.climberSystem.getClimberMotor().set(climberOutput);
   }

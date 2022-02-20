@@ -39,8 +39,8 @@ public final class Constants {
 
 
         //Climber motors 
-    public static final int RIGHTCLIMBER_MOTOR_ID = 81;
-    public static final int LEFTCLIMBER_MOTOR_ID = 80;
+    public static final int RIGHTCLIMBER_MOTOR_ID = 14;
+    public static final int LEFTCLIMBER_MOTOR_ID = 13;
 
     public static final int SHOOTERWHEELRIGHT_MOTOR_ID = 16; // Motor ID for One of the shooter motors
     public static final int SHOOTERWHEELLEFT_MOTOR_ID = 17; // Motor ID for one of the shooter motors

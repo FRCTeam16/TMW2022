@@ -22,6 +22,9 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterFeederSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.climber.ClimberSubsystem;
+import frc.robot.subsystems.climber.OpenLoopClimbCommand;
+import frc.robot.subsystems.climber.OpenLoopClimbCommand.ElevatorAction;
 import frc.robot.subsystems.vision.VisionSubsystem;
 
 
@@ -37,7 +40,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
-  // private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
+  private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
   private final VisionSubsystem m_visionSubsystem = new VisionSubsystem();
   private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
   private final ShooterFeederSubsystem m_feederSubsystem = new ShooterFeederSubsystem();
@@ -155,9 +158,34 @@ public class RobotContainer {
     // .whenReleased(() ->
     // m_climberSubsystem.setClimberState(ClimberState.kDisabled));
 
-    // new Button(gamepad::getAButton)
-    // .whenPressed(() -> m_climberSubsystem.setClimberState(ClimberState.kClimb))
-    // .whenReleased(() -> m_climberSubsystem.setClimberState(ClimberState.kHold));
+    /*
+    new Button(gamepad::getYButton)
+    .whenPressed(() -> new OpenLoopClimbCommand(ElevatorAction.Extend, m_climberSubsystem))
+    .whenReleased(() -> new OpenLoopClimbCommand(ElevatorAction.Hold, m_climberSubsystem));
+
+    new Button(gamepad::getAButton)
+    .whenPressed(() -> new OpenLoopClimbCommand(ElevatorAction.Pull, m_climberSubsystem))
+    .whenReleased(() -> new OpenLoopClimbCommand(ElevatorAction.Hold, m_climberSubsystem));
+    */
+
+    new Button(gamepad::getYButton)
+    .whenPressed(() -> {
+      double value = SmartDashboard.getNumber("Climber/OpenLoop/Extend Speed", -0.35);  // -0.2
+      m_climberSubsystem.setOpenLoopSpeed(value);
+    })
+    .whenReleased(() -> {
+      m_climberSubsystem.setOpenLoopSpeed(0.0);
+    });
+
+    new Button(gamepad::getAButton)
+    .whenPressed(() -> {
+      double value = SmartDashboard.getNumber("Climber/OpenLoop/Pull Speed", 0.2);
+      m_climberSubsystem.setOpenLoopSpeed(value);
+    })
+    .whenReleased(() -> {
+      m_climberSubsystem.setOpenLoopSpeed(0.0);
+    });
+    
 
     new Button(()-> rightJoy.getRawButton(5)).whenPressed(m_intakeSubsystem::RaiseIntake)
     .whenReleased(m_intakeSubsystem::DropIntake);
@@ -175,6 +203,10 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
     return new InstantCommand();
+  }
+
+  public void teleopInit() {
+    m_climberSubsystem.setOpenLoopSpeed(0.0);
   }
 
 }
