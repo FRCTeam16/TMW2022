@@ -9,6 +9,9 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import frc.robot.subsystems.DrivetrainSubsystem;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -68,4 +71,18 @@ public final class Constants {
 
 
     public static final int PIGEON_ID = 00;
+
+    public static final class Auto {
+        public static final double MaxSpeedMetersPerSecond = DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND * .5;
+        public static final double MaxAccelerationMetersPerSecondSquared = DrivetrainSubsystem.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED;
+
+        public static final double Px = 1;
+        public static final double Py = Px;
+        public static final double ThetaP = Math.toRadians(1); 
+
+        public static final TrapezoidProfile.Constraints ThetaControllerConstraints = new TrapezoidProfile.Constraints(
+                DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
+                DrivetrainSubsystem.MAX_ANGULAR_ACCELERATION_RADIANS_PER_SECOND_SQUARED);
+
+    }
 }

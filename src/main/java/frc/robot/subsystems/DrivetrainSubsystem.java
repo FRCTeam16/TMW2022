@@ -13,6 +13,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -152,6 +153,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
         storeContantsInNT();
     }
 
+    /**
+     * Stores drivetrain constants in network tables for review
+     */
     private void storeContantsInNT() {
         NetworkTableInstance nt = NetworkTableInstance.getDefault();
         NetworkTable table = nt.getTable("drivetrainConstants");
@@ -163,6 +167,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 .setDouble(MAX_ANGULAR_ACCELERATION_DEGREES_PER_SECOND_SQUARED);
         table.getEntry("MAX_ANGULAR_ACCELERATION_RADIANS_PER_SECOND_SQUARED")
                 .setDouble(MAX_ANGULAR_ACCELERATION_RADIANS_PER_SECOND_SQUARED);
+    }
+
+    public SwerveDriveKinematics getSwerveDriveKinematics() {
+        return this.m_kinematics;
     }
 
     /**
@@ -186,6 +194,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public void periodic() {
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
+
+        setSwerveModuleStates(states);
+    }
+
+    public void setSwerveModuleStates(SwerveModuleState[] states) {
 
         // TODO: Test this
         /*
@@ -226,6 +239,17 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     public RotationController getRotationController() {
         return this.rotationController;
+    }
+
+    /**
+     * Utility method to use get the angular outputs in degree units for closed loop rotation
+     * @param setpoint the target angle in degrees
+     * @return the angular output in degrees
+     */
+    public double getRotationOutput(double setpoint) {
+            return this.rotationController.calculate(
+                            this.getGyroscopeRotation().getDegrees(),
+                            setpoint);
     }
 
 }

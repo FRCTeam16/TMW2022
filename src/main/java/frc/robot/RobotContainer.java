@@ -4,6 +4,7 @@ import com.revrobotics.ColorSensorV3;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.Joystick;
@@ -16,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
+import frc.robot.auto.AutoManager;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.DetectBallColorCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -38,12 +40,17 @@ import frc.robot.subsystems.vision.VisionSubsystem;
 public class RobotContainer {
   // private static final PneumaticsModuleType PneumaticHub = null;
   // The robot's subsystems and commands are defined here...
-  private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
-  private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
-  private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
-  private final VisionSubsystem m_visionSubsystem = new VisionSubsystem();
-  private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
-  private final ShooterFeederSubsystem m_feederSubsystem = new ShooterFeederSubsystem();
+
+  // Must be called before any subsystem access
+  private final Subsystems subsystems = Subsystems.getInstance();
+
+  private final DrivetrainSubsystem m_drivetrainSubsystem = Subsystems.drivetrainSubsystem;
+  private final IntakeSubsystem m_intakeSubsystem = Subsystems.intakeSubsystem;
+  private final ShooterFeederSubsystem m_feederSubsystem = Subsystems.feederSubsystem;
+  private final ShooterSubsystem m_shooterSubsystem = Subsystems.shooterSubsystem;
+  private final ClimberSubsystem m_climberSubsystem = Subsystems.climberSubsystem;
+
+  public final AutoManager m_autoManager = new AutoManager();
 
   private final XboxController gamepad = new XboxController(2);
   private final Joystick leftJoy = new Joystick(0);
@@ -81,7 +88,7 @@ public class RobotContainer {
     CommandScheduler.getInstance().schedule(new CommandBase() {
       @Override
       public void execute() {
-        SmartDashboard.putNumber("Gyro", m_drivetrainSubsystem.getGyroscopeRotation().getDegrees());
+        SmartDashboard.putNumber("Gyro", m_drivetrainSubsystem.getGyroscopeRotation().getDegrees() % 360);
       }
 
       @Override
@@ -169,30 +176,29 @@ public class RobotContainer {
     */
 
     new Button(gamepad::getYButton)
-    .whenPressed(() -> {
-      double value = SmartDashboard.getNumber("Climber/OpenLoop/Extend Speed", -0.35);  // -0.2
-      m_climberSubsystem.setOpenLoopSpeed(value);
-    })
-    .whenReleased(() -> {
-      m_climberSubsystem.setOpenLoopSpeed(0.0);
-    });
+        .whenPressed(() -> {
+          double value = SmartDashboard.getNumber("Climber/OpenLoop/Extend Speed", -0.35); // -0.2
+          m_climberSubsystem.setOpenLoopSpeed(value);
+        })
+        .whenReleased(() -> {
+          m_climberSubsystem.setOpenLoopSpeed(0.0);
+        });
 
     new Button(gamepad::getAButton)
-    .whenPressed(() -> {
-      double value = SmartDashboard.getNumber("Climber/OpenLoop/Pull Speed", 0.2);
-      m_climberSubsystem.setOpenLoopSpeed(value);
-    })
-    .whenReleased(() -> {
-      m_climberSubsystem.setOpenLoopSpeed(0.0);
-    });
-    
+        .whenPressed(() -> {
+          double value = SmartDashboard.getNumber("Climber/OpenLoop/Pull Speed", 0.2);
+          m_climberSubsystem.setOpenLoopSpeed(value);
+        })
+        .whenReleased(() -> {
+          m_climberSubsystem.setOpenLoopSpeed(0.0);
+        });
 
-    new Button(()-> rightJoy.getRawButton(5)).whenPressed(m_intakeSubsystem::RaiseIntake)
-    .whenReleased(m_intakeSubsystem::DropIntake);
+    new Button(() -> rightJoy.getRawButton(5)).whenPressed(m_intakeSubsystem::RaiseIntake)
+        .whenReleased(m_intakeSubsystem::DropIntake);
 
-    new Button(()-> rightJoy.getRawButton(6)).whenPressed(m_shooterSubsystem::shortShot);
+    new Button(() -> rightJoy.getRawButton(6)).whenPressed(m_shooterSubsystem::shortShot);
 
-    new Button(()-> rightJoy.getRawButton(7)).whenPressed(m_shooterSubsystem::longShot);
+    new Button(() -> rightJoy.getRawButton(7)).whenPressed(m_shooterSubsystem::longShot);
   }
 
   /**
@@ -201,10 +207,12 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-    return new InstantCommand();
+    return m_autoManager.getSelectedCommand();
   }
 
+  /**
+   * Handle settings initial robot states for teleop
+   */
   public void teleopInit() {
     m_climberSubsystem.setOpenLoopSpeed(0.0);
   }
