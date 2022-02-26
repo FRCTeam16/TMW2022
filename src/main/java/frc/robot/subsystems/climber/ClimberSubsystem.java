@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.climber.OpenLoopClimbCommand.ElevatorAction;
@@ -73,21 +74,20 @@ public class ClimberSubsystem extends SubsystemBase {
 
   private final CANSparkMax climberMotor = new CANSparkMax(Constants.LEFTCLIMBER_MOTOR_ID, MotorType.kBrushless);
   private final CANSparkMax followerMotor = new CANSparkMax(Constants.RIGHTCLIMBER_MOTOR_ID, MotorType.kBrushless);
- // private final DoubleSolenoid climberSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 2, 6);
+  private final DoubleSolenoid climberSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 1, 5);
+  private final DoubleSolenoid climberSolenoid2 = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 4);
 
+  // Climb state management
   private ClimberStep climberStep = ClimberStep.kStep1;
   private CurrentBar currentBar = CurrentBar.kMid;
 
-  //private DoubleSolenoid.Value currentSolenoidValue = DoubleSolenoid.Value.kOff;
 
   enum RunState {
     OpenLoop, ClosedLoop
   }
   private RunState currentState = RunState.OpenLoop;
-  // private double openLoopOutput = 0.0;
 
   private double openLoopValue = 0.0;
-
 
   public ClimberSubsystem() {
     climberMotor.restoreFactoryDefaults();
@@ -95,17 +95,17 @@ public class ClimberSubsystem extends SubsystemBase {
     climberMotor.setIdleMode(IdleMode.kBrake);
     followerMotor.setIdleMode(IdleMode.kBrake);
     followerMotor.follow(climberMotor, true);
-    
+
+    // climberSolenoid.set(DoubleSolenoid.Value.kOff);
+
     OpenLoopClimbCommand.ConfigSmartDashboard();
 
-  //  this.setDefaultCommand(new OpenLoopClimbCommand(ElevatorAction.Disabled, this));
-
+    //
+    // Climber telemetry information
+    //
     CommandScheduler.getInstance().schedule(new CommandBase() {
       @Override
       public void execute() {
-        SmartDashboard.putNumber("Climber/Climber Encoder", climberMotor.getEncoder().getPosition());
-        SmartDashboard.putString("Climber/Climber Step", climberStep.name());
-        SmartDashboard.putString("Climber/Current Bar", currentBar.name());
       }
 
       @Override
@@ -113,7 +113,6 @@ public class ClimberSubsystem extends SubsystemBase {
         return true;
       }
     });
-
   }
 
   public void setOpenLoopSpeed(double value) {
@@ -124,13 +123,15 @@ public class ClimberSubsystem extends SubsystemBase {
     this.climberStep = state;
   }
 
-  // public void SolonoidFWD() {
-  //   currentSolenoidValue = Value.kForward;
-  // }
+  public void moveSolonoidsForward() {
+    climberSolenoid.set(Value.kForward);
+    climberSolenoid2.set(Value.kForward);
+  }
 
-  // public void SolonoidREV() {
-  //   currentSolenoidValue = Value.kReverse;
-  // }
+  public void moveSolenoidsBackward() {
+    climberSolenoid.set(Value.kReverse);
+    climberSolenoid2.set(Value.kReverse);
+  }
 
   /**
    * Main method for performing climb steps
@@ -153,16 +154,34 @@ public class ClimberSubsystem extends SubsystemBase {
     }
   }
 
-  @Override
-  public void periodic() {
-    SmartDashboard.putNumber("Climber/Simple/Target", openLoopValue);
-    SmartDashboard.putNumber("Climber/Simple/Output", climberMotor.getAppliedOutput());
-    SmartDashboard.putNumber("Climber/Simple/CAmps", climberMotor.getOutputCurrent());
-    SmartDashboard.putNumber("Climber/Simple/FAmps", followerMotor.getOutputCurrent());
-    this.climberMotor.set(openLoopValue);
+  public void displayTelemetry() {
+    SmartDashboard.putNumber("Climber/Climber Encoder", climberMotor.getEncoder().getPosition());
+    SmartDashboard.putString("Climber/Climber Step", climberStep.name());
+    SmartDashboard.putString("Climber/Current Bar", currentBar.name());
+
+
+    SmartDashboard.putNumber("Climber/Open/Target", openLoopValue);
+    SmartDashboard.putNumber("Climber/Open/Output", climberMotor.getAppliedOutput());
+    SmartDashboard.putNumber("Climber/Open/CAmps", climberMotor.getOutputCurrent());
+    SmartDashboard.putNumber("Climber/Open/FAmps", followerMotor.getOutputCurrent());
   }
 
-CANSparkMax getClimberMotor() {
-	return climberMotor;
-}
+  @Override
+  public void periodic() {
+    if (currentState == RunState.OpenLoop) {
+      displayTelemetry();
+      this.climberMotor.set(openLoopValue);
+    } else {
+
+    }
+  }
+
+  /**
+   * Expose for some command manipulation
+   * @return
+   * @deprecated
+   */
+  CANSparkMax getClimberMotor() {
+    return climberMotor;
+  }
 }
