@@ -68,8 +68,6 @@ public class RobotContainer {
    */
   public RobotContainer() {
     // Set up the default command for the drivetrain.
-    m_drivetrainSubsystem.resetOdometry(new Pose2d(5, 4.2, new Rotation2d(0)));
-
     m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(m_drivetrainSubsystem,
         () -> -OIUtil.modifyAxis((rightJoy.getY())) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
         () -> -OIUtil.modifyAxis((rightJoy.getX())) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
@@ -159,21 +157,7 @@ public class RobotContainer {
     new Button(()-> rightJoy.getRawButton(8)).toggleWhenPressed(
       new StartEndCommand(m_shooterSubsystem::enable,m_shooterSubsystem::disable ,m_shooterSubsystem)
       );
-
-    // new Button(gamepad::getYButton)
-    // .whenPressed(() -> m_climberSubsystem.setClimberState(ClimberState.kExtend))
-    // .whenReleased(() ->
-    // m_climberSubsystem.setClimberState(ClimberState.kDisabled));
-
-    /*
-    new Button(gamepad::getYButton)
-    .whenPressed(() -> new OpenLoopClimbCommand(ElevatorAction.Extend, m_climberSubsystem))
-    .whenReleased(() -> new OpenLoopClimbCommand(ElevatorAction.Hold, m_climberSubsystem));
-
-    new Button(gamepad::getAButton)
-    .whenPressed(() -> new OpenLoopClimbCommand(ElevatorAction.Pull, m_climberSubsystem))
-    .whenReleased(() -> new OpenLoopClimbCommand(ElevatorAction.Hold, m_climberSubsystem));
-    */
+  
 
     new Button(gamepad::getYButton)
         .whenPressed(() -> {
@@ -192,6 +176,7 @@ public class RobotContainer {
         .whenReleased(() -> {
           m_climberSubsystem.setOpenLoopSpeed(0.0);
         });
+      
 
     new Button(() -> rightJoy.getRawButton(5)).whenPressed(m_intakeSubsystem::RaiseIntake)
         .whenReleased(m_intakeSubsystem::DropIntake);
@@ -214,7 +199,9 @@ public class RobotContainer {
    * Handle settings initial robot states for teleop
    */
   public void teleopInit() {
-    m_climberSubsystem.setOpenLoopSpeed(0.0);
+    if (m_climberSubsystem != null) {
+      m_climberSubsystem.setOpenLoopSpeed(0.0);
+    }
   }
 
 }

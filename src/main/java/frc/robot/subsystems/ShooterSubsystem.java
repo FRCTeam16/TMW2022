@@ -5,13 +5,11 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-//import static edu.wpi.first.wpilibj.DoubleSolenoid.Value.*;
 
 public class ShooterSubsystem extends SubsystemBase {
 
@@ -134,8 +132,6 @@ public class ShooterSubsystem extends SubsystemBase {
       //
       double rightShooterSpeed = 0.0;
       if (enabled) {
-        // feederSpeed = SmartDashboard.getNumber(FEEDER_SPEED_KEY,
-        // DEFAULT_FEEDER_SPEED);
         rightShooterSpeed = SmartDashboard.getNumber(SHOOTER_SPEED_KEY, DEFAULT_SHOOTER_SPEED);
         rightShooterMotor.set(rightShooterSpeed);
       }

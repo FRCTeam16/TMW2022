@@ -13,7 +13,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -180,6 +179,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
      */
     public void zeroGyroscope() {
         m_gyro.zeroGyroscope();
+        resetOdometry(this.getPose(), new Rotation2d());
     }
 
     public Rotation2d getGyroscopeRotation() {
@@ -193,24 +193,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
-        SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
-
         setSwerveModuleStates(states);
     }
 
     public void setSwerveModuleStates(SwerveModuleState[] states) {
-
-        // TODO: Test this
-        /*
-         * SwerveModuleState.optimize(states[0],
-         * Rotation2d.fromDegrees(m_frontLeftModule.getSteerAngle()));
-         * SwerveModuleState.optimize(states[1],
-         * Rotation2d.fromDegrees(m_frontRightModule.getSteerAngle()));
-         * SwerveModuleState.optimize(states[2],
-         * Rotation2d.fromDegrees(m_backLeftModule.getSteerAngle()));
-         * SwerveModuleState.optimize(states[3],
-         * Rotation2d.fromDegrees(m_backRightModule.getSteerAngle()));
-         */
+        SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
 
         m_frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
                 states[0].angle.getRadians());
@@ -222,7 +209,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 states[3].angle.getRadians());
 
         Pose2d newPose = m_odometry.update(this.getGyroscopeRotation(), states);
-        m_field.setRobotPose(newPose);  // odomotry.getPoseMeters
+        m_field.setRobotPose(newPose); // odomotry.getPoseMeters
     }
 
     public Pose2d getPose() {
@@ -231,10 +218,21 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     /**
      * Sets the robot pose to a new position and current gyro rotation.
+     * 
      * @param pose
      */
     public void resetOdometry(Pose2d pose) {
-        m_odometry.resetPosition(pose, this.getGyroscopeRotation());
+        resetOdometry(pose, this.getGyroscopeRotation());
+    }
+
+    /**
+     * Sets the robot pose to a new position and specified gyro rotation.
+     * 
+     * @param pose
+     * @param rotation
+     */
+    public void resetOdometry(Pose2d pose, Rotation2d rotation) {
+        m_odometry.resetPosition(pose, rotation);
     }
 
     public RotationController getRotationController() {
@@ -242,14 +240,16 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     /**
-     * Utility method to use get the angular outputs in degree units for closed loop rotation
+     * Utility method to use get the angular outputs in degree units for closed loop
+     * rotation
+     * 
      * @param setpoint the target angle in degrees
      * @return the angular output in degrees
      */
     public double getRotationOutput(double setpoint) {
-            return this.rotationController.calculate(
-                            this.getGyroscopeRotation().getDegrees(),
-                            setpoint);
+        return this.rotationController.calculate(
+                this.getGyroscopeRotation().getDegrees(),
+                setpoint);
     }
 
 }

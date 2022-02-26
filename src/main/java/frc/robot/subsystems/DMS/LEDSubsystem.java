@@ -4,13 +4,19 @@
 
 package frc.robot.subsystems.DMS;
 
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class LEDSubsystem extends SubsystemBase {
+  private boolean running = false;
+  private Timer timer = new Timer();
   private SerialPort serial;
+
+  private static final double INITIAL_IGNORE_TIME = 1.0;
 
   /** Creates a new LEDSubsystem. */
   public LEDSubsystem() {
@@ -72,9 +78,18 @@ public class LEDSubsystem extends SubsystemBase {
     this.serial.write(buffer, buffer.length);
   }
 
+  public void begin() {
+    timer.reset();
+  }
+
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    if (running) {
+      
+    }
+  }
+
+  private void runMotorTest() {
 
   }
 }

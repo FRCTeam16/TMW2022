@@ -9,8 +9,8 @@ import edu.wpi.first.math.controller.PIDController;
 /** Add your docs here. */
 public class RotationController extends PIDController {
     
-    private static final double kP = 7.5;
-    private static final double kI = 3.0;
+    private static final double kP = 3.5;
+    private static final double kI = 0.0; // 3.0;
     private static final double kD = 0.0;
 
     private double tolerance = 1.0;

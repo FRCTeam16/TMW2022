@@ -11,19 +11,16 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
-public class TestingDriveToDistanceProfiled extends ProfiledPIDCommand {
+public class OdometryDriveProfiled extends ProfiledPIDCommand {
 
   private static final double kP = 10.0;
   private static final double kI = 0.01;
   private static final double kD = 0.0;
 
-  // private static final double kPy = 10.0;
-  // private static final double kIy = 0.01;
-  // private static final double kDy = 0.0;
 
   /** Creates a new DriveToDistanceProfiled. */
 
-  public TestingDriveToDistanceProfiled(double distanceInMeters, DrivetrainSubsystem drivetrain) {
+  public OdometryDriveProfiled(double distanceInMeters, DrivetrainSubsystem drivetrain) {
     super(
         // The ProfiledPIDController used by the command
         new ProfiledPIDController(
