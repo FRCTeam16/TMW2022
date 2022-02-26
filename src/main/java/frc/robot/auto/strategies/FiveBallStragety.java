@@ -23,38 +23,73 @@ import frc.robot.commands.SimpleDistanceDriveCommand;
 public class FiveBallStragety extends SequentialCommandGroup {
   /** Creates a new FiveBallStragety. */
   public FiveBallStragety() {
-    
-    addCommands(
-      initialState(),
-      pickupFirstBall(),
-      //shootFirstLoad(),
-      pickupSecondBall()
 
-      //
-    );
-    
+    addCommands(
+        initialState(),
+        pickupFirstBall(),
+        shootFirstLoad(),
+        pickupSecondBall(),
+        pickupThirdBall(),
+        shootSecondLoad(),
+        finishAuto());
   }
 
   private Command initialState() {
     return CommandGroupBase.parallel(
-      new InstantCommand(Subsystems.drivetrainSubsystem::zeroGyroscope),
-      new InstantCommand(() -> Subsystems.drivetrainSubsystem.resetOdometry(new Pose2d(0, 0, new Rotation2d())))
-    );
+        new InstantCommand(Subsystems.drivetrainSubsystem::zeroGyroscope),
+        new InstantCommand(() -> Subsystems.drivetrainSubsystem.resetOdometry(new Pose2d(0, 0, new Rotation2d()))));
   }
+
+  // the first ball is a straight backup from the starting position, 1.06 meters
+  // form the outer tarmac line
   private Command pickupFirstBall() {
     return CommandGroupBase.sequence(
-      CommandGroupBase.parallel(
-        new InstantCommand(Subsystems.intakeSubsystem::DropIntake),
-        new InstantCommand(Subsystems.intakeSubsystem::enable)),
-      new SimpleDistanceDriveCommand(30, 0.5, -1, -0.25)
+        CommandGroupBase.parallel(
+            new InstantCommand(Subsystems.intakeSubsystem::DropIntake),
+            new InstantCommand(Subsystems.intakeSubsystem::enable)),
+        new SimpleDistanceDriveCommand(270, 0.5, 0, -1.06));
+  }
+
+  // probably drive half way down staring tarmac to shoot more acurately
+  private Command shootFirstLoad() {
+    return CommandGroupBase.sequence(
+        new SimpleDistanceDriveCommand(0, .5, -1.1, 1.55),
+        new InstantCommand(Subsystems.feederSubsystem::pull));
+  }
+
+  // hypotenuce to the second ball is 3.09 meters from the first cargo location
+  // can't do this one until we run to see positioning on the robot after
+  // shooting.
+  private Command pickupSecondBall() {
+    return CommandGroupBase.sequence(
+        CommandGroupBase.parallel(
+            new InstantCommand(Subsystems.intakeSubsystem::enable)),
+        new SimpleDistanceDriveCommand(30, 0.5, -1, -0.25) // FIXME
+
     );
   }
-  private Command pickupSecondBall(){
+
+  // hypotenuce to the tarmac ball is 4.2 meters
+  private Command pickupThirdBall() {
     return CommandGroupBase.sequence(
-      CommandGroupBase.parallel(
-        new InstantCommand(Subsystems.intakeSubsystem::enable)),
-      new SimpleDistanceDriveCommand(30, 0.5, -1, -0.25)
-      
-    );
+        CommandGroupBase.parallel(
+            new InstantCommand(Subsystems.intakeSubsystem::enable)),
+        new SimpleDistanceDriveCommand(30, 0.5, -1, -0.25));
+  }
+
+  private Command shootSecondLoad() {
+    return CommandGroupBase.sequence(
+        new InstantCommand(Subsystems.feederSubsystem::pull));
+  }
+
+  /*
+   * finishAuto() is so we can have the robot sit at the tarmac for the human
+   * player to feed a ball to if we want it to until auto is complete
+   */
+  private Command finishAuto() {
+    return CommandGroupBase.sequence(
+        CommandGroupBase.parallel(
+            new InstantCommand(Subsystems.intakeSubsystem::enable),
+            new InstantCommand(Subsystems.feederSubsystem::pull)));
   }
 }
