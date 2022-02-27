@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems.vision;
 
 import com.revrobotics.CANSparkMax;
@@ -9,28 +5,56 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+import frc.robot.Subsystems;
+import frc.robot.subsystems.vision.VisionSubsystem.VisionInfo;
 
 public class TurretSubsystem extends SubsystemBase {
-  /** Creates a new TurretSubsystem. */
-
    private final CANSparkMax turretMotor = new CANSparkMax(99, MotorType.kBrushless);
    private final double DEFAULT_TURRET_SPEED = -.4;
-   private static final String TURRET_SPEED_KEY = "Feeder Speed";
+   private final double VISION_THRESHOLD = 1.0;
 
-  private boolean openLoop = true;
+   enum RunState {
+     OpenLoop, Vision
+   }
+   private RunState runState = RunState.OpenLoop;
+   private boolean direction = true;
+
 
   public TurretSubsystem() {
     turretMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
-    SmartDashboard.setDefaultNumber(TURRET_SPEED_KEY, DEFAULT_TURRET_SPEED);
+    SmartDashboard.setDefaultNumber("Turret/Open/DefaultSpeed", DEFAULT_TURRET_SPEED);
+    SmartDashboard.setDefaultNumber("Turret/Vision/Threshold", VISION_THRESHOLD);
+  }
+
+  public void openForward() {
+    runState = RunState.OpenLoop;
+    direction = true;
+  }
+
+  public void openBackwards() {
+    runState = RunState.OpenLoop;
+    direction = false;
   }
 
   @Override
   public void periodic() {
-    double turretSpeed = 0.0;
-    // This method will be called once per scheduler run
-    if (openLoop = true) {
-      turretSpeed = SmartDashboard.getNumber(TURRET_SPEED_KEY, DEFAULT_TURRET_SPEED);
+    double defaultSpeed = SmartDashboard.getNumber("Turret/Open/DefaultSpeed", DEFAULT_TURRET_SPEED);
+    double speed = 0.0;
+    if (runState == RunState.OpenLoop) {
+      speed = defaultSpeed * ((direction) ? 1 : -1);
+      turretMotor.set(speed);
+    } else if (runState == RunState.Vision) {
+      double threshold = SmartDashboard.getNumber("Turret/Vision/Threshold", VISION_THRESHOLD);
+      VisionInfo info = Subsystems.visionSubsystem.getVisionInfo();
+      if (info.hasTarget && Math.abs(info.xOffset) > threshold) {
+        // Could do PID control here
+        // Set speed based on offset direction
+        if (info.xOffset < 0) {
+          speed = -speed;
+        }
+      }
     }
+    // Both using openloop
+    turretMotor.set(speed);
   }
 }
