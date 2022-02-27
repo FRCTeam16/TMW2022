@@ -174,6 +174,9 @@ public class ClimberSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Climber/Open/Output", climberMotor.getAppliedOutput());
     SmartDashboard.putNumber("Climber/Open/CAmps", climberMotor.getOutputCurrent());
     SmartDashboard.putNumber("Climber/Open/FAmps", followerMotor.getOutputCurrent());
+
+    SmartDashboard.putNumber("Climber/Open/CVel", climberMotor.getEncoder().getVelocity());
+    SmartDashboard.putNumber("Climber/Open/FVel", followerMotor.getEncoder().getVelocity());
   }
 
   public void zeroClimberEncoder() {
@@ -182,8 +185,8 @@ public class ClimberSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    displayTelemetry();
     if (currentState == RunState.OpenLoop) {
-      displayTelemetry();
       this.climberMotor.set(openLoopValue);
     } else {
       closedLoopCommand.execute();
