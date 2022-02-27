@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Subsystems;
+import frc.robot.util.BSMath;
 
 public class ShooterSubsystem extends SubsystemBase {
 
@@ -23,11 +25,20 @@ public class ShooterSubsystem extends SubsystemBase {
   public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM;
   private final Solenoid shooterHood = new Solenoid(PneumaticsModuleType.REVPH, 3);
 
-  private boolean closedLoop = true;
-  private double targetRPM = 0.0;  
-   // tested 2255 for long shot
-   // 2100 + hoodopen for right outside the tarmac
+  public enum ShooterProfile {
+    Short(2100), Long(2255), Dynamic(0);
 
+    private double value;
+
+    private ShooterProfile(double value) {
+      this.value = value;
+    }
+  }
+
+  private boolean closedLoop = true;
+  private double targetRPM = 0.0;
+  // tested 2255 for long shot
+  // 2100 + hoodopen for right outside the tarmac
 
   public ShooterSubsystem() {
     followerMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
@@ -37,6 +48,8 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterHood.set(false);
 
     SmartDashboard.setDefaultNumber(SHOOTER_SPEED_KEY, DEFAULT_SHOOTER_SPEED);
+    SmartDashboard.setDefaultNumber("Shooter/Profile/Short", ShooterProfile.Short.value);
+    SmartDashboard.setDefaultNumber("Shooter/Profile/Long", ShooterProfile.Long.value);
 
     kP = 0.00028;
     kI = 0;
@@ -74,6 +87,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void disable() {
     this.enabled = false;
+    targetRPM = 0;
   }
 
   /*
@@ -82,12 +96,43 @@ public class ShooterSubsystem extends SubsystemBase {
    * 2290.86 RPM works for the shot from the launchPad with hood closed
    * 1762.2 RPM works for the short tarmac shot with hood open
    */
+  @Deprecated
   public void longShot() {
     shooterHood.set(false);
   }
 
+  @Deprecated
   public void shortShot() {
     shooterHood.set(true);
+  }
+
+  public void setProfile(ShooterProfile profile) {
+    double rpm = 0.0;
+    switch (profile) {
+      case Short:
+        rpm = SmartDashboard.getNumber("Shooter/Profile/Short", ShooterProfile.Short.value);
+        shooterHood.set(true);
+        break;
+      case Long:
+        rpm = SmartDashboard.getNumber("Shooter/Profile/Long", ShooterProfile.Long.value);
+        shooterHood.set(false);
+        break;
+      case Dynamic:
+        rpm = calculateDynamicRPM();
+        shooterHood.set(false);
+        break;
+    }
+    this.targetRPM = rpm;
+  }
+
+  public double calculateDynamicRPM() {
+    double rpm = 0.0;
+    var info = Subsystems.visionSubsystem.getVisionInfo();
+    if (info.hasTarget) {
+      var distance = Subsystems.visionSubsystem.CalculateDistance(0.5, 2.64);
+      rpm = BSMath.map(distance, 3, 7, ShooterProfile.Short.value, ShooterProfile.Long.value);
+    }
+    return rpm;
   }
 
   @Override
@@ -100,31 +145,48 @@ public class ShooterSubsystem extends SubsystemBase {
 
     if (closedLoop) {
       // read PID coefficients from SmartDashboard
-    double p = SmartDashboard.getNumber("Shooter/P Gain", 0);
-    double i = SmartDashboard.getNumber("Shooter/I Gain", 0);
-    double d = SmartDashboard.getNumber("Shooter/D Gain", 0);
-    double iz = SmartDashboard.getNumber("Shooter/I Zone", 0);
-    double ff = SmartDashboard.getNumber("Shooter/Feed Forward", 0);
-    double max = SmartDashboard.getNumber("Shooter/Max Output", 0);
-    double min = SmartDashboard.getNumber("Shooter/Min Output", 0);
-    targetRPM = SmartDashboard.getNumber("Shooter/TargetRPM", 0);
+      double p = SmartDashboard.getNumber("Shooter/P Gain", 0);
+      double i = SmartDashboard.getNumber("Shooter/I Gain", 0);
+      double d = SmartDashboard.getNumber("Shooter/D Gain", 0);
+      double iz = SmartDashboard.getNumber("Shooter/I Zone", 0);
+      double ff = SmartDashboard.getNumber("Shooter/Feed Forward", 0);
+      double max = SmartDashboard.getNumber("Shooter/Max Output", 0);
+      double min = SmartDashboard.getNumber("Shooter/Min Output", 0);
+      targetRPM = SmartDashboard.getNumber("Shooter/TargetRPM", 0);
 
-    targetRPM = MathUtil.clamp(targetRPM, -maxRPM, maxRPM);
+      // TODO check for dynamic/vision profile & calculate rpm by mapping domain
 
+      targetRPM = MathUtil.clamp(targetRPM, -maxRPM, maxRPM);
 
-    // if PID coefficients on SmartDashboard have changed, write new values to
-    var pidController = rightShooterMotor.getPIDController();
-    if((p != kP)) { pidController.setP(p); kP = p; }
-    if((i != kI)) { pidController.setI(i); kI = i; }
-    if((d != kD)) { pidController.setD(d); kD = d; }
-    if((iz != kIz)) { pidController.setIZone(iz); kIz = iz; }
-    if((ff != kFF)) { pidController.setFF(ff); kFF = ff; }
-    if((max != kMaxOutput) || (min != kMinOutput)) {
-      pidController.setOutputRange(min, max);
-      kMinOutput = min; kMaxOutput = max;
-    }
-    rightShooterMotor.getPIDController().setReference(targetRPM, ControlType.kVelocity);
-    SmartDashboard.putNumber("Actual RPM", rightShooterMotor.getEncoder().getVelocity());
+      // if PID coefficients on SmartDashboard have changed, write new values to
+      var pidController = rightShooterMotor.getPIDController();
+      if ((p != kP)) {
+        pidController.setP(p);
+        kP = p;
+      }
+      if ((i != kI)) {
+        pidController.setI(i);
+        kI = i;
+      }
+      if ((d != kD)) {
+        pidController.setD(d);
+        kD = d;
+      }
+      if ((iz != kIz)) {
+        pidController.setIZone(iz);
+        kIz = iz;
+      }
+      if ((ff != kFF)) {
+        pidController.setFF(ff);
+        kFF = ff;
+      }
+      if ((max != kMaxOutput) || (min != kMinOutput)) {
+        pidController.setOutputRange(min, max);
+        kMinOutput = min;
+        kMaxOutput = max;
+      }
+      rightShooterMotor.getPIDController().setReference(targetRPM, ControlType.kVelocity);
+      SmartDashboard.putNumber("Actual RPM", rightShooterMotor.getEncoder().getVelocity());
 
     } else {
       //
