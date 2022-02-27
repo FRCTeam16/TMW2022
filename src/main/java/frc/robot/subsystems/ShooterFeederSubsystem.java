@@ -16,14 +16,6 @@ import frc.robot.Constants;
 public class ShooterFeederSubsystem extends SubsystemBase {
   private boolean enabled = false;
 
-  //private final WPI_TalonSRX intakeMotor = Constants.Objects.INTAKE_MOTOR;
-  //private final double DEFAULT_INTAKE_SPEED = -0.5;
-  //private static final String INTAKE_SPEED_KEY = "Intake Speed";
-
-  // private final WPI_TalonSRX beaterMotor = new WPI_TalonSRX(Constants.BEATER_MOTOR_ID);
-  //private final double DEFAULT_BEATERBAR_SPEED = -1;
-  //private static final String BEATERBAR_SPEED_KEY = "Beater Bar Speed";
-
   // Calling CANSpark motor 
 
    private final CANSparkMax feederMotor = new CANSparkMax(Constants.SHOOTERFEEDER_MOTOR_ID, MotorType.kBrushless);

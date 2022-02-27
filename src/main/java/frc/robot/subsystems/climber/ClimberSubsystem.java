@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.climber.OpenLoopClimbCommand.ElevatorAction;
@@ -86,6 +87,7 @@ public class ClimberSubsystem extends SubsystemBase {
     OpenLoop, ClosedLoop
   }
   private RunState currentState = RunState.OpenLoop;
+  private SmartMotionClosedExampleCommand closedLoopCommand = new SmartMotionClosedExampleCommand(this);
 
   private double openLoopValue = 0.0;
 
@@ -96,9 +98,12 @@ public class ClimberSubsystem extends SubsystemBase {
     followerMotor.setIdleMode(IdleMode.kBrake);
     followerMotor.follow(climberMotor, true);
 
-    // climberSolenoid.set(DoubleSolenoid.Value.kOff);
+    climberSolenoid.set(DoubleSolenoid.Value.kOff);
+    climberSolenoid2.set(DoubleSolenoid.Value.kOff);
 
     OpenLoopClimbCommand.ConfigSmartDashboard();
+    SmartDashboard.putData("Climber Open Loop", new InstantCommand(() -> currentState = RunState.OpenLoop).withName("Climber Open"));
+    SmartDashboard.putData("Climber Closd Loop", new InstantCommand(() -> currentState = RunState.ClosedLoop).withName("Climber Closed"));
 
     //
     // Climber telemetry information
@@ -131,6 +136,11 @@ public class ClimberSubsystem extends SubsystemBase {
   public void moveSolenoidsBackward() {
     climberSolenoid.set(Value.kReverse);
     climberSolenoid2.set(Value.kReverse);
+  }
+
+  public void moveSolenoidsDefault() {
+    climberSolenoid.set(Value.kOff);
+    climberSolenoid2.set(Value.kOff);
   }
 
   /**
@@ -166,13 +176,17 @@ public class ClimberSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Climber/Open/FAmps", followerMotor.getOutputCurrent());
   }
 
+  public void zeroClimberEncoder() {
+    climberMotor.getEncoder().setPosition(0);
+  }
+
   @Override
   public void periodic() {
     if (currentState == RunState.OpenLoop) {
       displayTelemetry();
       this.climberMotor.set(openLoopValue);
     } else {
-
+      closedLoopCommand.execute();
     }
   }
 

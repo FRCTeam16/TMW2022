@@ -11,14 +11,14 @@ import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-public class ClosedLoopCommand extends CommandBase {
+public class SmartMotionClosedExampleCommand extends CommandBase {
   /** Creates a new ClosedLoopCommand. */
   private SparkMaxPIDController m_pidController;
   private RelativeEncoder m_encoder;
   public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc, allowedErr;
   private final ClimberSubsystem climberSystem;
 
-  public ClosedLoopCommand(ClimberSubsystem climberSubsystem) {
+  public SmartMotionClosedExampleCommand(ClimberSubsystem climberSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.climberSystem = climberSubsystem;
     var climberMotor = climberSubsystem.getClimberMotor();
@@ -60,21 +60,21 @@ public class ClosedLoopCommand extends CommandBase {
     m_pidController.setSmartMotionAllowedClosedLoopError(allowedErr, smartMotionSlot);
 
     // display PID coefficients on SmartDashboard
-    SmartDashboard.putNumber("Climber/P Gain", kP);
-    SmartDashboard.putNumber("Climber/I Gain", kI);
-    SmartDashboard.putNumber("Climber/D Gain", kD);
-    SmartDashboard.putNumber("Climber/I Zone", kIz);
-    SmartDashboard.putNumber("Climber/Feed Forward", kFF);
-    SmartDashboard.putNumber("Climber/Max Output", kMaxOutput);
-    SmartDashboard.putNumber("Climber/Min Output", kMinOutput);
+    SmartDashboard.putNumber("Climber/Closed/P Gain", kP);
+    SmartDashboard.putNumber("Climber/Closed/I Gain", kI);
+    SmartDashboard.putNumber("Climber/Closed/D Gain", kD);
+    SmartDashboard.putNumber("Climber/Closed/I Zone", kIz);
+    SmartDashboard.putNumber("Climber/Closed/Feed Forward", kFF);
+    SmartDashboard.putNumber("Climber/Closed/Max Output", kMaxOutput);
+    SmartDashboard.putNumber("Climber/Closed/Min Output", kMinOutput);
 
     // display Smart Motion coefficients
-    SmartDashboard.putNumber("Climber/Max Velocity", maxVel);
-    SmartDashboard.putNumber("Climber/Min Velocity", minVel);
-    SmartDashboard.putNumber("Climber/Max Acceleration", maxAcc);
-    SmartDashboard.putNumber("Climber/Allowed Closed Loop Error", allowedErr);
-    SmartDashboard.putNumber("Climber/Set Position", 0);
-    SmartDashboard.putNumber("Climber/Set Velocity", 0);
+    SmartDashboard.putNumber("Climber/Closed/Max Velocity", maxVel);
+    SmartDashboard.putNumber("Climber/Closed/Min Velocity", minVel);
+    SmartDashboard.putNumber("Climber/Closed/Max Acceleration", maxAcc);
+    SmartDashboard.putNumber("Climber/Closed/Allowed Closed Loop Error", allowedErr);
+    SmartDashboard.putNumber("Climber/Closed/Set Position", 0);
+    SmartDashboard.putNumber("Climber/Closed/Set Velocity", 0);
   }
 
   // Called when the command is initially scheduled.
@@ -85,17 +85,17 @@ public class ClosedLoopCommand extends CommandBase {
   @Override
   public void execute() {
      // read PID coefficients from SmartDashboard
-     double p = SmartDashboard.getNumber("Climber/P Gain", 0);
-     double i = SmartDashboard.getNumber("Climber/I Gain", 0);
-     double d = SmartDashboard.getNumber("Climber/D Gain", 0);
-     double iz = SmartDashboard.getNumber("Climber/I Zone", 0);
-     double ff = SmartDashboard.getNumber("Climber/Feed Forward", 0);
-     double max = SmartDashboard.getNumber("Climber/Max Output", 0);
-     double min = SmartDashboard.getNumber("Climber/Min Output", 0);
-     double maxV = SmartDashboard.getNumber("Climber/Max Velocity", 0);
-     double minV = SmartDashboard.getNumber("Climber/Min Velocity", 0);
-     double maxA = SmartDashboard.getNumber("Climber/Max Acceleration", 0);
-     double allE = SmartDashboard.getNumber("Climber/Allowed Closed Loop Error", 0);
+     double p = SmartDashboard.getNumber("Climber/Closed/P Gain", 0);
+     double i = SmartDashboard.getNumber("Climber/Closed/I Gain", 0);
+     double d = SmartDashboard.getNumber("Climber/Closed/D Gain", 0);
+     double iz = SmartDashboard.getNumber("Climber/Closed/I Zone", 0);
+     double ff = SmartDashboard.getNumber("Climber/Closed/Feed Forward", 0);
+     double max = SmartDashboard.getNumber("Climber/Closed/Max Output", 0);
+     double min = SmartDashboard.getNumber("Climber/Closed/Min Output", 0);
+     double maxV = SmartDashboard.getNumber("Climber/Closed/Max Velocity", 0);
+     double minV = SmartDashboard.getNumber("Climber/Closed/Min Velocity", 0);
+     double maxA = SmartDashboard.getNumber("Climber/Closed/Max Acceleration", 0);
+     double allE = SmartDashboard.getNumber("Climber/Closed/Allowed Closed Loop Error", 0);
  
      // if PID coefficients on SmartDashboard have changed, write new values to
      // controller
@@ -144,19 +144,17 @@ public class ClosedLoopCommand extends CommandBase {
      double setPoint, processVariable;
      
      
-       setPoint = SmartDashboard.getNumber("Climber/Set Position", 0);
+       setPoint = SmartDashboard.getNumber("Climber/Closed/Set Position", 0);
        /**
         * As with other PID modes, Smart Motion is set by calling the
         * setReference method on an existing pid object and setting
         * the control type to kSmartMotion
         */
+      System.out.println("===> sp: " + setPoint + "| p = " + p);
        m_pidController.setReference(setPoint, CANSparkMax.ControlType.kSmartMotion);
        processVariable = m_encoder.getPosition();
      
- 
-     SmartDashboard.putNumber("Climber/SetPoint", setPoint);
-     SmartDashboard.putNumber("Climber/Process Variable", processVariable);
-     SmartDashboard.putNumber("Climber/Output", climberSystem.getClimberMotor().getAppliedOutput());
+     SmartDashboard.putNumber("Climber/Closed/Output", climberSystem.getClimberMotor().getAppliedOutput());
  
      
   }

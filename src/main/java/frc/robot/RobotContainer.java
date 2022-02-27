@@ -136,6 +136,8 @@ public class RobotContainer {
 
     private void configureClimberButtonBindings() {
 
+        SmartDashboard.putData("Zero Climber Encoder", new InstantCommand(Subsystems.climberSubsystem::zeroClimberEncoder).withName("Zero Climber Encoder"));
+
         new Button(gamepad::getYButton)
                 .whenPressed(() -> {
                     double value = SmartDashboard.getNumber("Climber/OpenLoop/Extend Speed", -0.35); // -0.2
@@ -156,6 +158,7 @@ public class RobotContainer {
 
         new Button(gamepad::getRightBumper).whenPressed(Subsystems.climberSubsystem::moveSolonoidsForward);
         new Button(gamepad::getLeftBumper).whenPressed(Subsystems.climberSubsystem::moveSolenoidsBackward);
+        new Button(gamepad::getStartButton).whenPressed(Subsystems.climberSubsystem::moveSolenoidsDefault);
     }
 
     private void configureDebugButtonBindings() {

@@ -74,7 +74,7 @@ public class FiveBallStragety extends SequentialCommandGroup {
     return CommandGroupBase.sequence(
         CommandGroupBase.parallel(
             new InstantCommand(Subsystems.intakeSubsystem::enable)),
-        new SimpleDistanceDriveCommand(30, 0.5, -1, -0.25));
+        new SimpleDistanceDriveCommand(30, 0.5, -3.9, -0.25));
   }
 
   private Command shootSecondLoad() {
