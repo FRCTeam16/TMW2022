@@ -1,25 +1,16 @@
 package frc.robot.subsystems.climber;
 
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.subsystems.climber.OpenLoopClimbCommand.ElevatorAction;
-
-import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.CANSparkMax.IdleMode;
 
 public class ClimberSubsystem extends SubsystemBase {
 
@@ -82,14 +73,26 @@ public class ClimberSubsystem extends SubsystemBase {
   private ClimberStep climberStep = ClimberStep.kStep1;
   private CurrentBar currentBar = CurrentBar.kMid;
 
-
+  // Current control state of the subsystem
   enum RunState {
     OpenLoop, ClosedLoop
   }
-  private RunState currentState = RunState.OpenLoop;
-  private SmartMotionClosedExampleCommand closedLoopCommand = new SmartMotionClosedExampleCommand(this);
+  private RunState runState = RunState.OpenLoop;
+  private ClimberClosedLoopManager closedLoopManager = new ClimberClosedLoopManager(climberMotor);
 
+
+  public enum Positions {
+    Retracted(10.0), ReleaseBar(70.0), Extended(90.0);
+
+    private final double value;
+    private Positions(double value) {
+      this.value = value;
+    }
+  }
+
+  // Control targets
   private double openLoopValue = 0.0;
+  private double positionSetpoint = 0.0;
 
   public ClimberSubsystem() {
     climberMotor.restoreFactoryDefaults();
@@ -102,26 +105,46 @@ public class ClimberSubsystem extends SubsystemBase {
     climberSolenoid2.set(DoubleSolenoid.Value.kOff);
 
     OpenLoopClimbCommand.ConfigSmartDashboard();
-    SmartDashboard.putData("Climber Open Loop", new InstantCommand(() -> currentState = RunState.OpenLoop).withName("Climber Open"));
-    SmartDashboard.putData("Climber Closd Loop", new InstantCommand(() -> currentState = RunState.ClosedLoop).withName("Climber Closed"));
 
-    //
-    // Climber telemetry information
-    //
-    CommandScheduler.getInstance().schedule(new CommandBase() {
-      @Override
-      public void execute() {
-      }
+    SmartDashboard.putNumber("Climber/Closed/Position/Retracted", Positions.Retracted.value);
+    SmartDashboard.putNumber("Climber/Closed/Position/ReleaseBar", Positions.ReleaseBar.value);
+    SmartDashboard.putNumber("Climber/Closed/Position/Extended", Positions.Extended.value);
 
-      @Override
-      public boolean runsWhenDisabled() {
-        return true;
-      }
-    });
+    // Toggle open/closed loop control
+    SmartDashboard.putData("Climber Open Loop", new InstantCommand(() -> runState = RunState.OpenLoop).withName("Climber Open"));
+    SmartDashboard.putData("Climber Closd Loop", new InstantCommand(() -> runState = RunState.ClosedLoop).withName("Climber Closed"));
   }
+
 
   public void setOpenLoopSpeed(double value) {
     this.openLoopValue = value;
+    this.runState = RunState.OpenLoop;
+  }
+
+  public void holdClosedLoopPosition() {
+    this.setClosedLoopPosition(this.climberMotor.getEncoder().getPosition());
+  }
+
+  public void setClosedLoopPosition(Positions position) {
+    double target = 0.0;
+    switch (position) {
+      case Retracted:
+        target = SmartDashboard.getNumber("Climber/Closed/Position/Retracted", position.value);
+        break;
+      case ReleaseBar:
+        target = SmartDashboard.getNumber("Climber/Closed/Position/ReleaseBar", position.value);
+        break;
+      case Extended:
+        target = SmartDashboard.getNumber("Climber/Closed/Position/Extended", position.value);
+        break;
+    }
+    setClosedLoopPosition(target);
+  }
+
+  public void setClosedLoopPosition(double position) {
+    this.openLoopValue = 0.0;
+    this.runState = RunState.ClosedLoop;
+    this.closedLoopManager.setTarget(position);
   }
 
   public void setClimberState(ClimberStep state) {
@@ -168,15 +191,13 @@ public class ClimberSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Climber/Climber Encoder", climberMotor.getEncoder().getPosition());
     SmartDashboard.putString("Climber/Climber Step", climberStep.name());
     SmartDashboard.putString("Climber/Current Bar", currentBar.name());
+    SmartDashboard.putNumber("Climber/Open/Value", openLoopValue);
 
-
-    SmartDashboard.putNumber("Climber/Open/Target", openLoopValue);
-    SmartDashboard.putNumber("Climber/Open/Output", climberMotor.getAppliedOutput());
-    SmartDashboard.putNumber("Climber/Open/CAmps", climberMotor.getOutputCurrent());
-    SmartDashboard.putNumber("Climber/Open/FAmps", followerMotor.getOutputCurrent());
-
-    SmartDashboard.putNumber("Climber/Open/CVel", climberMotor.getEncoder().getVelocity());
-    SmartDashboard.putNumber("Climber/Open/FVel", followerMotor.getEncoder().getVelocity());
+    SmartDashboard.putNumber("Climber/Output", climberMotor.getAppliedOutput());
+    SmartDashboard.putNumber("Climber/CAmps", climberMotor.getOutputCurrent());
+    SmartDashboard.putNumber("Climber/FAmps", followerMotor.getOutputCurrent());
+    SmartDashboard.putNumber("Climber/CVel", climberMotor.getEncoder().getVelocity());
+    SmartDashboard.putNumber("Climber/FVel", followerMotor.getEncoder().getVelocity());
   }
 
   public void zeroClimberEncoder() {
@@ -186,10 +207,10 @@ public class ClimberSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     displayTelemetry();
-    if (currentState == RunState.OpenLoop) {
+    if (runState == RunState.OpenLoop) {
       this.climberMotor.set(openLoopValue);
     } else {
-      closedLoopCommand.execute();
+      closedLoopManager.run();
     }
   }
 
