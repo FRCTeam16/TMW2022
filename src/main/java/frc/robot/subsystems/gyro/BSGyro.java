@@ -24,4 +24,6 @@ public interface BSGyro {
      * robot is currently facing to the 'forwards' direction.
      */
     void zeroGyroscope();
+
+    public void setGyroOffset(double offsetDegrees);
 }

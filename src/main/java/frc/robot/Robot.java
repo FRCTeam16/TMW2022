@@ -35,6 +35,7 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+    addPeriodic(Subsystems.ledSubsystem::Report, 0.25);
   }
 
   /**
@@ -57,6 +58,7 @@ public class Robot extends TimedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
+    Subsystems.drivetrainSubsystem.setGyroOffset(0);
   }
 
   @Override

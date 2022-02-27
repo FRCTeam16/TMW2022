@@ -252,4 +252,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 setpoint);
     }
 
+    public void setGyroOffset(double offsetAngleDegrees) {
+        m_gyro.setGyroOffset(offsetAngleDegrees);
+    }
+
 }

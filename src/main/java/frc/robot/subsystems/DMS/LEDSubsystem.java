@@ -41,6 +41,12 @@ public class LEDSubsystem extends SubsystemBase {
     serial = new SerialPort(115200, SerialPort.Port.kUSB1);
   }
 
+  public void Report() {
+    if (running) {
+      SendData(new DriveInfo<Double>(0.0), new DriveInfo<Double>(0.0));
+    }
+  }
+
   public void SendData(DriveInfo<Double> driveMotor, DriveInfo<Double> steerMotor) {
     int robotState = 0;
     if (DriverStation.isDisabled()) {

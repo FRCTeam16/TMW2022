@@ -24,4 +24,10 @@ public class PigeonGyro implements BSGyro {
         m_pigeon.setYaw(0.0);
         m_pigeon.setAccumZAngle(0);
     }
+
+    @Override
+    public void setGyroOffset(double offsetDegrees) {
+        m_pigeon.setYaw(offsetDegrees);
+        
+    }
 }

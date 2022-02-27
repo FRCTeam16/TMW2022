@@ -4,6 +4,7 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterFeederSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.DMS.LEDSubsystem;
 import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.vision.TurretSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
@@ -21,6 +22,7 @@ public class Subsystems {
     public static ShooterSubsystem shooterSubsystem;
     public static ShooterFeederSubsystem feederSubsystem;
     public static TurretSubsystem turretSubsystem;
+    public static LEDSubsystem ledSubsystem;
 
     private Subsystems() {
         drivetrainSubsystem = new DrivetrainSubsystem();
@@ -30,7 +32,7 @@ public class Subsystems {
         shooterSubsystem = new ShooterSubsystem();
         feederSubsystem = new ShooterFeederSubsystem();
         turretSubsystem = new TurretSubsystem();
-
+        ledSubsystem = new LEDSubsystem();
     }
 
     public static Subsystems getInstance() {

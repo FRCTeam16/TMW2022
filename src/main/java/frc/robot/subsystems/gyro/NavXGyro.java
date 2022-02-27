@@ -29,4 +29,10 @@ public class NavXGyro implements BSGyro {
     public void zeroGyroscope() {
         m_navx.zeroYaw();
     }
+
+    @Override
+    public void setGyroOffset(double offsetDegrees) {
+        // TODO: needs testing
+        m_navx.setAngleAdjustment(offsetDegrees);
+    }
 }
