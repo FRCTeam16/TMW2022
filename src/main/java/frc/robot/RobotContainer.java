@@ -26,6 +26,8 @@ import frc.robot.subsystems.ShooterFeederSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.climber.OpenLoopClimbCommand;
+import frc.robot.subsystems.climber.ClimberSubsystem.ClimberStep;
+import frc.robot.subsystems.climber.ClimberSubsystem.Positions;
 import frc.robot.subsystems.climber.OpenLoopClimbCommand.ElevatorAction;
 import frc.robot.subsystems.vision.VisionSubsystem;
 
@@ -159,6 +161,10 @@ public class RobotContainer {
         new Button(gamepad::getRightBumper).whenPressed(Subsystems.climberSubsystem::moveSolonoidsForward);
         new Button(gamepad::getLeftBumper).whenPressed(Subsystems.climberSubsystem::moveSolenoidsBackward);
         new Button(gamepad::getStartButton).whenPressed(Subsystems.climberSubsystem::moveSolenoidsDefault);
+
+        SmartDashboard.putData("Climber/Cmd/Retract", new InstantCommand(() -> Subsystems.climberSubsystem.setClosedLoopPosition(Positions.Retracted)).withName("Retract"));
+        SmartDashboard.putData("Climber/Cmd/ReleaseBar", new InstantCommand(() -> Subsystems.climberSubsystem.setClosedLoopPosition(Positions.ReleaseBar)).withName("ReleaseBar"));
+        SmartDashboard.putData("Climber/Cmd/Extend", new InstantCommand(() -> Subsystems.climberSubsystem.setClosedLoopPosition(Positions.Extended)).withName("Extend"));
     }
 
     private void configureDebugButtonBindings() {
