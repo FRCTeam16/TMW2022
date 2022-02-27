@@ -37,6 +37,7 @@ public class FiveBallStragety extends SequentialCommandGroup {
   private Command initialState() {
     return CommandGroupBase.parallel(
         new InstantCommand(Subsystems.drivetrainSubsystem::zeroGyroscope),
+        // new InstantCommand(Subsystems.drivetrainSubsystem.set)
         new InstantCommand(() -> Subsystems.drivetrainSubsystem.resetOdometry(new Pose2d(0, 0, new Rotation2d()))));
   }
 

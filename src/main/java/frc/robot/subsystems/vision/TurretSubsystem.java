@@ -14,7 +14,7 @@ import frc.robot.Constants;
 public class TurretSubsystem extends SubsystemBase {
   /** Creates a new TurretSubsystem. */
 
-   private final CANSparkMax turretMotor = new CANSparkMax(Constants.SHOOTERFEEDER_MOTOR_ID, MotorType.kBrushless);
+   private final CANSparkMax turretMotor = new CANSparkMax(99, MotorType.kBrushless);
    private final double DEFAULT_TURRET_SPEED = -.4;
    private static final String TURRET_SPEED_KEY = "Feeder Speed";
 
