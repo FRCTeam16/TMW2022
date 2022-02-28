@@ -92,7 +92,6 @@ public class ClimberSubsystem extends SubsystemBase {
 
   // Control targets
   private double openLoopValue = 0.0;
-  private double positionSetpoint = 0.0;
 
   public ClimberSubsystem() {
     climberMotor.restoreFactoryDefaults();

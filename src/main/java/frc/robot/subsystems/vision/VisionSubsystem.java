@@ -1,6 +1,8 @@
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.vision.Limelight.CameraMode;
+import frc.robot.subsystems.vision.Limelight.LEDMode;
 import frc.robot.subsystems.vision.Limelight.SceneInfo;
 
 /**
@@ -23,6 +25,15 @@ public class VisionSubsystem extends SubsystemBase {
 
   public VisionInfo getVisionInfo() {
     return visionInfo;
+  }
+
+  public void enable() {
+    limelight.setCameraMode(CameraMode.ImageProcessing);
+    limelight.setLEDMode(LEDMode.CurrentPipeline);
+  }
+
+  public void disable() {
+    limelight.setLEDMode(LEDMode.ForceOff);
   }
 
   @Override

@@ -2,10 +2,6 @@ package frc.robot;
 
 import com.revrobotics.ColorSensorV3;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PneumaticHub;
@@ -24,12 +20,9 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterFeederSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.ShooterSubsystem.ShooterProfile;
 import frc.robot.subsystems.climber.ClimberSubsystem;
-import frc.robot.subsystems.climber.OpenLoopClimbCommand;
-import frc.robot.subsystems.climber.ClimberSubsystem.ClimberStep;
 import frc.robot.subsystems.climber.ClimberSubsystem.Positions;
-import frc.robot.subsystems.climber.OpenLoopClimbCommand.ElevatorAction;
-import frc.robot.subsystems.vision.VisionSubsystem;
 
 /*
  * This class is where the bulk of the robot should be declared. Since
@@ -111,13 +104,20 @@ public class RobotContainer {
         // new Button(() -> rightJoy.getRawButton(14))
         // .whenPressed(new SimpleTrackTargetCommand(m_visionSubsystem,
         // m_drivetrainSubsystem).withTimeout(20));
+        
+        configureIntakeButtonBindings();
+        configureShooterButtonBindings();
+        configureClimberButtonBindings();
+        configureTurretButtonBindings();
+        configureVisionButtonBindings();
+    }
 
-        // Intake Trigger
+    private void configureIntakeButtonBindings() {
         new Button(leftJoy::getTrigger).whenPressed(m_intakeSubsystem::enable)
                 .whenReleased(m_intakeSubsystem::disable);
 
-        configureShooterButtonBindings();
-        configureClimberButtonBindings();
+        new Button(() -> rightJoy.getRawButton(5)).whenPressed(m_intakeSubsystem::RaiseIntake)
+                .whenReleased(m_intakeSubsystem::DropIntake);
     }
 
     private void configureShooterButtonBindings() {
@@ -128,12 +128,13 @@ public class RobotContainer {
         new Button(() -> rightJoy.getRawButton(8)).toggleWhenPressed(
                 new StartEndCommand(m_shooterSubsystem::enable, m_shooterSubsystem::disable, m_shooterSubsystem));
 
-        new Button(() -> rightJoy.getRawButton(5)).whenPressed(m_intakeSubsystem::RaiseIntake)
-                .whenReleased(m_intakeSubsystem::DropIntake);
-
         new Button(() -> rightJoy.getRawButton(6)).whenPressed(m_shooterSubsystem::shortShot);
 
         new Button(() -> rightJoy.getRawButton(7)).whenPressed(m_shooterSubsystem::longShot);
+
+        SmartDashboard.putData("Shooter Short", new InstantCommand(() -> m_shooterSubsystem.setProfile(ShooterProfile.Short)).withName("Shoot Short"));
+        SmartDashboard.putData("Shooter Long", new InstantCommand(() -> m_shooterSubsystem.setProfile(ShooterProfile.Short)).withName("Shoot Long"));
+
     }
 
     private void configureClimberButtonBindings() {
@@ -167,6 +168,29 @@ public class RobotContainer {
         SmartDashboard.putData("Climber/Cmd/Extend", new InstantCommand(() -> Subsystems.climberSubsystem.setClosedLoopPosition(Positions.Extended)).withName("Extend"));
     }
 
+    private void configureTurretButtonBindings() {
+        new Button(() -> (gamepad.getLeftTriggerAxis() > 0.25))
+            .whenPressed(Subsystems.turretSubsystem::openBackwards)
+            .whenReleased(Subsystems.turretSubsystem::openStop);
+
+        new Button(() -> (gamepad.getRightTriggerAxis() > 0.25))
+            .whenPressed(Subsystems.turretSubsystem::openForward)
+            .whenReleased(Subsystems.turretSubsystem::openStop);
+
+        SmartDashboard.putData("Turret/EnableVision", new InstantCommand(() -> {
+            Subsystems.visionSubsystem.enable();
+            Subsystems.turretSubsystem.enableVisionTracking();
+        }).withName("Enable Vision Tracking"));
+
+        SmartDashboard.putData("Turret/DisableVision", new InstantCommand(() -> {
+            Subsystems.visionSubsystem.disable();
+            Subsystems.turretSubsystem.openStop();
+        }).withName("Enable Vision Tracking"));
+    }
+
+    private void configureVisionButtonBindings() {
+    }
+
     private void configureDebugButtonBindings() {
         // Turn to angle button
         // new Button(() -> rightJoy.getRawButton(11))
@@ -178,11 +202,8 @@ public class RobotContainer {
         // .whenPressed(new DriveToDistanceProfiled(1, m_drivetrainSubsystem));
     }
 
-    /**
-     * Use this to pass the autonomous command to the main {@link Robot} class.
-     *
-     * @return the command to run in autonomous
-     */
+
+
     public Command getAutonomousCommand() {
         return m_autoManager.getSelectedCommand();
     }
