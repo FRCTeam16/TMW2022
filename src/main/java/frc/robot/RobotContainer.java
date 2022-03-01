@@ -185,6 +185,10 @@ public class RobotContainer {
         return m_autoManager.getSelectedCommand();
     }
 
+    public void disabledInit() {
+        m_autoManager.initializeAuto();
+    }
+
     /**
      * Handle settings initial robot states for teleop
      */

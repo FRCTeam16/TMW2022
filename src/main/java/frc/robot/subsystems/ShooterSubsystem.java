@@ -26,7 +26,7 @@ public class ShooterSubsystem extends SubsystemBase {
   private final Solenoid shooterHood = new Solenoid(PneumaticsModuleType.REVPH, 3);
 
   public enum ShooterProfile {
-    Short(2100), Long(2255), Dynamic(0);
+    Short(1800), Long(2255), Dynamic(0);
 
     private double value;
 
@@ -122,6 +122,7 @@ public class ShooterSubsystem extends SubsystemBase {
         shooterHood.set(false);
         break;
     }
+    SmartDashboard.putNumber("Shooter/TargetRPM", rpm);
     this.targetRPM = rpm;
   }
 
@@ -152,11 +153,7 @@ public class ShooterSubsystem extends SubsystemBase {
       double ff = SmartDashboard.getNumber("Shooter/Feed Forward", 0);
       double max = SmartDashboard.getNumber("Shooter/Max Output", 0);
       double min = SmartDashboard.getNumber("Shooter/Min Output", 0);
-      targetRPM = SmartDashboard.getNumber("Shooter/TargetRPM", 0);
-
-      // TODO check for dynamic/vision profile & calculate rpm by mapping domain
-
-      targetRPM = MathUtil.clamp(targetRPM, -maxRPM, maxRPM);
+      double rpm = SmartDashboard.getNumber("Shooter/TargetRPM", 0);
 
       // if PID coefficients on SmartDashboard have changed, write new values to
       var pidController = rightShooterMotor.getPIDController();
@@ -185,6 +182,14 @@ public class ShooterSubsystem extends SubsystemBase {
         kMinOutput = min;
         kMaxOutput = max;
       }
+
+      // If our target RPM was overridden by the smart dashboard, update it
+      if (targetRPM != rpm) {
+        targetRPM = rpm;
+      }
+      targetRPM = MathUtil.clamp(targetRPM, -maxRPM, maxRPM);
+
+
       rightShooterMotor.getPIDController().setReference(targetRPM, ControlType.kVelocity);
       SmartDashboard.putNumber("Actual RPM", rightShooterMotor.getEncoder().getVelocity());
 
