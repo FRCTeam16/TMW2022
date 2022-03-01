@@ -1,6 +1,5 @@
 package frc.robot;
 
-import com.revrobotics.ColorSensorV3;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -61,7 +60,6 @@ public class RobotContainer {
     private final static double maxPressure = 120;
 
     private final PneumaticHub pneuHub = new PneumaticHub();
-    private final ColorSensorV3 colorSensor = new ColorSensorV3(Port.kOnboard);
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -97,7 +95,7 @@ public class RobotContainer {
         });
 
         // Color Sensor Debug
-        CommandScheduler.getInstance().schedule(new DetectBallColorCommand(colorSensor));
+        CommandScheduler.getInstance().schedule(new DetectBallColorCommand(Subsystems.detectBallSubsystem.getDetector()));
     }
 
     private void configureButtonBindings() {

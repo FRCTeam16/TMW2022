@@ -1,5 +1,6 @@
 package frc.robot;
 
+import frc.robot.subsystems.DetectBallSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterFeederSubsystem;
@@ -22,6 +23,7 @@ public class Subsystems {
     public static ShooterSubsystem shooterSubsystem;
     public static ShooterFeederSubsystem feederSubsystem;
     public static TurretSubsystem turretSubsystem;
+    public static DetectBallSubsystem detectBallSubsystem;
     public static LEDSubsystem ledSubsystem;
 
     private Subsystems() {
@@ -32,6 +34,7 @@ public class Subsystems {
         shooterSubsystem = new ShooterSubsystem();
         feederSubsystem = new ShooterFeederSubsystem();
         turretSubsystem = new TurretSubsystem();
+        detectBallSubsystem = new DetectBallSubsystem();
         ledSubsystem = new LEDSubsystem();
     }
 
