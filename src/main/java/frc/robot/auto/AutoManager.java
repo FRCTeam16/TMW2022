@@ -1,5 +1,8 @@
 package frc.robot.auto;
 
+import java.util.Dictionary;
+import java.util.HashMap;
+
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -15,6 +18,7 @@ public class AutoManager {
     }
 
     private final SendableChooser<AutoStrategies> chooser = new SendableChooser<>();
+    private final HashMap<AutoStrategies, Command> strategyLookup = new HashMap<>();
 
     public AutoManager() {
         chooser.addOption("Debug Auto", AutoStrategies.DebugAuto);
@@ -24,6 +28,12 @@ public class AutoManager {
         chooser.addOption("Center", AutoStrategies.Center);
         // chooser.addOption(name, object);
         SmartDashboard.putData(chooser);
+
+        initializeAuto();
+    }
+
+    public void initializeAuto() {
+        strategyLookup.put(AutoStrategies.Center, new CenterAutoStrategy());
     }
 
     public Command getSelectedCommand() {
@@ -32,29 +42,34 @@ public class AutoManager {
         // TODO: eventually move to eager creation during disabled init of strategies
         // for potential performance
         // instantiating here allows easier re-runs during dev
-        switch (chooser.getSelected()) {
-            case Center:
-                selected = new CenterAutoStrategy();
-                break;
 
-            case DebugAuto:
-                selected = new DebugAuto();
-                break;
-
-            case DebugTimed:
-                selected = new DebugTimedStrategy();
-                break;
-
-            case DebugPath:
-                selected = new SwervePathStrategy();
-                break;
-
-            case DebugRotate:
-                selected = new RotateTuneStrategy();
-                break;
-
-            default:
-                selected = new InstantCommand();
+        if (strategyLookup.containsKey(chooser.getSelected())) {
+            selected = strategyLookup.get(chooser.getSelected());
+        } else {
+            switch (chooser.getSelected()) {
+                case Center:
+                    selected = new CenterAutoStrategy();
+                    break;
+    
+                case DebugAuto:
+                    selected = new DebugAuto();
+                    break;
+    
+                case DebugTimed:
+                    selected = new DebugTimedStrategy();
+                    break;
+    
+                case DebugPath:
+                    selected = new SwervePathStrategy();
+                    break;
+    
+                case DebugRotate:
+                    selected = new RotateTuneStrategy();
+                    break;
+    
+                default:
+                    selected = new InstantCommand();
+            }
         }
         return selected;
     }
