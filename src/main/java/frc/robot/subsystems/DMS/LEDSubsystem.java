@@ -5,6 +5,8 @@
 package frc.robot.subsystems.DMS;
 
 
+import java.util.logging.Logger;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.Timer;
@@ -38,11 +40,16 @@ public class LEDSubsystem extends SubsystemBase {
     // LEDbuffer[14] = 255; // terminate
     // }
 
-    serial = new SerialPort(115200, SerialPort.Port.kUSB1);
+    try {
+      serial = new SerialPort(115200, SerialPort.Port.kUSB1);
+    } catch (Exception e) {
+      System.err.println("Unable to create DMS/LED subsystem, problem with serial port: " + e.getMessage());
+      // TODO: probably set bool preventing running
+    }
   }
 
   public void Report() {
-    if (running) {
+    if (running && serial != null) {
       SendData(new DriveInfo<Double>(0.0), new DriveInfo<Double>(0.0));
     }
   }

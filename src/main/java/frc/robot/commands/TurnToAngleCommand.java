@@ -17,8 +17,8 @@ public class TurnToAngleCommand extends TrapezoidProfileCommand {
         new TrapezoidProfile(
             // The motion profile constraints
             new TrapezoidProfile.Constraints(
-              DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_DEGREES_PER_SECOND, 
-              DrivetrainSubsystem.MAX_ANGULAR_ACCELERATION_DEGREES_PER_SECOND_SQUARED),
+              DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_DEGREES_PER_SECOND / 2, 
+              DrivetrainSubsystem.MAX_ANGULAR_ACCELERATION_DEGREES_PER_SECOND_SQUARED / 2 ),
             // Goal state
             new TrapezoidProfile.State(targetAngle, 0),
             // Initial state

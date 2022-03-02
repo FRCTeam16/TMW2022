@@ -71,6 +71,7 @@ public class ProfiledDistanceDriveCommand extends CommandBase {
     var xy_trans = startPose.plus(translation);
     this.targetPose = new Translation2d(xy_trans.getX(), xy_trans.getY());
 
+    this.currentState = new TrapezoidProfile.State(0, 0); // assume zero initial velocity
     this.goal = new TrapezoidProfile.State(startPose.getDistance(xy_trans), endSpeed);
 
     System.out.println("****************> SDDC Initialize");

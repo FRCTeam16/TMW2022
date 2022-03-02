@@ -8,6 +8,7 @@ public class PigeonGyro implements BSGyro {
     // private final Pigeon2 m_pigeon;
     private final WPI_Pigeon2 m_pigeon;
     private double[] ypr = new double[3];
+    private double offset = 0.0;
 
     public PigeonGyro(int CAN_ID) {
         m_pigeon = new WPI_Pigeon2(CAN_ID);
@@ -16,7 +17,9 @@ public class PigeonGyro implements BSGyro {
 
     @Override
     public Rotation2d getGyroscopeRotation() {
-        return Rotation2d.fromDegrees(m_pigeon.getYaw());
+        double degrees = m_pigeon.getYaw() % 360.0;
+        return Rotation2d.fromDegrees(degrees + offset);
+        // return Rotation2d.fromDegrees(m_pigeon.getYaw());
     }
 
     @Override
@@ -27,7 +30,7 @@ public class PigeonGyro implements BSGyro {
 
     @Override
     public void setGyroOffset(double offsetDegrees) {
-        m_pigeon.setYaw(offsetDegrees);
-        
+        //m_pigeon.setYaw(offsetDegrees);
+        this.offset = offsetDegrees;
     }
 }

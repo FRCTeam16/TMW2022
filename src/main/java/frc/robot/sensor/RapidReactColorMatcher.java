@@ -47,11 +47,12 @@ public class RapidReactColorMatcher {
     }
 
     public void telemetry() {
-        SmartDashboard.putNumber("ColorSensor/Red", detectedColor.red);
-        SmartDashboard.putNumber("ColorSensor/Blue", detectedColor.blue);
-        SmartDashboard.putNumber("ColorSensor/Green", detectedColor.green);
+        if (detectedColor != null) {
+            SmartDashboard.putNumber("ColorSensor/Red", detectedColor.red);
+            SmartDashboard.putNumber("ColorSensor/Blue", detectedColor.blue);
+            SmartDashboard.putNumber("ColorSensor/Green", detectedColor.green);
+        }
         SmartDashboard.putNumber("ColorSensor/Proximity", proximity);
-
         SmartDashboard.putString("ColorSensor/Detected Color", matchedColor.name());
         SmartDashboard.putNumber("ColorSensor/Detected Color Confidence", matchedConfidence);
     }

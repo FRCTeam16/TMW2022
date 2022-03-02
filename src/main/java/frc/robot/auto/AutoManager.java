@@ -9,12 +9,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.auto.strategies.CenterAutoStrategy;
 import frc.robot.auto.strategies.DebugAuto;
+import frc.robot.auto.strategies.FiveBallStragety;
 import frc.robot.auto.strategies.RotateTuneStrategy;
 import frc.robot.auto.strategies.SwervePathStrategy;
 
 public class AutoManager {
     public enum AutoStrategies {
-        Center, DebugAuto, DebugTimed, DebugPath, DebugRotate
+        Center, DebugAuto, DebugTimed, DebugPath, DebugRotate, FiveBall
     }
 
     private final SendableChooser<AutoStrategies> chooser = new SendableChooser<>();
@@ -26,6 +27,7 @@ public class AutoManager {
         chooser.addOption("Debug Path", AutoStrategies.DebugPath);
         chooser.addOption("Debug Rotate", AutoStrategies.DebugRotate);
         chooser.addOption("Center", AutoStrategies.Center);
+        chooser.addOption("Five Ball", AutoStrategies.FiveBall);
         // chooser.addOption(name, object);
         SmartDashboard.putData(chooser);
 
@@ -65,6 +67,10 @@ public class AutoManager {
     
                 case DebugRotate:
                     selected = new RotateTuneStrategy();
+                    break;
+
+                case FiveBall:
+                    selected = new FiveBallStragety();
                     break;
     
                 default:

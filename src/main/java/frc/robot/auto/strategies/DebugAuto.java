@@ -6,23 +6,32 @@ package frc.robot.auto.strategies;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Subsystems;
 import frc.robot.commands.SimpleDistanceDriveCommand;
+import frc.robot.commands.testing.ProfiledDistanceDriveCommand;
 
 public class DebugAuto extends SequentialCommandGroup {
   public DebugAuto() {
-    double speed = 0.75;
+    double speed = 0.5;
     addCommands(
-      new InstantCommand(() -> Subsystems.drivetrainSubsystem.resetOdometry(new Pose2d(0, 0, new Rotation2d()))),
+      CommandGroupBase.parallel(
+        new InstantCommand(() -> Subsystems.intakeSubsystem.RaiseIntake()),
+        new InstantCommand(() -> Subsystems.drivetrainSubsystem.resetOdometry(new Pose2d(0, 0, new Rotation2d()))),
+        new InstantCommand(() -> Subsystems.drivetrainSubsystem.setGyroOffset(180.0))
+      ),
+      new SimpleDistanceDriveCommand(180, speed, 0, -0.00001),
+      new ProfiledDistanceDriveCommand(180, speed, 0, -4),
+      new WaitCommand(2),
+      new ProfiledDistanceDriveCommand(180, speed, 0, 4),
+      new InstantCommand(() -> Subsystems.intakeSubsystem.DropIntake())
 
-      new SimpleDistanceDriveCommand(45, speed, 1, 0),
-
-      new SimpleDistanceDriveCommand(315, speed, 1, 0),
-
-      new SimpleDistanceDriveCommand(0, 0, 0, 0)
+      //new SimpleDistanceDriveCommand(315, speed, 1, 0),
+      //new SimpleDistanceDriveCommand(0, 0, 0, 0)
     );
   }
 
