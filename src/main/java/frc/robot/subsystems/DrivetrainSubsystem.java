@@ -178,8 +178,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * 'forwards' direction.
      */
     public void zeroGyroscope() {
+        m_gyro.setGyroOffset(0.0);
         m_gyro.zeroGyroscope();
         resetOdometry(this.getPose(), new Rotation2d());
+        
     }
 
     public Rotation2d getGyroscopeRotation() {

@@ -59,7 +59,7 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     m_robotContainer.disabledInit();
-    Subsystems.drivetrainSubsystem.setGyroOffset(0);
+    // Subsystems.drivetrainSubsystem.setGyroOffset(0);
   }
 
   @Override

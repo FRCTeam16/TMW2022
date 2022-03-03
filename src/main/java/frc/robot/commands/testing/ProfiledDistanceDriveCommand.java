@@ -64,6 +64,12 @@ public class ProfiledDistanceDriveCommand extends CommandBase {
     return this;
   }
 
+  // FIXME Robot centric does not work for this command right now
+  // public ProfiledDistanceDriveCommand withRobotCentric() {
+  //   this.fieldCentric = false;
+  //   return this;
+  // }
+
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {

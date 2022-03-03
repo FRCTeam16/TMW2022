@@ -8,12 +8,12 @@ import edu.wpi.first.math.controller.PIDController;
 
 /** Add your docs here. */
 public class RotationController extends PIDController {
-    
-    private static final double kP = 3.5;
-    private static final double kI = 0.0; // 3.0;
-    private static final double kD = 0.0;
 
-    private double tolerance = 1.0;
+    private static final double kP = 4.0; //4.25;
+    private static final double kI = 1.35; // 3.0;
+    private static final double kD = 0.0; // 0;
+
+    private double tolerance = 2.0;
 
     public RotationController() {
         this(kP, kI, kD);
@@ -22,6 +22,7 @@ public class RotationController extends PIDController {
     public RotationController(double kp, double ki, double kd) {
         super(kp, ki, kd);
         this.enableContinuousInput(-180, 180);
+        this.setIntegratorRange(-5, 5);
         this.setTolerance(tolerance);
     }
 }
