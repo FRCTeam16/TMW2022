@@ -17,7 +17,8 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Subsystems;
 import frc.robot.commands.SimpleDistanceDriveCommand;
-import frc.robot.commands.TurnToAngleCommand;
+import frc.robot.commands.ProfiledTurnToAngleCommand;
+import frc.robot.commands.ZeroAndSetOffsetCommand;
 import frc.robot.commands.testing.ProfiledDistanceDriveCommand;
 import frc.robot.subsystems.ShooterSubsystem.ShooterProfile;
 
@@ -41,14 +42,14 @@ public class FiveBallStragety extends SequentialCommandGroup {
 
   private Command initialState() {
     return CommandGroupBase.parallel(
-        new InstantCommand(Subsystems.drivetrainSubsystem::zeroGyroscope),
         // new InstantCommand(Subsystems.drivetrainSubsystem.set)
-        new InstantCommand(() -> Subsystems.drivetrainSubsystem.setGyroOffset(270.0)),
         new InstantCommand(() -> Subsystems.drivetrainSubsystem.resetOdometry(new Pose2d(0, 0, new Rotation2d()))),
-        new InstantCommand(()-> Subsystems.shooterSubsystem.setProfile(ShooterProfile.Short)),
-        new InstantCommand(Subsystems.shooterSubsystem::enable),
-        new InstantCommand(Subsystems.intakeSubsystem::DropIntake),
-        new WaitCommand(0.5)
+        // new ZeroAndSetOffsetCommand(-90)
+        new InstantCommand(Subsystems.drivetrainSubsystem::zeroGyroscope).andThen(
+        new InstantCommand(() -> Subsystems.drivetrainSubsystem.setGyroOffset(-90)))
+        //new InstantCommand(()-> Subsystems.shooterSubsystem.setProfile(ShooterProfile.Short)),
+        //new InstantCommand(Subsystems.shooterSubsystem::enable),
+        //new InstantCommand(Subsystems.intakeSubsystem::DropIntake),
         );
   }
 
@@ -56,20 +57,20 @@ public class FiveBallStragety extends SequentialCommandGroup {
   // form the outer tarmac line
   private Command pickupFirstBall() {
     return CommandGroupBase.sequence(
-        new ProfiledDistanceDriveCommand(245, 0, 0, -0.1).withTimeout(1.0),
-        // new TurnToAngleCommand(-105, Subsystems.drivetrainSubsystem).withTimeout(0.5),
+        new ProfiledDistanceDriveCommand(-115, 0, 0, -0.1).withTimeout(1.0),
+        //  new TurnToAngleCommand(-115, Subsystems.drivetrainSubsystem).withTimeout(0.5),
         CommandGroupBase.parallel(
-            new ProfiledDistanceDriveCommand(245, 0, 0, 0).withTimeout(0.5),
-            new InstantCommand(Subsystems.feederSubsystem::pull),
+            new ProfiledDistanceDriveCommand(-115, 0, 0, 0).withTimeout(0.5),
+           // new InstantCommand(Subsystems.feederSubsystem::pull),
             new WaitCommand(4.0)),
         CommandGroupBase.parallel(
           new InstantCommand(() -> System.out.println("****** doing pickup *****")),
-            new InstantCommand(Subsystems.feederSubsystem::dontPull),
+            //new InstantCommand(Subsystems.feederSubsystem::dontPull),
             new InstantCommand(Subsystems.intakeSubsystem::enable),
-            new ProfiledDistanceDriveCommand(270, 0.3, 0, -1.16)
+            new ProfiledDistanceDriveCommand(-90, 0.3, 0, -1.16)
             .withThreshold(0.03).withTimeout(2.0)),
           new InstantCommand(() -> System.out.println("****** stopping drive *****")),
-          new ProfiledDistanceDriveCommand(245, 0, 0, 0).withTimeout(0.5),
+          new ProfiledDistanceDriveCommand(-115, 0, 0, 0).withTimeout(0.5),
           new InstantCommand(() -> System.out.println("****** after pickup first *****"))); // should be 1.06
   }
   
@@ -80,7 +81,7 @@ public class FiveBallStragety extends SequentialCommandGroup {
     return CommandGroupBase.sequence(
       new InstantCommand(() -> System.out.println("****** pickupSecondBall *****")),
         CommandGroupBase.parallel(
-            new InstantCommand(Subsystems.intakeSubsystem::enable)),
+           new InstantCommand(Subsystems.intakeSubsystem::enable)),
         new ProfiledDistanceDriveCommand(141, 0.5, -2.54, 1.76) // FIXME
 
     );

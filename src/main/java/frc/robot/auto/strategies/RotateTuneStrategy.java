@@ -6,22 +6,24 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Subsystems;
+import frc.robot.commands.ProfiledTurnToAngleCommand;
 import frc.robot.commands.TurnToAngleCommand;
 
 public class RotateTuneStrategy extends SequentialCommandGroup {
   public RotateTuneStrategy() {
 
-    double offset = 135.0;
+    double offset = 0.0;
 
     addCommands(
+      new InstantCommand(() -> Subsystems.drivetrainSubsystem.resetOdometry(new Pose2d(0, 0, new Rotation2d()))),
       new InstantCommand(() -> Subsystems.drivetrainSubsystem.zeroGyroscope()),
       new InstantCommand(() -> Subsystems.drivetrainSubsystem.setGyroOffset(offset)),
       // new InstantCommand(() -> Subsystems.drivetrainSubsystem.resetOdometry(new Pose2d(0, 0, new Rotation2d(offset)))),
-      new TurnToAngleCommand(-45, Subsystems.drivetrainSubsystem),
+      new TurnToAngleCommand(-45),
       new WaitCommand(0.5),
-      new TurnToAngleCommand(45, Subsystems.drivetrainSubsystem),
+      new TurnToAngleCommand(45),
       new WaitCommand(0.5),
-      new TurnToAngleCommand(0, Subsystems.drivetrainSubsystem)
+      new TurnToAngleCommand(0)
     );
   }
 }

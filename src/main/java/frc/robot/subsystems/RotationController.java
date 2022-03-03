@@ -4,12 +4,13 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 
 /** Add your docs here. */
 public class RotationController extends PIDController {
 
-    private static final double kP = 4.0; //4.25;
+    private static final double kP = 4.0; //0.01; //4.25;
     private static final double kI = 1.35; // 3.0;
     private static final double kD = 0.0; // 0;
 
@@ -24,5 +25,9 @@ public class RotationController extends PIDController {
         this.enableContinuousInput(-180, 180);
         this.setIntegratorRange(-5, 5);
         this.setTolerance(tolerance);
+    }
+
+    public static double clampToDPS(double outputPercent) {
+        return MathUtil.clamp(outputPercent, -0.6, 0.6) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_DEGREES_PER_SECOND;
     }
 }

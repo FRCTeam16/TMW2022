@@ -42,10 +42,6 @@ public class PigeonGyro implements BSGyro {
     public void setGyroOffset(double offsetDegrees) {
         //m_pigeon.setYaw(offsetDegrees);
         this.offset = offsetDegrees;
-        System.out.println("****************************************************");
-        System.out.println("****************************************************");
-        System.out.println("****************************************************");
-        System.out.println("****************************************************");
         SmartDashboard.putNumber("PigeonGyro/Offset", offsetDegrees);
     }
 }
