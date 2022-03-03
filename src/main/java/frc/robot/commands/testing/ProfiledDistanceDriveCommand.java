@@ -25,6 +25,7 @@ public class ProfiledDistanceDriveCommand extends CommandBase {
   private State goal;
   private State currentState;
   private double endSpeed = 0.0;
+  private boolean fieldCentric = true;
 
 
   /**
@@ -93,30 +94,53 @@ public class ProfiledDistanceDriveCommand extends CommandBase {
     this.currentState = profile.calculate(0.2);
     
     var speed = currentState.velocity;
+
+    //
     var driveAngle = Math.atan2(
       targetPose.getY() - currentPose.getY(),
       targetPose.getX() - currentPose.getX());
 
     double vxMetersPerSecond = Math.abs(speed * Math.cos(driveAngle));
     double vyMetersPerSecond = Math.abs(speed * Math.sin(driveAngle));
-
-    System.out.println("VX: " + vxMetersPerSecond / Constants.Auto.MaxSpeedMetersPerSecond + 
-      " | VY: " + vyMetersPerSecond / Constants.Auto.MaxSpeedMetersPerSecond);
-
+    
+    
+    // TODO: may just need to add 90 to driveAngle and use true quadrant sign values
     if (currentPose.getY() > targetPose.getY()) {
       vyMetersPerSecond = -vyMetersPerSecond;
     }
     if (currentPose.getX() > targetPose.getX()) {
       vxMetersPerSecond = -vxMetersPerSecond;
     }
+/* 
+Test new
+    var driveAngle = Math.atan2(
+      targetPose.getX() - currentPose.getX()
+      targetPose.getY() - currentPose.getY());
+
+    double vxMetersPerSecond = speed * Math.cos(driveAngle);
+    double vyMetersPerSecond = speed * Math.sin(driveAngle);
+*/
+
+    System.out.println(
+      "DA: " + driveAngle +
+      " | VX: " + vxMetersPerSecond / Constants.Auto.MaxSpeedMetersPerSecond + 
+      " | VY: " + vyMetersPerSecond / Constants.Auto.MaxSpeedMetersPerSecond);
+
 
     var twist = Subsystems.drivetrainSubsystem.getRotationController().calculate(
         Subsystems.drivetrainSubsystem.getGyroscopeRotation().getDegrees(), angle);
-    var speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-        vxMetersPerSecond, 
-        vyMetersPerSecond,
-        Math.toRadians(twist), 
-        Subsystems.drivetrainSubsystem.getGyroscopeRotation());
+    var speeds = (fieldCentric) ? 
+      ChassisSpeeds.fromFieldRelativeSpeeds(
+          vxMetersPerSecond, 
+          vyMetersPerSecond,
+          Math.toRadians(twist), 
+          Subsystems.drivetrainSubsystem.getGyroscopeRotation()) :
+        new ChassisSpeeds(
+          vxMetersPerSecond,
+          vyMetersPerSecond,
+          Math.toRadians(twist)
+        );
+    
     Subsystems.drivetrainSubsystem.drive(speeds);
   }
 
@@ -129,7 +153,7 @@ public class ProfiledDistanceDriveCommand extends CommandBase {
   @Override
   public boolean isFinished() {
     var distance = Subsystems.drivetrainSubsystem.getPose().getTranslation().getDistance(targetPose);
-    System.out.println("DIST: " + distance + " | T:" + targetPose + " | C:" + Subsystems.drivetrainSubsystem.getPose());
+    System.out.println("DIST: " + distance + " | T:" + targetPose + " | C:" + Subsystems.drivetrainSubsystem.getPose().getTranslation());
     return (distance < distanceThreshold);
   }
 }

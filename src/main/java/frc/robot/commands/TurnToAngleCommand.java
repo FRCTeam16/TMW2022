@@ -10,8 +10,15 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 public class TurnToAngleCommand extends TrapezoidProfileCommand {
   private int num_scans_seen = 0;
 
-  /** Creates a new TurnToAngleCommand. */
+  public TurnToAngleCommand(double targetAngle) {
+    this(targetAngle, Subsystems.drivetrainSubsystem);
+  }
+
   public TurnToAngleCommand(double targetAngle, DrivetrainSubsystem drivetrain) {
+    this(targetAngle, true, drivetrain);
+  }
+
+  public TurnToAngleCommand(double targetAngle, boolean fieldCentric, DrivetrainSubsystem drivetrain) {
     super(
         // The motion profile to be executed
         new TrapezoidProfile(
@@ -25,14 +32,18 @@ public class TurnToAngleCommand extends TrapezoidProfileCommand {
             new TrapezoidProfile.State(drivetrain.getGyroscopeRotation().getDegrees(), 0)),
         state -> {
           // Use current trajectory state here
-          System.out.println("***** " +  state.position + " | " + state.velocity);
-          SmartDashboard.putString("TTAC", state.toString());
-          var output = drivetrain.getRotationController().calculate(drivetrain.getGyroscopeRotation().getDegrees(), state.position);
-          drivetrain.drive(new ChassisSpeeds(0, 0, Math.toRadians(output)));
+          var currentRotation = drivetrain.getGyroscopeRotation();
+          var output = drivetrain.getRotationController().calculate(currentRotation.getDegrees(), state.position);
+
+          System.out.println("[TTAC] S.P= " +  state.position + " | S.V=" + state.velocity + " | R=" + currentRotation + " | O= " + output);
+
+          drivetrain.drive(
+            (fieldCentric) ? 
+              ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, Math.toRadians(output), currentRotation):
+              new ChassisSpeeds(0, 0, Math.toRadians(output)));
         });
 
         this.addRequirements(drivetrain);
-
   }
 
   @Override
