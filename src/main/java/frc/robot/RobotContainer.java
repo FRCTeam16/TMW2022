@@ -89,14 +89,29 @@ public class RobotContainer {
 
         // Color Sensor Debug
         CommandScheduler.getInstance().schedule(new DetectBallColorCommand(Subsystems.detectBallSubsystem.getDetector()));
+
+        CommandScheduler.getInstance().schedule(new CommandBase() {
+            @Override
+            public void execute() {
+                SmartDashboard.putNumber("Right Joy POV 90", rightJoy.getPOV());
+            }
+
+            @Override
+            public boolean isFinished() {
+                return false;
+            }
+
+            @Override
+            public boolean runsWhenDisabled() {
+                return true;
+            }
+        });
     }
 
     private void configureButtonBindings() {
 
         // Back button zeros the gyroscope
-        new Button(gamepad::getBackButton)
-                // No requirements because we don't need to interrupt anything
-                .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
+        new Button(() -> rightJoy.getRawButton(4)).whenPressed(m_drivetrainSubsystem::zeroGyroscope);
 
         // Track Goal limelight button
         // new Button(() -> rightJoy.getRawButton(14))
@@ -114,8 +129,8 @@ public class RobotContainer {
         new Button(leftJoy::getTrigger).whenPressed(m_intakeSubsystem::enable)
                 .whenReleased(m_intakeSubsystem::disable);
 
-        new Button(() -> rightJoy.getRawButton(5)).whenPressed(m_intakeSubsystem::RaiseIntake)
-                .whenReleased(m_intakeSubsystem::DropIntake);
+        new Button(() -> gamepad.getPOV() == 0).whenPressed(m_intakeSubsystem::RaiseIntake);
+        new Button(() -> gamepad.getPOV() == 180).whenPressed(m_intakeSubsystem::DropIntake);
     }
 
     private void configureShooterButtonBindings() {
@@ -123,12 +138,17 @@ public class RobotContainer {
                 .whenPressed(m_feederSubsystem::pull)
                 .whenReleased(m_feederSubsystem::dontPull);
 
-        new Button(() -> rightJoy.getRawButton(8)).toggleWhenPressed(
-                new StartEndCommand(m_shooterSubsystem::enable, m_shooterSubsystem::disable, m_shooterSubsystem));
+        new Button(() -> rightJoy.getPOV() == 90)
+                .whenPressed(() -> m_shooterSubsystem.setProfile(ShooterProfile.Short));
 
-        new Button(() -> rightJoy.getRawButton(6)).whenPressed(m_shooterSubsystem::shortShot);
+        new Button(() -> rightJoy.getPOV() == 0)
+                .whenPressed(() -> m_shooterSubsystem.setProfile(ShooterProfile.Long));
 
-        new Button(() -> rightJoy.getRawButton(7)).whenPressed(m_shooterSubsystem::longShot);
+        new Button(() -> gamepad.getStartButton())
+                .whenPressed(m_shooterSubsystem::enable);
+
+        new Button(() -> gamepad.getBackButton())
+                .whenPressed(m_shooterSubsystem::disable);
 
         SmartDashboard.putData("Shooter Short", new InstantCommand(() -> m_shooterSubsystem.setProfile(ShooterProfile.Short)).withName("Shoot Short"));
         SmartDashboard.putData("Shooter Long", new InstantCommand(() -> m_shooterSubsystem.setProfile(ShooterProfile.Long)).withName("Shoot Long"));

@@ -12,6 +12,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Subsystems;
 
 public class ShooterFeederSubsystem extends SubsystemBase {
   private boolean enabled = false;
@@ -28,14 +29,15 @@ public class ShooterFeederSubsystem extends SubsystemBase {
     SmartDashboard.setDefaultNumber(FEEDER_SPEED_KEY, DEFAULT_FEEDER_SPEED);
   }
   public void pull() {
+    if(Subsystems.shooterSubsystem.atMinimumSpeed()) {
     this.enabled = true;
-   
+    }
   }
 
   public void dontPull() {
     this.enabled = false;
   
-  }
+  } 
 
   @Override
   public void periodic() {

@@ -80,6 +80,18 @@ public class ShooterSubsystem extends SubsystemBase {
     SmartDashboard.setDefaultNumber("Shooter/TargetRPM", targetRPM);
 
   }
+ 
+  public Boolean atMinimumSpeed() {
+    boolean retVal = false;
+    if (targetRPM != 0) {
+      double speedRatio = rightShooterMotor.getEncoder().getVelocity() / targetRPM;
+      if (speedRatio >= .95) {
+        retVal = true;
+      }
+    }
+    return retVal;
+
+  };
 
   public void enable() {
     this.enabled = true;
@@ -122,6 +134,8 @@ public class ShooterSubsystem extends SubsystemBase {
         shooterHood.set(false);
         break;
     }
+    this.enable();
+
     SmartDashboard.putNumber("Shooter/TargetRPM", rpm);
     this.targetRPM = rpm;
   }
