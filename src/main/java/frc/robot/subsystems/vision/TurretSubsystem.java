@@ -1,6 +1,7 @@
 package frc.robot.subsystems.vision;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
@@ -17,7 +18,16 @@ public class TurretSubsystem extends SubsystemBase {
   private final PIDController visionpPID;
 
   enum RunState {
-    OpenLoop, Vision
+    OpenLoop, ClosedLoop, Vision
+  }
+
+  public enum TurretPositions {
+    Center(200);
+
+    private final double value;
+    private TurretPositions(double value) {
+      this.value = value;
+    }
   }
 
   private RunState runState = RunState.OpenLoop;
@@ -26,6 +36,11 @@ public class TurretSubsystem extends SubsystemBase {
   private double vision_kP = 0.0;
   private double vision_kI = 0.0;
   private double vision_kD = 0.0;
+
+  private double position_kP = 0.0;
+  private double position_kI = 0.0;
+  private double position_kD = 0.0;
+  private TurretPositions position;
 
   public TurretSubsystem() {
     turretMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
@@ -38,6 +53,10 @@ public class TurretSubsystem extends SubsystemBase {
 
     visionpPID = new PIDController(vision_kP, vision_kI, vision_kD);
     visionpPID.setSetpoint(0.0);
+
+    SmartDashboard.setDefaultNumber("Turret/Position/P", position_kP);
+    SmartDashboard.setDefaultNumber("Turret/Position/I", position_kI);
+    SmartDashboard.setDefaultNumber("Turret/Position/D", position_kD);
   }
 
   public void enableVisionTracking() {
@@ -64,6 +83,11 @@ public class TurretSubsystem extends SubsystemBase {
     this.turretMotor.getEncoder().setPosition(0.0);
   }
 
+  public void setTurretPosition(TurretPositions position) {
+    runState = RunState.ClosedLoop;
+    this.position = position;
+  }
+
   @Override
   public void periodic() {
     double speed = 0.0;
@@ -72,6 +96,8 @@ public class TurretSubsystem extends SubsystemBase {
     } else if (runState == RunState.Vision) {
       // speed = simpleVisionPeriodic();
       speed = visionPIDPeriodic();
+    } else if (runState == RunState.ClosedLoop) {
+
     }
     turretMotor.set(speed);
   }
@@ -119,5 +145,29 @@ public class TurretSubsystem extends SubsystemBase {
       speed = MathUtil.clamp(visionpPID.calculate(visionInfo.xOffset, 0.0), -0.3, 0.3);
     }
     return speed;
+  }
+
+  private void positionPIDPeriodic() {
+    var positionPID = turretMotor.getPIDController();
+
+    double p = SmartDashboard.getNumber("Turret/Position/P", position_kP);
+    double i = SmartDashboard.getNumber("Turret/Position/I", position_kI);
+    double d = SmartDashboard.getNumber("Turret/Position/D", position_kD);
+
+    if (position_kP != p) {
+      position_kP = p;
+      positionPID.setP(position_kP);
+    }
+    if (position_kI != i) {
+      position_kI = i;
+      positionPID.setI(position_kI);
+    }
+    if (position_kD != d) {
+      position_kD = d;
+      positionPID.setD(position_kD);
+    }
+
+    positionPID.setReference(position.value, ControlType.kPosition);
+   
   }
 }

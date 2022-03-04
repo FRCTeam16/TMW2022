@@ -2,9 +2,12 @@ package frc.robot;
 
 
 import edu.wpi.first.wpilibj.I2C.Port;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.ADXL345_I2C.AllAxes;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -54,10 +57,14 @@ public class RobotContainer {
 
     private final PneumaticHub pneuHub = new PneumaticHub();
 
+    public static Alliance alliance = Alliance.Invalid;
+
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
+        RobotContainer.alliance = DriverStation.getAlliance();
+
         // Set up the default command for the drivetrain.
         m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(m_drivetrainSubsystem,
                 () -> -OIUtil.modifyAxis((rightJoy.getY())) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
@@ -149,6 +156,7 @@ public class RobotContainer {
 
         new Button(() -> gamepad.getBackButton())
                 .whenPressed(m_shooterSubsystem::disable);
+        new Button(() -> rightJoy.getRawButton(16)).whenPressed(Subsystems.feederSubsystem::disableQueuing);
 
         SmartDashboard.putData("Shooter Short", new InstantCommand(() -> m_shooterSubsystem.setProfile(ShooterProfile.Short)).withName("Shoot Short"));
         SmartDashboard.putData("Shooter Long", new InstantCommand(() -> m_shooterSubsystem.setProfile(ShooterProfile.Long)).withName("Shoot Long"));
@@ -160,40 +168,40 @@ public class RobotContainer {
 
         SmartDashboard.putData("Zero Climber Encoder", new InstantCommand(Subsystems.climberSubsystem::zeroClimberEncoder).withName("Zero Climber Encoder"));
 
-        new Button(gamepad::getAButton)
-                .whenPressed(() -> {
-                    double value = SmartDashboard.getNumber("Climber/OpenLoop/Extend Speed", -0.35); // -0.2
-                    m_climberSubsystem.setOpenLoopSpeed(value);
-                })
-                .whenReleased(() -> {
-                    m_climberSubsystem.setOpenLoopSpeed(0.0);
-                });
 
-        new Button(gamepad::getYButton)
-                .whenPressed(() -> {
-                    double value = SmartDashboard.getNumber("Climber/OpenLoop/Pull Speed", 0.2);
-                    m_climberSubsystem.setOpenLoopSpeed(value);
+        new Button(() -> (Math.abs(gamepad.getRightY()) > 0.10))
+                .whileHeld(() -> {
+                    Subsystems.climberSubsystem.setOpenLoopSpeed(-gamepad.getRightY());
                 })
-                .whenReleased(() -> {
-                    m_climberSubsystem.setOpenLoopSpeed(0.0);
-                });
+                .whenReleased(Subsystems.climberSubsystem::holdClosedLoopPosition);
+                // .whenReleased(() -> Subsystems.climberSubsystem.setOpenLoopSpeed(0.0));
 
         new Button(gamepad::getRightBumper).whenPressed(Subsystems.climberSubsystem::moveSolonoidsForward);
         new Button(gamepad::getLeftBumper).whenPressed(Subsystems.climberSubsystem::moveSolenoidsBackward);
-        new Button(gamepad::getStartButton).whenPressed(Subsystems.climberSubsystem::moveSolenoidsDefault);
-
+        SmartDashboard.putData("Climber/Cmd/SolenoidOff", new InstantCommand(Subsystems.climberSubsystem::moveSolenoidsDefault));
         SmartDashboard.putData("Climber/Cmd/Retract", new InstantCommand(() -> Subsystems.climberSubsystem.setClosedLoopPosition(Positions.Retracted)).withName("Retract"));
         SmartDashboard.putData("Climber/Cmd/ReleaseBar", new InstantCommand(() -> Subsystems.climberSubsystem.setClosedLoopPosition(Positions.ReleaseBar)).withName("ReleaseBar"));
         SmartDashboard.putData("Climber/Cmd/Extend", new InstantCommand(() -> Subsystems.climberSubsystem.setClosedLoopPosition(Positions.Extended)).withName("Extend"));
+        SmartDashboard.putData("Climber/Cmd/Reach", new InstantCommand(() -> Subsystems.climberSubsystem.setClosedLoopPosition(Positions.Reach)).withName("Reach"));
+
+        new Button(gamepad::getAButton)
+                .whenPressed(() -> Subsystems.climberSubsystem.setClosedLoopPosition(Positions.Retracted));
+        new Button(gamepad::getYButton)
+                .whenPressed(() -> Subsystems.climberSubsystem.setClosedLoopPosition(Positions.Extended));
+        new Button(gamepad::getBButton)
+                .whenPressed(() -> Subsystems.climberSubsystem.setClosedLoopPosition(Positions.ReleaseBar));
+        new Button(gamepad::getXButton)
+                .whenPressed(() -> Subsystems.climberSubsystem.setClosedLoopPosition(Positions.Reach));
+
     }
 
     private void configureTurretButtonBindings() {
         new Button(() -> (gamepad.getLeftTriggerAxis() > 0.25))
-            .whenPressed(Subsystems.turretSubsystem::openBackwards)
+            .whileHeld(Subsystems.turretSubsystem::openBackwards)
             .whenReleased(Subsystems.turretSubsystem::openStop);
 
         new Button(() -> (gamepad.getRightTriggerAxis() > 0.25))
-            .whenPressed(Subsystems.turretSubsystem::openForward)
+            .whileHeld(Subsystems.turretSubsystem::openForward)
             .whenReleased(Subsystems.turretSubsystem::openStop);
 
         SmartDashboard.putData("Turret/EnableVision", new InstantCommand(() -> {

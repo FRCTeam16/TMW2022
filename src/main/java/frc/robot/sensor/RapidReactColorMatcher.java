@@ -19,7 +19,7 @@ public class RapidReactColorMatcher {
 
     private final ColorMatch colorMatcher = new ColorMatch();
 
-    private int proximity;
+    private int proximity = -1;
     private Color detectedColor;
     private MatchedColor matchedColor;
     private double matchedConfidence;
@@ -30,6 +30,18 @@ public class RapidReactColorMatcher {
         this.colorMatcher.addColorMatch(BlueBall);
         this.colorMatcher.addColorMatch(RedBall);
     }
+
+    public int getProximity() {
+        return proximity;
+    }
+
+    public Color getDetectedColor() {
+        return this.detectedColor;
+    }
+    public MatchedColor getMatchedColor() {
+        return this.matchedColor;
+    }
+
 
     public void execute() {
         this.proximity = colorSensor.getProximity();
