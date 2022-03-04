@@ -40,7 +40,7 @@ public class TurretSubsystem extends SubsystemBase {
   private double position_kP = 0.0;
   private double position_kI = 0.0;
   private double position_kD = 0.0;
-  private TurretPositions position;
+  private double targetPosition = 0.0;
 
   public TurretSubsystem() {
     turretMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
@@ -89,23 +89,38 @@ public class TurretSubsystem extends SubsystemBase {
     this.turretMotor.getEncoder().setPosition(0.0);
   }
 
+  public void holdTurretPosition() {
+    setTurretPosition(this.turretMotor.getEncoder().getPosition());
+  }
+
   public void setTurretPosition(TurretPositions position) {
+    this.setTurretPosition(position.value);
+  }
+
+  public void setTurretPosition(double positionValue) {
     runState = RunState.ClosedLoop;
-    this.position = position;
+    this.targetPosition = positionValue;
   }
 
   @Override
   public void periodic() {
-    double speed = 0.0;
-    if (runState == RunState.OpenLoop) {
-      speed = openLoopSpeed;
-    } else if (runState == RunState.Vision) {
-      // speed = simpleVisionPeriodic();
-      speed = visionPIDPeriodic();
-    } else if (runState == RunState.ClosedLoop) {
-
-    }
-    turretMotor.set(speed);
+    if (runState == RunState.ClosedLoop) {
+      positionPIDPeriodic();
+    } else {
+      //
+      // Open Loop Approaches
+      // 
+      double speed = 0.0;
+      if (runState == RunState.OpenLoop) {
+        speed = openLoopSpeed;
+      } else if (runState == RunState.Vision) {
+        // speed = simpleVisionPeriodic();
+        speed = visionPIDPeriodic();
+      } else if (runState == RunState.ClosedLoop) {
+        positionPIDPeriodic();
+      }
+      turretMotor.set(speed);
+    } 
   }
 
   private double simpleVisionPeriodic() {
@@ -174,7 +189,7 @@ public class TurretSubsystem extends SubsystemBase {
       positionPID.setD(position_kD);
     }
 
-    positionPID.setReference(position.value, ControlType.kPosition);
+    positionPID.setReference(targetPosition, ControlType.kPosition);
    
   }
 }
