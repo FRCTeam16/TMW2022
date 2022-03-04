@@ -10,10 +10,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class IntakeSubsystem extends SubsystemBase {
+public class IntakeSubsystem extends SubsystemBase implements Lifecycle {
 
   private boolean enabled = false;
-  private boolean intakeOut = false;
 
   private final CANSparkMax intakeMotor = new CANSparkMax(Constants.INTAKE_MOTOR_ID, MotorType.kBrushless);
   private final double DEFAULT_INTAKE_SPEED = -.7;
@@ -28,6 +27,10 @@ public class IntakeSubsystem extends SubsystemBase {
     SmartDashboard.setDefaultNumber(INTAKE_SPEED_KEY, DEFAULT_INTAKE_SPEED);
   }
 
+  @Override
+  public void teleopInit() {
+  }
+
   public void enable() {
     this.enabled = true;
   }
@@ -37,11 +40,11 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public void DropIntake() {
-    intakeLift.set(false);
+    intakeLift.set(true);
   }
 
   public void RaiseIntake() {
-    intakeLift.set(true);
+    intakeLift.set(false);
   }
 
   @Override

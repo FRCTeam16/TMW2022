@@ -244,8 +244,9 @@ public class RobotContainer {
      */
     public void teleopInit() {
         if (m_climberSubsystem != null) {
-            m_climberSubsystem.setOpenLoopSpeed(0.0);
+            m_climberSubsystem.setOpenLoopSpeed(0.0);  // make this init
         }
+        Subsystems.lifecycleSubsystems.stream().filter(s -> s != null).forEach((s) -> s.teleopInit());
     }
 
 }

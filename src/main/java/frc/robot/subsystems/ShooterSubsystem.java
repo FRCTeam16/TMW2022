@@ -13,7 +13,7 @@ import frc.robot.Constants;
 import frc.robot.Subsystems;
 import frc.robot.util.BSMath;
 
-public class ShooterSubsystem extends SubsystemBase {
+public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
 
   private boolean enabled = false;
 
@@ -79,6 +79,11 @@ public class ShooterSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Shooter/Min Output", kMinOutput);
     SmartDashboard.setDefaultNumber("Shooter/TargetRPM", targetRPM);
 
+  }
+
+  @Override
+  public void teleopInit() {
+    this.targetRPM = 0;
   }
  
   public Boolean atMinimumSpeed() {

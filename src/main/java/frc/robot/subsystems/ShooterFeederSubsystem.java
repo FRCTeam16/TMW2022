@@ -18,7 +18,7 @@ import frc.robot.Subsystems;
 import frc.robot.sensor.RapidReactColorMatcher;
 import frc.robot.sensor.RapidReactColorMatcher.MatchedColor;
 
-public class ShooterFeederSubsystem extends SubsystemBase {
+public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
   private boolean shooting = false;
   private boolean queuingEnabled = true;
 
@@ -32,6 +32,17 @@ public class ShooterFeederSubsystem extends SubsystemBase {
   public ShooterFeederSubsystem() {
     feederMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
     SmartDashboard.setDefaultNumber(FEEDER_SPEED_KEY, DEFAULT_FEEDER_SPEED);
+  }
+
+  @Override
+  public void teleopInit() {
+    queuingEnabled = true;
+  }
+
+  @Override
+  public void autoInit() {
+    // TODO Auto-generated method stub
+    Lifecycle.super.autoInit();
   }
 
   public void pull() {

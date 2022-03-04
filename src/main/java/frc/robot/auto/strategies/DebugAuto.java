@@ -22,19 +22,19 @@ public class DebugAuto extends SequentialCommandGroup {
     double offset = -90.0;
     addCommands(
       CommandGroupBase.parallel(
-        new InstantCommand(() -> Subsystems.intakeSubsystem.RaiseIntake()),
+        // new InstantCommand(() -> Subsystems.intakeSubsystem.RaiseIntake()),
         new InstantCommand(() -> Subsystems.drivetrainSubsystem.resetOdometry(new Pose2d(0, 0, new Rotation2d()))),
         new InstantCommand(Subsystems.drivetrainSubsystem::zeroGyroscope).andThen(
-        new InstantCommand(() -> Subsystems.drivetrainSubsystem.setGyroOffset(offset))),
-        new WaitCommand(5.0)
+        new InstantCommand(() -> Subsystems.drivetrainSubsystem.setGyroOffset(offset)))
+        // new WaitCommand(5.0)
       ),
       
       // driveSquare(offset, speed)
 
       new ProfiledDistanceDriveCommand(-115, 0, 0, -0.1).withTimeout(1.0),
-      new WaitCommand(0.5),
+      // new WaitCommand(0.5),
       new ProfiledDistanceDriveCommand(-90, 0.3, 0, -1.16).withTimeout(2.0),
-      new WaitCommand(0.5),
+      // new WaitCommand(0.5),
       new ProfiledDistanceDriveCommand(131, 0.5, -2.54, 1.76),
       new SimpleDistanceDriveCommand(offset, 0, 0, 0)
 

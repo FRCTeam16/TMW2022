@@ -1,5 +1,9 @@
 package frc.robot;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import frc.robot.subsystems.Lifecycle;
 import frc.robot.subsystems.DetectBallSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -26,6 +30,8 @@ public class Subsystems {
     public static DetectBallSubsystem detectBallSubsystem;
     public static LEDSubsystem ledSubsystem;
 
+    public static List<Lifecycle> lifecycleSubsystems = new ArrayList<>();
+
     private Subsystems() {
         drivetrainSubsystem = new DrivetrainSubsystem();
         intakeSubsystem = new IntakeSubsystem();
@@ -36,6 +42,9 @@ public class Subsystems {
         turretSubsystem = new TurretSubsystem();
         detectBallSubsystem = new DetectBallSubsystem();
         ledSubsystem = new LEDSubsystem();
+
+        lifecycleSubsystems.add(shooterSubsystem);
+        lifecycleSubsystems.add(feederSubsystem);
     }
 
     public static Subsystems getInstance() {

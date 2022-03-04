@@ -33,8 +33,8 @@ public class FiveBallStragety extends SequentialCommandGroup {
         initialState(),
         pickupFirstBall(),
         // shootFirstLoad(),
-        pickupSecondBall()
-        // pickupThirdBall(),
+        pickupSecondBall(),
+        pickupThirdBall()
         // shootSecondLoad(),
         // finishAuto());
         );
@@ -46,10 +46,11 @@ public class FiveBallStragety extends SequentialCommandGroup {
         new InstantCommand(() -> Subsystems.drivetrainSubsystem.resetOdometry(new Pose2d(0, 0, new Rotation2d()))),
         // new ZeroAndSetOffsetCommand(-90)
         new InstantCommand(Subsystems.drivetrainSubsystem::zeroGyroscope).andThen(
-        new InstantCommand(() -> Subsystems.drivetrainSubsystem.setGyroOffset(-90)))
-        //new InstantCommand(()-> Subsystems.shooterSubsystem.setProfile(ShooterProfile.Short)),
-        //new InstantCommand(Subsystems.shooterSubsystem::enable),
-        //new InstantCommand(Subsystems.intakeSubsystem::DropIntake),
+        new InstantCommand(() -> Subsystems.drivetrainSubsystem.setGyroOffset(-90))),
+        new InstantCommand(()-> Subsystems.shooterSubsystem.setProfile(ShooterProfile.Short)),
+        new InstantCommand(Subsystems.feederSubsystem::dontPull),
+        new InstantCommand(Subsystems.shooterSubsystem::enable),
+        new InstantCommand(Subsystems.intakeSubsystem::DropIntake)
         );
   }
 
@@ -58,18 +59,16 @@ public class FiveBallStragety extends SequentialCommandGroup {
   private Command pickupFirstBall() {
     return CommandGroupBase.sequence(
         new ProfiledDistanceDriveCommand(-115, 0, 0, -0.1).withTimeout(1.0),
+        new WaitCommand(0.5), // wait for RPM speedup?
         //  new TurnToAngleCommand(-115, Subsystems.drivetrainSubsystem).withTimeout(0.5),
         CommandGroupBase.parallel(
-            new ProfiledDistanceDriveCommand(-115, 0, 0, 0).withTimeout(0.5),
-           // new InstantCommand(Subsystems.feederSubsystem::pull),
-            new WaitCommand(4.0)),
+          new ProfiledDistanceDriveCommand(-115, 0, 0, 0).withTimeout(0.5),
+          new InstantCommand(Subsystems.feederSubsystem::pull),
+          new WaitCommand(2.5)),
         CommandGroupBase.parallel(
-          new InstantCommand(() -> System.out.println("****** doing pickup *****")),
-            //new InstantCommand(Subsystems.feederSubsystem::dontPull),
+            new InstantCommand(Subsystems.feederSubsystem::dontPull), // FIXME would rather queue
             new InstantCommand(Subsystems.intakeSubsystem::enable),
-            new ProfiledDistanceDriveCommand(-90, 0.3, 0, -1.16)
-            .withThreshold(0.03).withTimeout(2.0)),
-          new InstantCommand(() -> System.out.println("****** stopping drive *****")),
+            new ProfiledDistanceDriveCommand(-90, 0.3, 0, -1.20).withThreshold(0.03).withTimeout(2.0)),
           new ProfiledDistanceDriveCommand(-115, 0, 0, 0).withTimeout(0.5),
           new InstantCommand(() -> System.out.println("****** after pickup first *****"))); // should be 1.06
   }
@@ -80,10 +79,8 @@ public class FiveBallStragety extends SequentialCommandGroup {
   private Command pickupSecondBall() {
     return CommandGroupBase.sequence(
       new InstantCommand(() -> System.out.println("****** pickupSecondBall *****")),
-        CommandGroupBase.parallel(
-           new InstantCommand(Subsystems.intakeSubsystem::enable)),
-        new ProfiledDistanceDriveCommand(141, 0.5, -2.54, 1.76) // FIXME
-
+      new ProfiledDistanceDriveCommand(141, 0.5, -3.05, 0.6),  // -2.54, 1.76
+      new WaitCommand(2.0)
     );
   }
 
@@ -97,9 +94,9 @@ public class FiveBallStragety extends SequentialCommandGroup {
   // hypotenuce to the tarmac ball is 4.2 meters
   private Command pickupThirdBall() {
     return CommandGroupBase.sequence(
-        CommandGroupBase.parallel(
-            new InstantCommand(Subsystems.intakeSubsystem::enable)),
-        new ProfiledDistanceDriveCommand(30, 0.5, -3.9, -0.25));
+      new InstantCommand(() -> Subsystems.shooterSubsystem.setProfile(ShooterProfile.Long)),
+      // new ProfiledDistanceDriveCommand(-170, 0.5, -4.2, -0.3));   // 0.5, -4.2, -0.3
+      new ProfiledDistanceDriveCommand(-170, 1.9, -4.2, -0.3));   // 0.5, -4.2, -0.3
   }
 
   private Command shootSecondLoad() {
