@@ -51,6 +51,7 @@ public class TurretSubsystem extends SubsystemBase {
     SmartDashboard.setDefaultNumber("Turret/Vision/I", vision_kI);
     SmartDashboard.setDefaultNumber("Turret/Vision/D", vision_kD);
 
+    SmartDashboard.putNumber("Turret/Vision/Threshold", VISION_THRESHOLD);
     visionpPID = new PIDController(vision_kP, vision_kI, vision_kD);
     visionpPID.setSetpoint(0.0);
 
@@ -62,6 +63,11 @@ public class TurretSubsystem extends SubsystemBase {
   public void enableVisionTracking() {
     runState = RunState.Vision;
     openLoopSpeed = 0.0;
+  }
+
+  public boolean hasVisionTarget() {
+    var visionInfo = Subsystems.visionSubsystem.getVisionInfo();
+    return (visionInfo.hasTarget && visionpPID.atSetpoint());
   }
 
   public void openForward() {
@@ -119,6 +125,7 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   private double visionPIDPeriodic() {
+    double maxSpeed = SmartDashboard.getNumber("Turret/Open/DefaultSpeed", DEFAULT_TURRET_SPEED);
     double p = SmartDashboard.getNumber("Turret/Vision/P", vision_kP);
     double i = SmartDashboard.getNumber("Turret/Vision/I", vision_kI);
     double d = SmartDashboard.getNumber("Turret/Vision/D", vision_kD);
@@ -141,8 +148,8 @@ public class TurretSubsystem extends SubsystemBase {
 
     double speed = 0.0;
     var visionInfo = Subsystems.visionSubsystem.getVisionInfo();
-    if (visionInfo.hasTarget && Math.abs(visionInfo.xOffset) > threshold) {
-      speed = MathUtil.clamp(visionpPID.calculate(visionInfo.xOffset, 0.0), -0.3, 0.3);
+    if (visionInfo.hasTarget) {
+      speed = MathUtil.clamp(visionpPID.calculate(visionInfo.xOffset, 0.0), -maxSpeed, maxSpeed);
     }
     return speed;
   }
