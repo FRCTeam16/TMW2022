@@ -151,6 +151,9 @@ public class RobotContainer {
         new Button(() -> rightJoy.getPOV() == 0)
                 .whenPressed(() -> m_shooterSubsystem.setProfile(ShooterProfile.Long));
 
+        new Button(() -> rightJoy.getPOV() == 270)
+                .whenPressed(() -> m_shooterSubsystem.setProfile(ShooterProfile.LowGoal));
+
         new Button(() -> gamepad.getStartButton())
                 .whenPressed(m_shooterSubsystem::enable);
 
@@ -213,6 +216,9 @@ public class RobotContainer {
             Subsystems.visionSubsystem.disable();
             Subsystems.turretSubsystem.openStop();
         }).withName("Enable Vision Tracking"));
+
+        SmartDashboard.putData("Turret/Zero Turret", new InstantCommand(Subsystems.turretSubsystem::zeroEncoder)
+        .withName("Zero Turret"));
     }
 
     private void configureVisionButtonBindings() {

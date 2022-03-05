@@ -2,18 +2,20 @@ package frc.robot.subsystems.vision;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Subsystems;
 import frc.robot.subsystems.vision.VisionSubsystem.VisionInfo;
 
 public class TurretSubsystem extends SubsystemBase {
-  private final CANSparkMax turretMotor = new CANSparkMax(99, MotorType.kBrushless);
-  private final double DEFAULT_TURRET_SPEED = -.4;
+  private final CANSparkMax turretMotor = new CANSparkMax(Constants.TURRET_MOTOR_ID, MotorType.kBrushless);
+  private final double DEFAULT_TURRET_SPEED = -0.1;
   private final double VISION_THRESHOLD = 1.0;
   private final PIDController visionpPID;
 
@@ -58,6 +60,21 @@ public class TurretSubsystem extends SubsystemBase {
     SmartDashboard.setDefaultNumber("Turret/Position/P", position_kP);
     SmartDashboard.setDefaultNumber("Turret/Position/I", position_kI);
     SmartDashboard.setDefaultNumber("Turret/Position/D", position_kD);
+
+    turretMotor.setSoftLimit(SoftLimitDirection.kReverse, -10.61f);
+    turretMotor.setSoftLimit(SoftLimitDirection.kForward, 10.61f);
+    enableSoftLimits();
+    
+  }
+
+  public void enableSoftLimits() {
+    turretMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
+    turretMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
+  }
+
+  public void disableSoftLimits() {
+    turretMotor.enableSoftLimit(SoftLimitDirection.kReverse, false);
+    turretMotor.enableSoftLimit(SoftLimitDirection.kForward, false);
   }
 
   public void enableVisionTracking() {
@@ -89,6 +106,10 @@ public class TurretSubsystem extends SubsystemBase {
     this.turretMotor.getEncoder().setPosition(0.0);
   }
 
+  public double getEncoderPosition() {
+    return this.turretMotor.getEncoder().getPosition();
+  }
+
   public void holdTurretPosition() {
     setTurretPosition(this.turretMotor.getEncoder().getPosition());
   }
@@ -104,6 +125,7 @@ public class TurretSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    SmartDashboard.putNumber("Turret/EncPosition", turretMotor.getEncoder().getPosition());
     if (runState == RunState.ClosedLoop) {
       positionPIDPeriodic();
     } else {

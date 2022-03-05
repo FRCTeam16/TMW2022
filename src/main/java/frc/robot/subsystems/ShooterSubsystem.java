@@ -26,7 +26,7 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
   private final Solenoid shooterHood = new Solenoid(PneumaticsModuleType.REVPH, 3);
 
   public enum ShooterProfile {
-    Short(1800), Long(2255), Dynamic(0);
+    Short(1800), Long(2255), LowGoal(1000), Dynamic(0);
 
     private double value;
 
@@ -136,6 +136,10 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
         break;
       case Dynamic:
         rpm = calculateDynamicRPM();
+        shooterHood.set(false);
+        break;
+      case LowGoal:
+        rpm = SmartDashboard.getNumber("Shooter/Profile/LowGoal", ShooterProfile.LowGoal.value);
         shooterHood.set(false);
         break;
     }
