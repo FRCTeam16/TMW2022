@@ -2,6 +2,7 @@ package frc.robot.subsystems.climber;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -15,9 +16,8 @@ import frc.robot.Constants;
 public class ClimberSubsystem extends SubsystemBase {
 
  
-// FIXME switched
-  private final CANSparkMax followerMotor = new CANSparkMax(Constants.LEFTCLIMBER_MOTOR_ID, MotorType.kBrushless);
-  private final CANSparkMax climberMotor  = new CANSparkMax(Constants.RIGHTCLIMBER_MOTOR_ID, MotorType.kBrushless);
+  private final CANSparkMax followerMotor = new CANSparkMax(Constants.RIGHTCLIMBER_MOTOR_ID, MotorType.kBrushless);
+  private final CANSparkMax climberMotor  = new CANSparkMax(Constants.LEFTCLIMBER_MOTOR_ID, MotorType.kBrushless);
   private final DoubleSolenoid climberSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 1, 5);
   private final DoubleSolenoid climberSolenoid2 = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 4);
 
@@ -31,7 +31,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
 
   public enum Positions {
-    Retracted(10.0), ReleaseBar(70.0), Extended(90.0), Reach(90.0);
+    Retracted(0.0), ReleaseBar(23.0), Extended(109.0), Reach(120.0);
 
     private final double value;
     private Positions(double value) {
@@ -48,9 +48,12 @@ public class ClimberSubsystem extends SubsystemBase {
     climberMotor.setIdleMode(IdleMode.kBrake);
     followerMotor.setIdleMode(IdleMode.kBrake);
     followerMotor.follow(climberMotor, true);
+    // climberMotor.setSoftLimit(SoftLimitDirection.kForward, 124);
+    // climberMotor.setSoftLimit(SoftLimitDirection.kReverse, 0);
+    // enableSoftLimits();  
+    // disableSoftLimits();  
 
-    climberSolenoid.set(DoubleSolenoid.Value.kOff);
-    climberSolenoid2.set(DoubleSolenoid.Value.kOff);
+    moveSolenoidsBackward();
 
     OpenLoopClimbCommand.ConfigSmartDashboard();
 
@@ -66,6 +69,16 @@ public class ClimberSubsystem extends SubsystemBase {
     // Open Loop Speed Defaults
     SmartDashboard.putNumber("Climber/OpenLoop/Extend Speed", 0.35);
     SmartDashboard.putNumber("Climber/OpenLoop/Pull Speed", -0.2);
+  }
+
+  public void enableSoftLimits() {
+    this.climberMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
+    this.climberMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
+  }
+
+  public void disableSoftLimits() {
+    this.climberMotor.enableSoftLimit(SoftLimitDirection.kForward, false);
+    this.climberMotor.enableSoftLimit(SoftLimitDirection.kReverse, false);
   }
 
 

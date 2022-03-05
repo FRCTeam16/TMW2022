@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.sensor.RapidReactColorMatcher;
 
 public class DetectBallSubsystem extends SubsystemBase {
-  private final ColorSensorV3 colorSensor = new ColorSensorV3(Port.kMXP);
+  private final ColorSensorV3 colorSensor = new ColorSensorV3(Port.kOnboard);
   public final RapidReactColorMatcher detector = new RapidReactColorMatcher(colorSensor);
 
   private final double DISTANCE_THRESHOLD = 500;
@@ -17,7 +17,7 @@ public class DetectBallSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    detector.execute();
+    detector.execute();    
   }
 
   public boolean isBallDetected() {
@@ -30,5 +30,9 @@ public class DetectBallSubsystem extends SubsystemBase {
 
   public RapidReactColorMatcher getDetector() {
     return this.detector;
+  }
+
+  public ColorSensorV3 getColorSensor() {
+    return this.colorSensor;
   }
 }

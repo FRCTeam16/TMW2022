@@ -1,8 +1,11 @@
-package frc.robot.commands;
+package frc.robot.commands.vision;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Subsystems;
 
+/**
+ * Runs turret vision tracking
+ */
 public class TrackVisionTargetWithTurretCommand extends CommandBase {
   int scansRequired = 0;
   int scanCount = 0;

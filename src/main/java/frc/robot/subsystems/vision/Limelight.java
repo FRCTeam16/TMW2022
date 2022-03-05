@@ -25,7 +25,7 @@ public class Limelight {
      */
     public SceneInfo getScene() {
         SceneInfo si = new SceneInfo();
-        si.hasTarget = dataTable.getEntry("tv").getBoolean(false);
+        si.hasTarget = (dataTable.getEntry("tv").getNumber(0.0).doubleValue() > 0.5);
         si.xOffset = dataTable.getEntry("tx").getDouble(0.0);
         si.yOffset = dataTable.getEntry("ty").getDouble(0.0);
         si.targetArea = dataTable.getEntry("ta").getDouble(0.0);

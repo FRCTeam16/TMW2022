@@ -41,6 +41,7 @@ public class VisionSubsystem extends SubsystemBase {
     var sceneInfo = limelight.getScene();
     
     // Update out information
+    visionInfo = new VisionInfo();
     visionInfo.hasTarget = sceneInfo.hasTarget;
     visionInfo.xOffset = sceneInfo.xOffset;
     visionInfo.yOffset = sceneInfo.yOffset;

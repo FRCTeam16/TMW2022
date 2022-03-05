@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand;
 import frc.robot.Subsystems;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
+@Deprecated
 public class ProfiledTurnToAngleCommand extends TrapezoidProfileCommand {
   private int num_scans_seen = 0;
 

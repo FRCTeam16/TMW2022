@@ -50,6 +50,7 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
     SmartDashboard.setDefaultNumber(SHOOTER_SPEED_KEY, DEFAULT_SHOOTER_SPEED);
     SmartDashboard.setDefaultNumber("Shooter/Profile/Short", ShooterProfile.Short.value);
     SmartDashboard.setDefaultNumber("Shooter/Profile/Long", ShooterProfile.Long.value);
+    SmartDashboard.setDefaultNumber("Shooter/Profile/LowGoal", ShooterProfile.LowGoal.value);
 
     kP = 0.00028;
     kI = 0;

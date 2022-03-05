@@ -1,12 +1,6 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -22,13 +16,10 @@ public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
   private boolean shooting = false;
   private boolean queuingEnabled = true;
 
-  // Calling CANSpark motor
-
   private final CANSparkMax feederMotor = new CANSparkMax(Constants.SHOOTERFEEDER_MOTOR_ID, MotorType.kBrushless);
   private final double DEFAULT_FEEDER_SPEED = -.4;
   private static final String FEEDER_SPEED_KEY = "Feeder Speed";
 
-  /** Creates a new ShooterFeederSubsystem. */
   public ShooterFeederSubsystem() {
     feederMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
     SmartDashboard.setDefaultNumber(FEEDER_SPEED_KEY, DEFAULT_FEEDER_SPEED);
@@ -36,13 +27,11 @@ public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
 
   @Override
   public void teleopInit() {
-    queuingEnabled = true;
+    queuingEnabled = false;
   }
 
   @Override
   public void autoInit() {
-    // TODO Auto-generated method stub
-    Lifecycle.super.autoInit();
   }
 
   public void pull() {
@@ -73,7 +62,7 @@ public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
       }
     } else if (queuingEnabled == true) {
       if (Subsystems.detectBallSubsystem.isBallDetected()) {
-        // TODO: Shooter needs to check doesBallMatchAlliance or we signal
+        // TODO: Shooter needs to check doesBallMatchAlliance or we should signal them
         feederSpeed = 0.0;
       } else {
         // no ball was detected, just run feeder until we queue a ball
@@ -85,8 +74,6 @@ public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
 
   /**
    * Returns whether the ball matches our alliance color OR was not identified
-   * 
-   * @return
    */
   public boolean doesBallMatchAlliance() {
     RapidReactColorMatcher.MatchedColor allianceColor = MatchedColor.Unknown;

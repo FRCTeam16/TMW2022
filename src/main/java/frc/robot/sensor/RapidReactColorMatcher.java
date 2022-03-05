@@ -44,6 +44,7 @@ public class RapidReactColorMatcher {
 
 
     public void execute() {
+        SmartDashboard.putBoolean("ColorSensor/Connected", colorSensor.isConnected());
         this.proximity = colorSensor.getProximity();
         var detectedColor = this.colorSensor.getColor();
         var match = colorMatcher.matchColor(detectedColor);
@@ -65,7 +66,7 @@ public class RapidReactColorMatcher {
             SmartDashboard.putNumber("ColorSensor/Green", detectedColor.green);
         }
         SmartDashboard.putNumber("ColorSensor/Proximity", proximity);
-        SmartDashboard.putString("ColorSensor/Detected Color", matchedColor.name());
+        SmartDashboard.putString("ColorSensor/Detected Color", (matchedColor != null) ? matchedColor.name() : "Null Matched Color");
         SmartDashboard.putNumber("ColorSensor/Detected Color Confidence", matchedConfidence);
     }
 

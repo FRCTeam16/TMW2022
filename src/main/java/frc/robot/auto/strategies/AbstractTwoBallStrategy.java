@@ -8,8 +8,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Subsystems;
-import frc.robot.commands.TrackVisionTargetWithTurretCommand;
 import frc.robot.commands.testing.ProfiledDistanceDriveCommand;
+import frc.robot.commands.vision.TrackVisionTargetWithTurretCommand;
 import frc.robot.subsystems.ShooterSubsystem.ShooterProfile;
 
 public class AbstractTwoBallStrategy extends SequentialCommandGroup {
@@ -25,7 +25,7 @@ public class AbstractTwoBallStrategy extends SequentialCommandGroup {
 
         addCommands(
             initialStateShoot(), // this shoots ball before it leaves tarmac
-            initialStateDontShoot(), // this waits for the
+            // initialStateDontShoot(), // this waits for the
             pickupFirstBall(), // this one shoots befor the ball is
             shootLoad()
         );
@@ -79,7 +79,7 @@ public class AbstractTwoBallStrategy extends SequentialCommandGroup {
             new InstantCommand(Subsystems.feederSubsystem::dontPull), // FIXME would rather queue
             new InstantCommand(Subsystems.intakeSubsystem::enable),
             new ProfiledDistanceDriveCommand(this.robotAngle, 0.3, driveX, driveY).withThreshold(0.03).withTimeout(2.0)),
-        new ProfiledDistanceDriveCommand(-115, 0, 0, 0).withTimeout(0.5),
+        new ProfiledDistanceDriveCommand(robotAngle, 0, 0, 0).withTimeout(0.5),
         new InstantCommand(() -> System.out.println("****** after pickup first *****"))); // should be 1.06
   }
 

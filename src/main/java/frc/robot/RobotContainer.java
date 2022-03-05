@@ -1,23 +1,22 @@
 package frc.robot;
 
 
-import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.ADXL345_I2C.AllAxes;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import frc.robot.auto.AutoManager;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.DetectBallColorCommand;
+import frc.robot.commands.prefs.SaveWheelOffsets;
+import frc.robot.commands.prefs.ZeroWheelOffsets;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterFeederSubsystem;
@@ -38,6 +37,7 @@ public class RobotContainer {
     // The robot's subsystems and commands are defined here...
 
     // Must be called before any subsystem access
+    @SuppressWarnings("unused")
     private final Subsystems subsystems = Subsystems.getInstance();
 
     private final DrivetrainSubsystem m_drivetrainSubsystem = Subsystems.drivetrainSubsystem;
@@ -95,24 +95,7 @@ public class RobotContainer {
         });
 
         // Color Sensor Debug
-        CommandScheduler.getInstance().schedule(new DetectBallColorCommand(Subsystems.detectBallSubsystem.getDetector()));
-
-        CommandScheduler.getInstance().schedule(new CommandBase() {
-            @Override
-            public void execute() {
-                SmartDashboard.putNumber("Right Joy POV 90", rightJoy.getPOV());
-            }
-
-            @Override
-            public boolean isFinished() {
-                return false;
-            }
-
-            @Override
-            public boolean runsWhenDisabled() {
-                return true;
-            }
-        });
+        CommandScheduler.getInstance().schedule(new DetectBallColorCommand());
     }
 
     private void configureButtonBindings() {
@@ -130,6 +113,7 @@ public class RobotContainer {
         configureClimberButtonBindings();
         configureTurretButtonBindings();
         configureVisionButtonBindings();
+        configureWheelOffsetButtonBindings();
     }
 
     private void configureIntakeButtonBindings() {
@@ -164,6 +148,7 @@ public class RobotContainer {
         SmartDashboard.putData("Shooter Short", new InstantCommand(() -> m_shooterSubsystem.setProfile(ShooterProfile.Short)).withName("Shoot Short"));
         SmartDashboard.putData("Shooter Long", new InstantCommand(() -> m_shooterSubsystem.setProfile(ShooterProfile.Long)).withName("Shoot Long"));
         SmartDashboard.putData("Shooter Off", new InstantCommand(() -> m_shooterSubsystem.setProfile(ShooterProfile.Dynamic)).withName("Shoot Off"));
+        SmartDashboard.putData("Shooter Low Goal", new InstantCommand(() -> m_shooterSubsystem.setProfile(ShooterProfile.LowGoal)).withName("Shoot Low Goal"));
 
     }
 
@@ -171,6 +156,8 @@ public class RobotContainer {
 
         SmartDashboard.putData("Zero Climber Encoder", new InstantCommand(Subsystems.climberSubsystem::zeroClimberEncoder).withName("Zero Climber Encoder"));
 
+        SmartDashboard.putData("Climber/Cmd/Enable Soft Limits", new InstantCommand(Subsystems.climberSubsystem::enableSoftLimits).withName("Enable Limits"));
+        SmartDashboard.putData("Climber/Cmd/Disable Soft Limits", new InstantCommand(Subsystems.climberSubsystem::disableSoftLimits).withName("Disable Limits"));
 
         new Button(() -> (Math.abs(gamepad.getRightY()) > 0.10))
                 .whileHeld(() -> {
@@ -219,9 +206,17 @@ public class RobotContainer {
 
         SmartDashboard.putData("Turret/Zero Turret", new InstantCommand(Subsystems.turretSubsystem::zeroEncoder)
         .withName("Zero Turret"));
+
+        SmartDashboard.putData("Turret/Cmd/Enable Soft Limits", new InstantCommand(Subsystems.turretSubsystem::enableSoftLimits).withName("Enable Limits"));
+        SmartDashboard.putData("Turret/Cmd/Disable Soft Limits", new InstantCommand(Subsystems.turretSubsystem::disableSoftLimits).withName("Disable Limits"));
     }
 
     private void configureVisionButtonBindings() {
+    }
+
+    private void configureWheelOffsetButtonBindings() {
+        SmartDashboard.putData("Offset/ZeroWheelOffsets", new ZeroWheelOffsets());
+        SmartDashboard.putData("Offset/SaveWheelOffsets", new SaveWheelOffsets());
     }
 
     private void configureDebugButtonBindings() {

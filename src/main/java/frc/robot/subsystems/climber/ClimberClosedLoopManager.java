@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class ClimberClosedLoopManager {
     private SparkMaxPIDController m_pidController;
     private RelativeEncoder m_encoder;
-    private double kP = 0.05;
+    private double kP = 0.1;
     private double kI = 0; 
     private double kD = 0;
     private double kIz = 0;

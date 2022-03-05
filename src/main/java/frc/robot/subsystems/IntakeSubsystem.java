@@ -6,6 +6,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -18,11 +19,11 @@ public class IntakeSubsystem extends SubsystemBase implements Lifecycle {
   private final double DEFAULT_INTAKE_SPEED = -.7;
   private static final String INTAKE_SPEED_KEY = "Intake Speed";
 
- //private final DoubleSolenoid intakeLift = new DoubleSolenoid(PneumaticsModuleType.REVPH, 2, 6);
- private final Solenoid intakeLift = new Solenoid(PneumaticsModuleType.REVPH, 2);
+ private final DoubleSolenoid intakeLift = new DoubleSolenoid(PneumaticsModuleType.REVPH, 2, 6);
+//  private final DoubleSolenoid intakeLift = new DoubleSolenoid(PneumaticsModuleType.REVPH, 2);
   
   public IntakeSubsystem() {
-    intakeLift.set(false);
+    RaiseIntake();
 
     SmartDashboard.setDefaultNumber(INTAKE_SPEED_KEY, DEFAULT_INTAKE_SPEED);
   }
@@ -40,11 +41,11 @@ public class IntakeSubsystem extends SubsystemBase implements Lifecycle {
   }
 
   public void DropIntake() {
-    intakeLift.set(true);
+    intakeLift.set(Value.kForward);
   }
 
   public void RaiseIntake() {
-    intakeLift.set(false);
+    intakeLift.set(Value.kReverse);
   }
 
   @Override

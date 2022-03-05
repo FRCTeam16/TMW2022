@@ -15,7 +15,7 @@ import frc.robot.subsystems.vision.VisionSubsystem.VisionInfo;
 
 public class TurretSubsystem extends SubsystemBase {
   private final CANSparkMax turretMotor = new CANSparkMax(Constants.TURRET_MOTOR_ID, MotorType.kBrushless);
-  private final double DEFAULT_TURRET_SPEED = -0.1;
+  private final double DEFAULT_TURRET_SPEED = -0.2;
   private final double VISION_THRESHOLD = 1.0;
   private final PIDController visionpPID;
 
@@ -24,7 +24,7 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   public enum TurretPositions {
-    Center(200);
+    Center(0);
 
     private final double value;
     private TurretPositions(double value) {
@@ -35,7 +35,7 @@ public class TurretSubsystem extends SubsystemBase {
   private RunState runState = RunState.OpenLoop;
   private double openLoopSpeed = 0.0;
 
-  private double vision_kP = 0.0;
+  private double vision_kP = 0.015;
   private double vision_kI = 0.0;
   private double vision_kD = 0.0;
 
@@ -45,6 +45,7 @@ public class TurretSubsystem extends SubsystemBase {
   private double targetPosition = 0.0;
 
   public TurretSubsystem() {
+    turretMotor.restoreFactoryDefaults();
     turretMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
     SmartDashboard.setDefaultNumber("Turret/Open/DefaultSpeed", DEFAULT_TURRET_SPEED);
     SmartDashboard.setDefaultNumber("Turret/Vision/Threshold", VISION_THRESHOLD);
@@ -64,7 +65,6 @@ public class TurretSubsystem extends SubsystemBase {
     turretMotor.setSoftLimit(SoftLimitDirection.kReverse, -10.61f);
     turretMotor.setSoftLimit(SoftLimitDirection.kForward, 10.61f);
     enableSoftLimits();
-    
   }
 
   public void enableSoftLimits() {
@@ -111,7 +111,7 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   public void holdTurretPosition() {
-    setTurretPosition(this.turretMotor.getEncoder().getPosition());
+    setTurretPosition(getEncoderPosition());
   }
 
   public void setTurretPosition(TurretPositions position) {
@@ -126,6 +126,8 @@ public class TurretSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Turret/EncPosition", turretMotor.getEncoder().getPosition());
+    SmartDashboard.putString("Turret/RunState", runState.name());
+    
     if (runState == RunState.ClosedLoop) {
       positionPIDPeriodic();
     } else {
@@ -136,24 +138,22 @@ public class TurretSubsystem extends SubsystemBase {
       if (runState == RunState.OpenLoop) {
         speed = openLoopSpeed;
       } else if (runState == RunState.Vision) {
-        // speed = simpleVisionPeriodic();
-        speed = visionPIDPeriodic();
-      } else if (runState == RunState.ClosedLoop) {
-        positionPIDPeriodic();
+        speed = simpleVisionPeriodic();
+        // speed = visionPIDPeriodic();
       }
       turretMotor.set(speed);
     } 
   }
 
+  // TODO: Manual p-gain calculation
   private double simpleVisionPeriodic() {
     double threshold = SmartDashboard.getNumber("Turret/Vision/Threshold", VISION_THRESHOLD);
     double speed = SmartDashboard.getNumber("Turret/Open/DefaultSpeed", DEFAULT_TURRET_SPEED);
     VisionInfo info = Subsystems.visionSubsystem.getVisionInfo();
-    if (info.hasTarget && Math.abs(info.xOffset) > threshold) {
-      // Set speed based on offset direction
-      if (info.xOffset < 0) {
-        speed = -speed;
-      }
+
+    if (info.hasTarget && (Math.abs(info.xOffset) > threshold)) {
+      double p = SmartDashboard.getNumber("Turret/Vision/P", vision_kP);
+      speed = MathUtil.clamp(info.xOffset * -p, -0.4 , 0.4);
     } else {
       // No target or within threshold
       speed = 0.0;
@@ -166,6 +166,7 @@ public class TurretSubsystem extends SubsystemBase {
     double p = SmartDashboard.getNumber("Turret/Vision/P", vision_kP);
     double i = SmartDashboard.getNumber("Turret/Vision/I", vision_kI);
     double d = SmartDashboard.getNumber("Turret/Vision/D", vision_kD);
+    
 
     if (vision_kP != p) {
       vision_kP = p;
@@ -185,6 +186,9 @@ public class TurretSubsystem extends SubsystemBase {
 
     double speed = 0.0;
     var visionInfo = Subsystems.visionSubsystem.getVisionInfo();
+    SmartDashboard.putBoolean("Turret/Vision/HasTarget", visionInfo.hasTarget);
+    SmartDashboard.putNumber("Turret/Vision/xOffset", visionInfo.xOffset);
+    
     if (visionInfo.hasTarget) {
       speed = MathUtil.clamp(visionpPID.calculate(visionInfo.xOffset, 0.0), -maxSpeed, maxSpeed);
     }

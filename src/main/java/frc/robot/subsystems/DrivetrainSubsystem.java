@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.gyro.BSGyro;
 import frc.robot.subsystems.gyro.PigeonGyro;
+import frc.robot.util.BSPrefs;
 
 import static frc.robot.Constants.*;
 
@@ -100,6 +101,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
         SmartDashboard.putData("Field", m_field);
 
+        BSPrefs offsets = BSPrefs.getOffsetsInstance();
+
         m_frontLeftModule = Mk4SwerveModuleHelper.createFalcon500(
                 // This parameter is optional, but will allow you to see the current state of
                 // the module on the dashboard.
@@ -117,6 +120,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 // This is how much the steer encoder is offset from true zero (In our case,
                 // zero is facing straight forward)
                 FRONT_LEFT_MODULE_STEER_OFFSET);
+                //-Math.toRadians(offsets.getDouble("FLOFF", 0.0)));
 
         // We will do the same for the other modules
         m_frontRightModule = Mk4SwerveModuleHelper.createFalcon500(
@@ -128,6 +132,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 FRONT_RIGHT_MODULE_STEER_MOTOR,
                 FRONT_RIGHT_MODULE_STEER_ENCODER,
                 FRONT_RIGHT_MODULE_STEER_OFFSET);
+                //-Math.toRadians(offsets.getDouble("FROFF", 0.0)));
 
         m_backLeftModule = Mk4SwerveModuleHelper.createFalcon500(
                 tab.getLayout("Back Left Module", BuiltInLayouts.kList)
@@ -138,6 +143,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 BACK_LEFT_MODULE_STEER_MOTOR,
                 BACK_LEFT_MODULE_STEER_ENCODER,
                 BACK_LEFT_MODULE_STEER_OFFSET);
+                // -Math.toRadians(offsets.getDouble("RLOFF", 0.0)));
 
         m_backRightModule = Mk4SwerveModuleHelper.createFalcon500(
                 tab.getLayout("Back Right Module", BuiltInLayouts.kList)
@@ -148,6 +154,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 BACK_RIGHT_MODULE_STEER_MOTOR,
                 BACK_RIGHT_MODULE_STEER_ENCODER,
                 BACK_RIGHT_MODULE_STEER_OFFSET);
+                // -Math.toRadians(offsets.getDouble("RROFF", 0.0)));
 
         storeContantsInNT();
     }

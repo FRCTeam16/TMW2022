@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.vision;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -8,6 +8,7 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
 
 
+@Deprecated
 public class TrackTargetCommand extends PIDCommand {
 
   private static final double kP = 7.5;
