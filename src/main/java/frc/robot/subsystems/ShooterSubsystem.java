@@ -26,7 +26,7 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
   private final Solenoid shooterHood = new Solenoid(PneumaticsModuleType.REVPH, 3);
 
   public enum ShooterProfile {
-    Short(1800), Long(2255), LowGoal(1000), Dynamic(0);
+    Short(1700), Long(2055), LowGoal(1000), Dynamic(0);
 
     private double value;
 

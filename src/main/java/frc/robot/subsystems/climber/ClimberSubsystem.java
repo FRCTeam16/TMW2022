@@ -31,7 +31,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
 
   public enum Positions {
-    Retracted(0.0), ReleaseBar(23.0), Extended(109.0), Reach(120.0);
+    Retracted(0.0), ReleaseBar(23.0), Extended(120.0), ShortPull(80);
 
     private final double value;
     private Positions(double value) {
@@ -60,7 +60,7 @@ public class ClimberSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Climber/Closed/Position/Retracted", Positions.Retracted.value);
     SmartDashboard.putNumber("Climber/Closed/Position/ReleaseBar", Positions.ReleaseBar.value);
     SmartDashboard.putNumber("Climber/Closed/Position/Extended", Positions.Extended.value);
-    SmartDashboard.putNumber("Climber/Closed/Position/Reach", Positions.Reach.value);
+    SmartDashboard.putNumber("Climber/Closed/Position/ShortPull", Positions.ShortPull.value);
 
     // Toggle open/closed loop control
     SmartDashboard.putData("Climber Open Loop", new InstantCommand(() -> runState = RunState.OpenLoop).withName("Climber Open"));
@@ -111,8 +111,8 @@ public class ClimberSubsystem extends SubsystemBase {
       case Extended:
         target = SmartDashboard.getNumber("Climber/Closed/Position/Extended", position.value);
         break;
-      case Reach:
-        target = SmartDashboard.getNumber("Climber/Closed/Position/Reach", position.value);
+      case ShortPull:
+        target = SmartDashboard.getNumber("Climber/Closed/Position/ShortPull", position.value);
         break;
     }
     setClosedLoopPosition(target);

@@ -172,7 +172,7 @@ public class RobotContainer {
         SmartDashboard.putData("Climber/Cmd/Retract", new InstantCommand(() -> Subsystems.climberSubsystem.setClosedLoopPosition(Positions.Retracted)).withName("Retract"));
         SmartDashboard.putData("Climber/Cmd/ReleaseBar", new InstantCommand(() -> Subsystems.climberSubsystem.setClosedLoopPosition(Positions.ReleaseBar)).withName("ReleaseBar"));
         SmartDashboard.putData("Climber/Cmd/Extend", new InstantCommand(() -> Subsystems.climberSubsystem.setClosedLoopPosition(Positions.Extended)).withName("Extend"));
-        SmartDashboard.putData("Climber/Cmd/Reach", new InstantCommand(() -> Subsystems.climberSubsystem.setClosedLoopPosition(Positions.Reach)).withName("Reach"));
+        SmartDashboard.putData("Climber/Cmd/Reach", new InstantCommand(() -> Subsystems.climberSubsystem.setClosedLoopPosition(Positions.ShortPull)).withName("Hang to swing"));
 
         new Button(gamepad::getAButton)
                 .whenPressed(() -> Subsystems.climberSubsystem.setClosedLoopPosition(Positions.Retracted));
@@ -181,7 +181,7 @@ public class RobotContainer {
         new Button(gamepad::getBButton)
                 .whenPressed(() -> Subsystems.climberSubsystem.setClosedLoopPosition(Positions.ReleaseBar));
         new Button(gamepad::getXButton)
-                .whenPressed(() -> Subsystems.climberSubsystem.setClosedLoopPosition(Positions.Reach));
+                .whenPressed(() -> Subsystems.climberSubsystem.setClosedLoopPosition(Positions.ShortPull));
 
     }
 
