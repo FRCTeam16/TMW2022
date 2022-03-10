@@ -64,6 +64,8 @@ public class FiveBallStragety extends SequentialCommandGroup {
         CommandGroupBase.parallel(
             new InstantCommand(Subsystems.feederSubsystem::pull),
             new WaitCommand(2.5)), // FIXME Adjust me with the wait
+
+        // Stop shooting and pickup ball
         CommandGroupBase.parallel(
             new InstantCommand(Subsystems.feederSubsystem::dontPull), // FIXME would rather queue
             new InstantCommand(Subsystems.intakeSubsystem::enable),

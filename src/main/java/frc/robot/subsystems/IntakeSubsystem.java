@@ -13,6 +13,7 @@ import frc.robot.Constants;
 public class IntakeSubsystem extends SubsystemBase implements Lifecycle {
 
   private boolean enabled = false;
+  private boolean reversed = false;
 
   private final CANSparkMax intakeMotor = new CANSparkMax(Constants.INTAKE_MOTOR_ID, MotorType.kBrushless);
   private final double DEFAULT_INTAKE_SPEED = -.7;
@@ -39,6 +40,14 @@ public class IntakeSubsystem extends SubsystemBase implements Lifecycle {
     this.enabled = false;
   }
 
+  public void reverse() {
+    this.reversed = true;
+  }
+
+  public void forward() {
+    this.reversed = false;
+  }
+
   public void DropIntake() {
     intakeLift.set(Value.kForward);
   }
@@ -52,6 +61,9 @@ public class IntakeSubsystem extends SubsystemBase implements Lifecycle {
     double intakeSpeed = 0.0;
     if (enabled) {
       intakeSpeed = SmartDashboard.getNumber(INTAKE_SPEED_KEY, DEFAULT_INTAKE_SPEED);
+      if(reversed) {
+        intakeSpeed = -intakeSpeed;
+      }
     }
     intakeMotor.set(intakeSpeed);
   }

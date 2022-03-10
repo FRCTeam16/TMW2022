@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Subsystems;
 
 public class LEDSubsystem extends SubsystemBase {
-    private boolean running = true;
+    private boolean running = false;
     private Timer timer = new Timer();
     private SerialPort serial;
 
