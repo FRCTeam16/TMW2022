@@ -116,6 +116,10 @@ public class LEDSubsystem extends SubsystemBase {
 
         currentPhase = DMSPhase.RunDriveMotors;
     }
+
+    public boolean isStopped() {
+        return currentPhase == DMSPhase.Stopped;
+    }
     
     public void stopDMS() {
         currentPhase = DMSPhase.Stopped;

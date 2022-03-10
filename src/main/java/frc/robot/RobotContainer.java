@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.button.Button;
 import frc.robot.auto.AutoManager;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.DetectBallColorCommand;
+import frc.robot.commands.RunDMSCommand;
 import frc.robot.commands.prefs.SaveWheelOffsets;
 import frc.robot.commands.prefs.ZeroWheelOffsets;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -213,6 +214,8 @@ public class RobotContainer {
     }
 
     private void configureVisionButtonBindings() {
+        new Button(() -> leftJoy.getRawButton(16)).whenPressed(Subsystems.turretSubsystem::enableVisionTracking);
+        new Button(() -> leftJoy.getRawButton(15)).whenPressed(Subsystems.turretSubsystem::disableVisionTracking);
     }
 
     private void configureWheelOffsetButtonBindings() {
@@ -222,7 +225,7 @@ public class RobotContainer {
 
     private void configureDMSButtonBindings() {
         new Button(() -> leftJoy.getRawButton(14))
-            .whenPressed(Subsystems.ledSubsystem::startDMS)
+            .whenPressed(new RunDMSCommand())
             .whenReleased(Subsystems.ledSubsystem::stopDMS);
     }
 

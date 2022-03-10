@@ -83,6 +83,11 @@ public class TurretSubsystem extends SubsystemBase {
     openLoopSpeed = 0.0;
   }
 
+  public void disableVisionTracking() {
+    runState = RunState.OpenLoop;
+    openLoopSpeed = 0.0;
+  }
+
   public boolean hasVisionTarget() {
     var visionInfo = Subsystems.visionSubsystem.getVisionInfo();
     return (visionInfo.hasTarget && visionpPID.atSetpoint());
