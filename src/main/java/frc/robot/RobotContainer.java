@@ -230,6 +230,8 @@ public class RobotContainer {
         
         SmartDashboard.putData("DMS/Start", new RunDMSCommand().withName("Run DMS"));
         SmartDashboard.putData("DMS/Stop", new InstantCommand(() -> Subsystems.ledSubsystem.stopDMS()).withName("Stop DMS"));
+
+        SmartDashboard.putData("DMS/Disable All", new InstantCommand(() -> Subsystems.ledSubsystem.stopSubsystem()).withName("Disable LED/DMS Subsystem"));
     }
 
     // private void configureDebugButtonBindings() {

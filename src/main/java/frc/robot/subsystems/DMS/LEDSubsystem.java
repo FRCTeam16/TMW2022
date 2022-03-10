@@ -105,6 +105,10 @@ public class LEDSubsystem extends SubsystemBase {
         timer.reset();
     }
 
+    public void stopSubsystem() {
+        running = false;
+    }
+
     public void startDMS() {
         timer.reset();
         timer.start();
