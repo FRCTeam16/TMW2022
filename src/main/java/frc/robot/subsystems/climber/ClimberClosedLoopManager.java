@@ -30,6 +30,10 @@ public class ClimberClosedLoopManager {
         this.m_pidController = climberMotor.getPIDController();
         this.m_encoder = climberMotor.getEncoder();
 
+        m_pidController.setP(kP);
+        m_pidController.setI(kI);
+        m_pidController.setD(kD);
+
         if (configMode) {
           SmartDashboard.putNumber("Climber/Closed/P Gain", kP);
           SmartDashboard.putNumber("Climber/Closed/I Gain", kI);
@@ -84,7 +88,7 @@ public class ClimberClosedLoopManager {
             kMaxOutput = max;
           }
         }
-
+        m_pidController.setP(kP);
         var profile = new TrapezoidProfile(contraints, goal, setpoint);
         setpoint = profile.calculate(0.2);  // look one scan ahead
 
