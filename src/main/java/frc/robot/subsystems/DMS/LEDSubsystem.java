@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Subsystems;
 
 public class LEDSubsystem extends SubsystemBase {
-    private boolean running = false;
+    private boolean running = true;
     private Timer timer = new Timer();
     private SerialPort serial;
 
@@ -86,15 +86,15 @@ public class LEDSubsystem extends SubsystemBase {
         buffer[2] = driveStatus.FR.byteValue();
         buffer[3] = driveStatus.RL.byteValue();
         buffer[4] = driveStatus.RR.byteValue();
-        buffer[5] = steerStatus.FL.byteValue();;
-        buffer[6] = steerStatus.FL.byteValue();;
-        buffer[7] = steerStatus.FL.byteValue();;
-        buffer[8] = steerStatus.FL.byteValue();;
+        buffer[5] = steerStatus.FL.byteValue();
+        buffer[6] = steerStatus.FL.byteValue();
+        buffer[7] = steerStatus.FL.byteValue();
+        buffer[8] = steerStatus.FL.byteValue();
         buffer[9] = (byte) robotState;
         buffer[10] = (byte) allianceColor;
         buffer[11] = (byte) (Subsystems.shooterSubsystem.atMinimumSpeed() ? 1 : 0); // Subsystems.shooterSubsystem.targetRPM; //need to add a shooter up to speed
                                // dms for derrick
-        buffer[12] = (byte) 0;
+        buffer[12] = (byte) (Subsystems.turretSubsystem.hasVisionTarget() ? 1 : 0);
         buffer[13] = (byte) 0;
         buffer[14] = (byte) 255;
 
@@ -166,6 +166,7 @@ public class LEDSubsystem extends SubsystemBase {
                 DMSStats.print("[Drive Status]", driveStatus);
             } else {
                 currentPhase = DMSPhase.RunSteerMotors;
+                timer.reset();
             }
         }
     }

@@ -17,7 +17,7 @@ public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
   private boolean queuingEnabled = true;
 
   private final CANSparkMax feederMotor = new CANSparkMax(Constants.SHOOTERFEEDER_MOTOR_ID, MotorType.kBrushless);
-  private final double DEFAULT_FEEDER_SPEED = -.4;
+  private final double DEFAULT_FEEDER_SPEED = -1;
   private static final String FEEDER_SPEED_KEY = "Feeder Speed";
 
   public ShooterFeederSubsystem() {

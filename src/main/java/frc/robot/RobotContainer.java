@@ -224,9 +224,12 @@ public class RobotContainer {
     }
 
     private void configureDMSButtonBindings() {
-        new Button(() -> leftJoy.getRawButton(14))
-            .whenPressed(new RunDMSCommand())
-            .whenReleased(Subsystems.ledSubsystem::stopDMS);
+        // new Button(() -> leftJoy.getRawButton(14))
+        //     .whenPressed(new RunDMSCommand())
+        //     .whenReleased(Subsystems.ledSubsystem::stopDMS);
+        
+        SmartDashboard.putData("DMS/Start", new RunDMSCommand().withName("Run DMS"));
+        SmartDashboard.putData("DMS/Stop", new InstantCommand(() -> Subsystems.ledSubsystem.stopDMS()).withName("Stop DMS"));
     }
 
     // private void configureDebugButtonBindings() {

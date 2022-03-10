@@ -45,6 +45,7 @@ public class Subsystems {
 
         lifecycleSubsystems.add(shooterSubsystem);
         lifecycleSubsystems.add(feederSubsystem);
+        lifecycleSubsystems.add(turretSubsystem);
     }
 
     public static Subsystems getInstance() {

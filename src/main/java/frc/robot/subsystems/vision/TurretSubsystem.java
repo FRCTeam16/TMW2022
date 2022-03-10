@@ -11,9 +11,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Subsystems;
+import frc.robot.subsystems.Lifecycle;
 import frc.robot.subsystems.vision.VisionSubsystem.VisionInfo;
 
-public class TurretSubsystem extends SubsystemBase {
+public class TurretSubsystem extends SubsystemBase implements Lifecycle{
   private final CANSparkMax turretMotor = new CANSparkMax(Constants.TURRET_MOTOR_ID, MotorType.kBrushless);
   private final double DEFAULT_TURRET_SPEED = -0.2;
   private final double VISION_THRESHOLD = 1.0;
@@ -66,6 +67,11 @@ public class TurretSubsystem extends SubsystemBase {
     turretMotor.setSoftLimit(SoftLimitDirection.kReverse, -SOFT_LIMIT);
     turretMotor.setSoftLimit(SoftLimitDirection.kForward, SOFT_LIMIT);
     enableSoftLimits();
+  }
+
+  @Override
+  public void teleopInit() {
+    this.runState = RunState.Vision;
   }
 
   public void enableSoftLimits() {

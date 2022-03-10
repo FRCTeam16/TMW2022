@@ -31,7 +31,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
 
   public enum Positions {
-    Retracted(0.0), ReleaseBar(23.0), Extended(120.0), ShortPull(80);
+    Retracted(0.0), ReleaseBar(23.0), Extended(120.0), ShortPull(60);
 
     private final double value;
     private Positions(double value) {
