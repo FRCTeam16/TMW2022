@@ -64,6 +64,11 @@ public class TurretSubsystem extends SubsystemBase implements Lifecycle{
     SmartDashboard.setDefaultNumber("Turret/Position/I", position_kI);
     SmartDashboard.setDefaultNumber("Turret/Position/D", position_kD);
 
+    var positionPID = turretMotor.getPIDController();
+    positionPID.setP(position_kP);
+    positionPID.setI(position_kI);
+    positionPID.setD(position_kD);
+
     turretMotor.setSoftLimit(SoftLimitDirection.kReverse, -SOFT_LIMIT);
     turretMotor.setSoftLimit(SoftLimitDirection.kForward, SOFT_LIMIT);
     enableSoftLimits();
@@ -115,7 +120,8 @@ public class TurretSubsystem extends SubsystemBase implements Lifecycle{
   }
 
   public void zeroEncoder() {
-    this.turretMotor.getEncoder().setPosition(0.0);
+    var response = this.turretMotor.getEncoder().setPosition(0.0);
+    System.out.println("===> Zero Turret Response: " + response.name());
   }
 
   public double getEncoderPosition() {
@@ -133,6 +139,10 @@ public class TurretSubsystem extends SubsystemBase implements Lifecycle{
   public void setTurretPosition(double positionValue) {
     runState = RunState.ClosedLoop;
     this.targetPosition = positionValue;
+  }
+
+  public void centerTurret() {
+    setTurretPosition(TurretPositions.Center);
   }
 
   @Override

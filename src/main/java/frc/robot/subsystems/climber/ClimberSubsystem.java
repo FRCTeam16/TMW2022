@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Subsystems;
 
 public class ClimberSubsystem extends SubsystemBase {
 
@@ -110,6 +111,8 @@ public class ClimberSubsystem extends SubsystemBase {
         break;
       case Extended:
         target = SmartDashboard.getNumber("Climber/Closed/Position/Extended", position.value);
+        Subsystems.turretSubsystem.disableVisionTracking();
+        // FIXME: test Subsystems.turretSubsystem.centerTurret();
         break;
       case ShortPull:
         target = SmartDashboard.getNumber("Climber/Closed/Position/ShortPull", position.value);
@@ -156,7 +159,8 @@ public class ClimberSubsystem extends SubsystemBase {
   }
 
   public void zeroClimberEncoder() {
-    climberMotor.getEncoder().setPosition(0);
+    var response = climberMotor.getEncoder().setPosition(0);
+    System.out.println("===> Zero Climber Response: " + response.name());
   }
 
   @Override

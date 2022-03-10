@@ -39,7 +39,7 @@ public class AbstractTwoBallStrategy extends SequentialCommandGroup {
             new InstantCommand(() -> Subsystems.drivetrainSubsystem.setGyroOffset(robotAngle))), // FIXME need to find out the
                                                                                           // angle to the ball from the
                                                                                           // starting position
-        new InstantCommand(() -> Subsystems.shooterSubsystem.setProfile(ShooterProfile.Short)),
+        new InstantCommand(() -> Subsystems.shooterSubsystem.setProfile(ShooterProfile.TarmacEdge)),
         new InstantCommand(Subsystems.feederSubsystem::dontPull),
         new InstantCommand(Subsystems.shooterSubsystem::enable),
         new InstantCommand(Subsystems.intakeSubsystem::DropIntake));
@@ -66,15 +66,8 @@ public class AbstractTwoBallStrategy extends SequentialCommandGroup {
 
   private Command pickupFirstBall() {
     return CommandGroupBase.sequence(
-        new TrackVisionTargetWithTurretCommand().withTimeout(3.0),
-        //new ProfiledDistanceDriveCommand(-115, 0, 0, -0.1).withTimeout(1.0),
-        new WaitCommand(0.5), // wait for RPM speedup?
-        // new TurnToAngleCommand(-115,
-        // Subsystems.drivetrainSubsystem).withTimeout(0.5),
-        CommandGroupBase.parallel(
-            // new ProfiledDistanceDriveCommand(-115, 0, 0, 0).withTimeout(0.5),
-            new InstantCommand(Subsystems.feederSubsystem::pull),
-            new WaitCommand(2.5)),
+        new TrackVisionTargetWithTurretCommand().withTimeout(1.0),
+        new WaitCommand(1.0), // wait for RPM speedup?
         CommandGroupBase.parallel(
             new InstantCommand(Subsystems.feederSubsystem::dontPull), // FIXME would rather queue
             new InstantCommand(Subsystems.intakeSubsystem::enable),

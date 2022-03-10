@@ -16,6 +16,7 @@ import frc.robot.auto.AutoManager;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.DetectBallColorCommand;
 import frc.robot.commands.RunDMSCommand;
+import frc.robot.commands.RunWithDisabledInstantCommand;
 import frc.robot.commands.prefs.SaveWheelOffsets;
 import frc.robot.commands.prefs.ZeroWheelOffsets;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -159,7 +160,7 @@ public class RobotContainer {
 
     private void configureClimberButtonBindings() {
 
-        SmartDashboard.putData("Zero Climber Encoder", new InstantCommand(Subsystems.climberSubsystem::zeroClimberEncoder).withName("Zero Climber Encoder"));
+        SmartDashboard.putData("Zero Climber Encoder", new RunWithDisabledInstantCommand(Subsystems.climberSubsystem::zeroClimberEncoder).withName("Zero Climber Encoder"));
 
         SmartDashboard.putData("Climber/Cmd/Enable Soft Limits", new InstantCommand(Subsystems.climberSubsystem::enableSoftLimits).withName("Enable Limits"));
         SmartDashboard.putData("Climber/Cmd/Disable Soft Limits", new InstantCommand(Subsystems.climberSubsystem::disableSoftLimits).withName("Disable Limits"));
@@ -209,8 +210,9 @@ public class RobotContainer {
             Subsystems.turretSubsystem.openStop();
         }).withName("Enable Vision Tracking"));
 
-        SmartDashboard.putData("Turret/Zero Turret", new InstantCommand(Subsystems.turretSubsystem::zeroEncoder)
+        SmartDashboard.putData("Turret/Zero Turret", new RunWithDisabledInstantCommand(Subsystems.turretSubsystem::zeroEncoder)
         .withName("Zero Turret"));
+        SmartDashboard.putData("Turret/Center Turret", new InstantCommand(Subsystems.turretSubsystem::centerTurret).withName("Center Turret"));;
 
         SmartDashboard.putData("Turret/Cmd/Enable Soft Limits", new InstantCommand(Subsystems.turretSubsystem::enableSoftLimits).withName("Enable Limits"));
         SmartDashboard.putData("Turret/Cmd/Disable Soft Limits", new InstantCommand(Subsystems.turretSubsystem::disableSoftLimits).withName("Disable Limits"));

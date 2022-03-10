@@ -26,7 +26,7 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
   private final Solenoid shooterHood = new Solenoid(PneumaticsModuleType.REVPH, 3);
 
   public enum ShooterProfile {
-    Short(1560), Long(2055), LowGoal(800), Dynamic(0);
+    Short(1560), Long(2055), LowGoal(800), TarmacEdge(1625), Dynamic(0);
 
     private double value;
 
@@ -51,6 +51,7 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
     SmartDashboard.setDefaultNumber("Shooter/Profile/Short", ShooterProfile.Short.value);
     SmartDashboard.setDefaultNumber("Shooter/Profile/Long", ShooterProfile.Long.value);
     SmartDashboard.setDefaultNumber("Shooter/Profile/LowGoal", ShooterProfile.LowGoal.value);
+    SmartDashboard.setDefaultNumber("Shooter/Profile/TarmacEdge", ShooterProfile.TarmacEdge.value)
 
     kP = 0.00028;
     kI = 0;
@@ -141,6 +142,10 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
         break;
       case LowGoal:
         rpm = SmartDashboard.getNumber("Shooter/Profile/LowGoal", ShooterProfile.LowGoal.value);
+        shooterHood.set(true);
+        break;
+      case TarmacEdge:
+        rpm = SmartDashboard.getNumber("Shooter/Profile/TarmacEdge", ShooterProfile.LowGoal.value);
         shooterHood.set(true);
         break;
     }
