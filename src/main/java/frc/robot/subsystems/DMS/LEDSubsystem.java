@@ -12,6 +12,9 @@ import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Subsystems;
+import frc.robot.subsystems.ShooterFeederSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 
 public class LEDSubsystem extends SubsystemBase {
   private boolean running = false;
@@ -83,7 +86,7 @@ public class LEDSubsystem extends SubsystemBase {
     buffer[8] = (byte) 0;
     buffer[9] = (byte) robotState;
     buffer[10] = (byte) allianceColor;
-    buffer[11] = (byte) 0;
+    buffer[11] = (byte) 0; //Subsystems.shooterSubsystem.targetRPM; //need to add a shooter up to speed dms for derrick
     buffer[12] = (byte) 0;
     buffer[13] = (byte) 0;
     buffer[14] = (byte) 255;

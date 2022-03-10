@@ -63,6 +63,7 @@ public class RightWallAuto extends SequentialCommandGroup {
   private Command shootLoad() {
     return CommandGroupBase.sequence(
         new ProfiledDistanceDriveCommand(160, .3, -1, 1),
+        new InstantCommand(() -> Subsystems.shooterSubsystem.setProfile(ShooterProfile.Short)),
         new InstantCommand(Subsystems.feederSubsystem::pull)); // maybe don't pull if the wrong direction
   }
 }

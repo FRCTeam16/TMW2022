@@ -3,12 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
-
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 //import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import frc.robot.subsystems.DrivetrainSubsystem;
 

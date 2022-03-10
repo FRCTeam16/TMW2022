@@ -6,6 +6,8 @@ package frc.robot.auto.strategies;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
+import java.time.Instant;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -64,7 +66,7 @@ public class FiveBallStragety extends SequentialCommandGroup {
         CommandGroupBase.parallel(
           new ProfiledDistanceDriveCommand(-115, 0, 0, 0).withTimeout(0.5),
           new InstantCommand(Subsystems.feederSubsystem::pull),
-          new WaitCommand(2.5)),
+          new WaitCommand(2.5)),  //FIXME Adjust me with the wait
         CommandGroupBase.parallel(
             new InstantCommand(Subsystems.feederSubsystem::dontPull), // FIXME would rather queue
             new InstantCommand(Subsystems.intakeSubsystem::enable),
@@ -86,6 +88,7 @@ public class FiveBallStragety extends SequentialCommandGroup {
 
   private Command shootFirstLoad() {
     return CommandGroupBase.sequence(
+       new InstantCommand(Subsystems.turretSubsystem::enableVisionTracking),
         new ProfiledDistanceDriveCommand(0, .5, -1.1, 1.55),
         new InstantCommand(Subsystems.feederSubsystem::pull));
   }
@@ -101,6 +104,7 @@ public class FiveBallStragety extends SequentialCommandGroup {
 
   private Command shootSecondLoad() {
     return CommandGroupBase.sequence(
+      new InstantCommand(() -> Subsystems.shooterSubsystem.setProfile(ShooterProfile.Short)),
         new InstantCommand(Subsystems.feederSubsystem::pull));
   }
 
