@@ -33,12 +33,13 @@ public class FiveBallStragety extends SequentialCommandGroup {
 
     addCommands(
         initialState(),
-        pickupFirstBall(),
+        shootFirstBallWithVisionThenPickup(),
+        //pickupFirstBall(),
         // shootFirstLoad(),
         pickupSecondBall(),
-        pickupThirdBall()
         // shootSecondLoad(),
-        // finishAuto());
+        pickupThirdBall(),
+        finishAuto()
         );
   }
 
@@ -52,8 +53,23 @@ public class FiveBallStragety extends SequentialCommandGroup {
         new InstantCommand(()-> Subsystems.shooterSubsystem.setProfile(ShooterProfile.Short)),
         new InstantCommand(Subsystems.feederSubsystem::dontPull),
         new InstantCommand(Subsystems.shooterSubsystem::enable),
-        new InstantCommand(Subsystems.intakeSubsystem::DropIntake)
+        new InstantCommand(Subsystems.intakeSubsystem::DropIntake),
+        new InstantCommand(Subsystems.turretSubsystem::enableVisionTracking)
         );
+  }
+
+  private Command shootFirstBallWithVisionThenPickup() {
+    return CommandGroupBase.sequence(
+        new WaitCommand(0.5), // wait for RPM speedup and vision?
+        CommandGroupBase.parallel(
+            new InstantCommand(Subsystems.feederSubsystem::pull),
+            new WaitCommand(2.5)), // FIXME Adjust me with the wait
+        CommandGroupBase.parallel(
+            new InstantCommand(Subsystems.feederSubsystem::dontPull), // FIXME would rather queue
+            new InstantCommand(Subsystems.intakeSubsystem::enable),
+            new ProfiledDistanceDriveCommand(-90, 0.3, 0, -1.20).withThreshold(0.03).withTimeout(2.0)),
+        new ProfiledDistanceDriveCommand(-90, 0, 0, 0).withTimeout(0.5),
+        new InstantCommand(() -> System.out.println("****** after pickup first *****"))); // should be 1.06
   }
 
   // the first ball is a straight backup from the starting position, 1.06 meters
@@ -82,17 +98,13 @@ public class FiveBallStragety extends SequentialCommandGroup {
     return CommandGroupBase.sequence(
       new InstantCommand(() -> System.out.println("****** pickupSecondBall *****")),
       new ProfiledDistanceDriveCommand(141, 0.5, -3.05, 0.6),  // -2.54, 1.76
-      new WaitCommand(2.0)
+      // new WaitCommand(2.0)
+      CommandGroupBase.parallel(
+            new InstantCommand(Subsystems.feederSubsystem::pull),
+            new WaitCommand(2.5)), // FIXME Adjust me with the wait
+      new InstantCommand(Subsystems.feederSubsystem::dontPull)
     );
   }
-
-  private Command shootFirstLoad() {
-    return CommandGroupBase.sequence(
-       new InstantCommand(Subsystems.turretSubsystem::enableVisionTracking),
-        new ProfiledDistanceDriveCommand(0, .5, -1.1, 1.55),
-        new InstantCommand(Subsystems.feederSubsystem::pull));
-  }
-
 
   // hypotenuce to the tarmac ball is 4.2 meters
   private Command pickupThirdBall() {
@@ -100,6 +112,13 @@ public class FiveBallStragety extends SequentialCommandGroup {
       new InstantCommand(() -> Subsystems.shooterSubsystem.setProfile(ShooterProfile.Long)),
       // new ProfiledDistanceDriveCommand(-170, 0.5, -4.2, -0.3));   // 0.5, -4.2, -0.3
       new ProfiledDistanceDriveCommand(-170, 1.9, -4.2, -0.3));   // 0.5, -4.2, -0.3
+  }
+
+  private Command shootFirstLoad() {
+    return CommandGroupBase.sequence(
+       new InstantCommand(Subsystems.turretSubsystem::enableVisionTracking),
+        new ProfiledDistanceDriveCommand(0, .5, -1.1, 1.55),
+        new InstantCommand(Subsystems.feederSubsystem::pull));
   }
 
   private Command shootSecondLoad() {

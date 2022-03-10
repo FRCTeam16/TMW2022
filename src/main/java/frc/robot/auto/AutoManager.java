@@ -46,10 +46,6 @@ public class AutoManager {
     public Command getSelectedCommand() {
         Command selected = null;
 
-        // TODO: eventually move to eager creation during disabled init of strategies
-        // for potential performance
-        // instantiating here allows easier re-runs during dev
-
         if (strategyLookup.containsKey(chooser.getSelected())) {
             selected = strategyLookup.get(chooser.getSelected());
         } else {

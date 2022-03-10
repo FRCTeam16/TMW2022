@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.SwerveModule;
@@ -20,11 +22,16 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.subsystems.DMS.DriveInfo;
 import frc.robot.subsystems.gyro.BSGyro;
 import frc.robot.subsystems.gyro.PigeonGyro;
 import frc.robot.util.BSPrefs;
+import frc.robot.util.SDSwerveModuleUtil;
 
 import static frc.robot.Constants.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DrivetrainSubsystem extends SubsystemBase {
     /**
@@ -91,6 +98,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final SwerveModule m_backLeftModule;
     private final SwerveModule m_backRightModule;
 
+    private final DMSHelper dmsHelper;
+
     private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
     private SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(m_kinematics, this.getGyroscopeRotation());
     private final Field2d m_field = new Field2d();
@@ -156,6 +165,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 BACK_RIGHT_MODULE_STEER_OFFSET);
                 // -Math.toRadians(offsets.getDouble("RROFF", 0.0)));
 
+        this.dmsHelper = new DMSHelper();
         storeContantsInNT();
     }
 
@@ -263,6 +273,38 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     public void setGyroOffset(double offsetAngleDegrees) {
         m_gyro.setGyroOffset(offsetAngleDegrees);
+    }
+
+    public void DMSDrive(double speed) {
+        dmsHelper.driveMotors.FL.set(ControlMode.PercentOutput, speed);
+        dmsHelper.driveMotors.FR.set(ControlMode.PercentOutput, speed);
+        dmsHelper.driveMotors.RL.set(ControlMode.PercentOutput, speed);
+        dmsHelper.driveMotors.RR.set(ControlMode.PercentOutput, speed);
+    }
+
+    public void DMSSteer(double speed) {
+        dmsHelper.steerMotors.FL.set(ControlMode.PercentOutput, speed);
+        dmsHelper.steerMotors.FR.set(ControlMode.PercentOutput, speed);
+        dmsHelper.steerMotors.RL.set(ControlMode.PercentOutput, speed);
+        dmsHelper.steerMotors.RR.set(ControlMode.PercentOutput, speed);
+    }
+
+    class DMSHelper {
+        DriveInfo<TalonFX> driveMotors = new DriveInfo<TalonFX>(null);
+        DriveInfo<TalonFX> steerMotors = new DriveInfo<TalonFX>(null);
+
+        
+        DMSHelper() {
+            driveMotors.FL = SDSwerveModuleUtil.getDriveMotor(m_frontLeftModule);
+            driveMotors.FR = SDSwerveModuleUtil.getDriveMotor(m_frontRightModule);
+            driveMotors.RL = SDSwerveModuleUtil.getDriveMotor(m_backLeftModule);
+            driveMotors.RR = SDSwerveModuleUtil.getDriveMotor(m_backRightModule);
+
+            steerMotors.FL = SDSwerveModuleUtil.getSteerMotor(m_frontLeftModule);
+            steerMotors.FR = SDSwerveModuleUtil.getSteerMotor(m_frontRightModule);
+            steerMotors.RL = SDSwerveModuleUtil.getDriveMotor(m_backLeftModule);
+            steerMotors.RR = SDSwerveModuleUtil.getSteerMotor(m_backRightModule);
+        }
     }
 
 }

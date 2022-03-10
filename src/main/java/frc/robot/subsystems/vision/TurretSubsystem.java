@@ -131,9 +131,7 @@ public class TurretSubsystem extends SubsystemBase {
     if (runState == RunState.ClosedLoop) {
       positionPIDPeriodic();
     } else {
-      //
       // Open Loop Approaches
-      // 
       double speed = 0.0;
       if (runState == RunState.OpenLoop) {
         speed = openLoopSpeed;
@@ -145,7 +143,10 @@ public class TurretSubsystem extends SubsystemBase {
     } 
   }
 
-  // TODO: Manual p-gain calculation
+  /**
+   * Basic p-gain correction
+   * @return
+   */
   private double simpleVisionPeriodic() {
     double threshold = SmartDashboard.getNumber("Turret/Vision/Threshold", VISION_THRESHOLD);
     double speed = SmartDashboard.getNumber("Turret/Open/DefaultSpeed", DEFAULT_TURRET_SPEED);
@@ -161,6 +162,9 @@ public class TurretSubsystem extends SubsystemBase {
     return speed;
   }
 
+  /**
+   * Bug in here somewhere, turret was only moving one direction
+   */
   private double visionPIDPeriodic() {
     double maxSpeed = SmartDashboard.getNumber("Turret/Open/DefaultSpeed", DEFAULT_TURRET_SPEED);
     double p = SmartDashboard.getNumber("Turret/Vision/P", vision_kP);
