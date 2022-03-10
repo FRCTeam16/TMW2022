@@ -142,6 +142,7 @@ public class ClimberSubsystem extends SubsystemBase {
   
 
   public void displayTelemetry() {
+    SmartDashboard.putString("Climber/RunState", runState.name());
     SmartDashboard.putNumber("Climber/Climber Encoder", climberMotor.getEncoder().getPosition());
     // SmartDashboard.putString("Climber/Climber Step", climberStep.name());
     // SmartDashboard.putString("Climber/Current Bar", currentBar.name());

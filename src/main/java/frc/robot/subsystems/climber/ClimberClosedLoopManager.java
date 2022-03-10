@@ -16,25 +16,29 @@ public class ClimberClosedLoopManager {
     private double kD = 0;
     private double kIz = 0;
     private double kFF = 0;
-    private double kMaxOutput = 0;
-    private double kMinOutput = 0;
+    private double kMaxOutput = 1;
+    private double kMinOutput = -1;
 
     private TrapezoidProfile.Constraints contraints = new TrapezoidProfile.Constraints(10, 5);
     private TrapezoidProfile.State goal = new TrapezoidProfile.State();
     private TrapezoidProfile.State setpoint = new TrapezoidProfile.State();
+
+    private boolean configMode = false;
 
 
     public ClimberClosedLoopManager(CANSparkMax climberMotor) {
         this.m_pidController = climberMotor.getPIDController();
         this.m_encoder = climberMotor.getEncoder();
 
-        SmartDashboard.putNumber("Climber/Closed/P Gain", kP);
-        SmartDashboard.putNumber("Climber/Closed/I Gain", kI);
-        SmartDashboard.putNumber("Climber/Closed/D Gain", kD);
-        SmartDashboard.putNumber("Climber/Closed/I Zone", kIz);
-        SmartDashboard.putNumber("Climber/Closed/Feed Forward", kFF);
-        SmartDashboard.putNumber("Climber/Closed/Max Output", kMaxOutput);
-        SmartDashboard.putNumber("Climber/Closed/Min Output", kMinOutput);
+        if (configMode) {
+          SmartDashboard.putNumber("Climber/Closed/P Gain", kP);
+          SmartDashboard.putNumber("Climber/Closed/I Gain", kI);
+          SmartDashboard.putNumber("Climber/Closed/D Gain", kD);
+          SmartDashboard.putNumber("Climber/Closed/I Zone", kIz);
+          SmartDashboard.putNumber("Climber/Closed/Feed Forward", kFF);
+          SmartDashboard.putNumber("Climber/Closed/Max Output", kMaxOutput);
+          SmartDashboard.putNumber("Climber/Closed/Min Output", kMinOutput);
+        }
     }
 
 
@@ -45,6 +49,7 @@ public class ClimberClosedLoopManager {
     }
 
     public void run() {
+      if (configMode) {
         double p = SmartDashboard.getNumber("Climber/Closed/P Gain", 0);
         double i = SmartDashboard.getNumber("Climber/Closed/I Gain", 0);
         double d = SmartDashboard.getNumber("Climber/Closed/D Gain", 0);
@@ -78,6 +83,7 @@ public class ClimberClosedLoopManager {
             kMinOutput = min;
             kMaxOutput = max;
           }
+        }
 
         var profile = new TrapezoidProfile(contraints, goal, setpoint);
         setpoint = profile.calculate(0.2);  // look one scan ahead
