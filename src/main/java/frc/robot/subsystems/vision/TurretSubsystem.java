@@ -39,7 +39,7 @@ public class TurretSubsystem extends SubsystemBase {
   private double vision_kI = 0.0;
   private double vision_kD = 0.0;
 
-  private double position_kP = 0.0;
+  private double position_kP = 0.00166;
   private double position_kI = 0.0;
   private double position_kD = 0.0;
   private double targetPosition = 0.0;
