@@ -18,6 +18,7 @@ public class TurretSubsystem extends SubsystemBase {
   private final double DEFAULT_TURRET_SPEED = -0.2;
   private final double VISION_THRESHOLD = 1.0;
   private final PIDController visionpPID;
+  private final float SOFT_LIMIT = 10.61f;
 
   enum RunState {
     OpenLoop, ClosedLoop, Vision
@@ -62,8 +63,8 @@ public class TurretSubsystem extends SubsystemBase {
     SmartDashboard.setDefaultNumber("Turret/Position/I", position_kI);
     SmartDashboard.setDefaultNumber("Turret/Position/D", position_kD);
 
-    turretMotor.setSoftLimit(SoftLimitDirection.kReverse, -10.61f);
-    turretMotor.setSoftLimit(SoftLimitDirection.kForward, 10.61f);
+    turretMotor.setSoftLimit(SoftLimitDirection.kReverse, -SOFT_LIMIT);
+    turretMotor.setSoftLimit(SoftLimitDirection.kForward, SOFT_LIMIT);
     enableSoftLimits();
   }
 

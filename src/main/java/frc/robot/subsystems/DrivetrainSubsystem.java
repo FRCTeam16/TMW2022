@@ -289,6 +289,38 @@ public class DrivetrainSubsystem extends SubsystemBase {
         dmsHelper.steerMotors.RR.set(ControlMode.PercentOutput, speed);
     }
 
+    public DriveInfo<Double> getDriveOutputCurrent() {
+        return new DriveInfo<Double>(
+            dmsHelper.driveMotors.FL.getStatorCurrent(),
+            dmsHelper.driveMotors.FR.getStatorCurrent(),
+            dmsHelper.driveMotors.RL.getStatorCurrent(),
+            dmsHelper.driveMotors.RR.getStatorCurrent());
+    }
+
+    public DriveInfo<Double> getDriveVelocity() {
+        return new DriveInfo<Double>(
+            dmsHelper.driveMotors.FL.getSelectedSensorVelocity(),
+            dmsHelper.driveMotors.FR.getSelectedSensorVelocity(),
+            dmsHelper.driveMotors.RL.getSelectedSensorVelocity(),
+            dmsHelper.driveMotors.RR.getSelectedSensorVelocity());
+    }
+
+    public DriveInfo<Double> getSteerOutputCurrent() {
+        return new DriveInfo<Double>(
+            dmsHelper.steerMotors.FL.getStatorCurrent(),
+            dmsHelper.steerMotors.FR.getStatorCurrent(),
+            dmsHelper.steerMotors.RL.getStatorCurrent(),
+            dmsHelper.steerMotors.RR.getStatorCurrent());
+    }
+
+    public DriveInfo<Double> getSteerVelocity() {
+        return new DriveInfo<Double>(
+            dmsHelper.steerMotors.FL.getSelectedSensorVelocity(),
+            dmsHelper.steerMotors.FR.getSelectedSensorVelocity(),
+            dmsHelper.steerMotors.RL.getSelectedSensorVelocity(),
+            dmsHelper.steerMotors.RR.getSelectedSensorVelocity());
+    }
+
     class DMSHelper {
         DriveInfo<TalonFX> driveMotors = new DriveInfo<TalonFX>(null);
         DriveInfo<TalonFX> steerMotors = new DriveInfo<TalonFX>(null);

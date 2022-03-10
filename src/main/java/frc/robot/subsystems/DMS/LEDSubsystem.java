@@ -4,16 +4,12 @@
 
 package frc.robot.subsystems.DMS;
 
-import java.util.logging.Logger;
-
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Subsystems;
-import frc.robot.subsystems.ShooterFeederSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
 
 public class LEDSubsystem extends SubsystemBase {
     private boolean running = false;
@@ -23,8 +19,11 @@ public class LEDSubsystem extends SubsystemBase {
     private enum DMSPhase {
         Stopped, RunDriveMotors, RunSteerMotors
     }
-
     private DMSPhase currentPhase = DMSPhase.Stopped;
+    private DMSStats driveDmsStatus = new DMSStats();
+    private DMSStats steerDmsStatus = new DMSStats();
+    private DriveInfo<Integer> driveStatus = new DriveInfo<Integer>(0);
+    private DriveInfo<Integer> steerStatus = new DriveInfo<Integer>(0);
 
     private static final double INITIAL_IGNORE_TIME = 1.0;
     private static final double MOTOR_TEST_TIME = 4.0;
@@ -83,17 +82,17 @@ public class LEDSubsystem extends SubsystemBase {
         byte[] buffer = new byte[15];
 
         buffer[0] = (byte) 254;
-        buffer[1] = (byte) 0;
-        buffer[2] = (byte) 0;
-        buffer[3] = (byte) 0;
-        buffer[4] = (byte) 0;
-        buffer[5] = (byte) 0;
-        buffer[6] = (byte) 0;
-        buffer[7] = (byte) 0;
-        buffer[8] = (byte) 0;
+        buffer[1] = driveStatus.FL.byteValue();
+        buffer[2] = driveStatus.FR.byteValue();
+        buffer[3] = driveStatus.RL.byteValue();
+        buffer[4] = driveStatus.RR.byteValue();
+        buffer[5] = steerStatus.FL.byteValue();;
+        buffer[6] = steerStatus.FL.byteValue();;
+        buffer[7] = steerStatus.FL.byteValue();;
+        buffer[8] = steerStatus.FL.byteValue();;
         buffer[9] = (byte) robotState;
         buffer[10] = (byte) allianceColor;
-        buffer[11] = (byte) 0; // Subsystems.shooterSubsystem.targetRPM; //need to add a shooter up to speed
+        buffer[11] = (byte) (Subsystems.shooterSubsystem.atMinimumSpeed() ? 1 : 0); // Subsystems.shooterSubsystem.targetRPM; //need to add a shooter up to speed
                                // dms for derrick
         buffer[12] = (byte) 0;
         buffer[13] = (byte) 0;
@@ -109,6 +108,20 @@ public class LEDSubsystem extends SubsystemBase {
     public void startDMS() {
         timer.reset();
         timer.start();
+        driveDmsStatus = new DMSStats();
+        steerDmsStatus = new DMSStats();
+
+        driveStatus = new DriveInfo<Integer>(0);
+        steerStatus = new DriveInfo<Integer>(0);
+
+        currentPhase = DMSPhase.RunDriveMotors;
+    }
+    
+    public void stopDMS() {
+        currentPhase = DMSPhase.Stopped;
+        
+        driveStatus = new DriveInfo<Integer>(0);
+        steerStatus = new DriveInfo<Integer>(0);
     }
 
     @Override
@@ -121,6 +134,7 @@ public class LEDSubsystem extends SubsystemBase {
                     runMotorTest();
                     break;
                 case RunSteerMotors:
+                    runSteerTest();
                     break;
             }
             ;
@@ -128,9 +142,53 @@ public class LEDSubsystem extends SubsystemBase {
     }
 
     private void runMotorTest() {
-        if (timer.get() < MOTOR_TEST_TIME) {
+        final double now = timer.get();
+        if (now < MOTOR_TEST_TIME) {
             Subsystems.drivetrainSubsystem.DMSDrive(1.0);
             Subsystems.drivetrainSubsystem.DMSSteer(0.0);
+
+            if (now > INITIAL_IGNORE_TIME) {
+                driveDmsStatus.addDriveCurrent(Subsystems.drivetrainSubsystem.getDriveOutputCurrent());
+                driveDmsStatus.addDriveVelocity(Subsystems.drivetrainSubsystem.getDriveVelocity());
+
+                DMSStats.print("(DVel)", driveDmsStatus.velocity);
+                DMSStats.print("(DAmp)", driveDmsStatus.current);
+
+                double velAvg = DMSStats.average(driveDmsStatus.velocity);
+                double ampAvg = DMSStats.average(driveDmsStatus.current);
+                System.out.println("Vel Avg: " + velAvg + " | Amp Avg: " + ampAvg);
+                
+                driveStatus = driveDmsStatus.calculateStatus();
+                DMSStats.print("[Drive Status]", driveStatus);
+            } else {
+                currentPhase = DMSPhase.RunSteerMotors;
+            }
         }
     }
+
+    private void runSteerTest() {
+        final double now = timer.get();
+        if (now < MOTOR_TEST_TIME) {
+            Subsystems.drivetrainSubsystem.DMSDrive(0.0);
+            Subsystems.drivetrainSubsystem.DMSSteer(1.0);
+
+            if (now > INITIAL_IGNORE_TIME) {
+                steerDmsStatus.addDriveCurrent(Subsystems.drivetrainSubsystem.getSteerOutputCurrent());
+                steerDmsStatus.addDriveVelocity(Subsystems.drivetrainSubsystem.getSteerVelocity());
+
+                DMSStats.print("(SVel)", steerDmsStatus.velocity);
+                DMSStats.print("(SAmp)", steerDmsStatus.current);
+
+                double velAvg = DMSStats.average(steerDmsStatus.velocity);
+                double ampAvg = DMSStats.average(steerDmsStatus.current);
+                System.out.println("Vel Avg: " + velAvg + " | Amp Avg: " + ampAvg);
+                
+                steerStatus = steerDmsStatus.calculateStatus();
+                DMSStats.print("[Steer Status]", driveStatus);
+            } else {
+                currentPhase = DMSPhase.Stopped;
+            }
+        }
+    }
+
 }

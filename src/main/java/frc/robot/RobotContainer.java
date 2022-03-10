@@ -114,6 +114,7 @@ public class RobotContainer {
         configureTurretButtonBindings();
         configureVisionButtonBindings();
         configureWheelOffsetButtonBindings();
+        configureDMSButtonBindings();
     }
 
     private void configureIntakeButtonBindings() {
@@ -217,6 +218,12 @@ public class RobotContainer {
     private void configureWheelOffsetButtonBindings() {
         SmartDashboard.putData("Offset/ZeroWheelOffsets", new ZeroWheelOffsets());
         SmartDashboard.putData("Offset/SaveWheelOffsets", new SaveWheelOffsets());
+    }
+
+    private void configureDMSButtonBindings() {
+        new Button(() -> leftJoy.getRawButton(14))
+            .whenPressed(Subsystems.ledSubsystem::startDMS)
+            .whenReleased(Subsystems.ledSubsystem::stopDMS);
     }
 
     // private void configureDebugButtonBindings() {

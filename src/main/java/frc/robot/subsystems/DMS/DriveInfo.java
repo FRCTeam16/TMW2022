@@ -18,6 +18,13 @@ public DriveInfo(T value){
     RR = value;
     }
 
+    public DriveInfo(T fl, T fr, T rl, T rr){
+        FL = fl;
+        FR = fr;
+        RL = rl;
+        RR = rr;
+        }
+
 }
 
 
