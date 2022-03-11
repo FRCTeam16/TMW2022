@@ -57,7 +57,11 @@ public class LEDSubsystem extends SubsystemBase {
             // TODO: probably set bool preventing running
         }
     }
+    
 
+    /**
+     * Called out of band by a scheduled periodic in main robot
+     */
     public void Report() {
         SmartDashboard.putBoolean("DMS/Running", running);
         SmartDashboard.putBoolean("DMS/HasSerial", (serial != null));

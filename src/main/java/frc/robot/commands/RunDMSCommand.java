@@ -13,7 +13,13 @@ public class RunDMSCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    Subsystems.drivetrainSubsystem.setDmsMode(true);
     Subsystems.ledSubsystem.startDMS();
+  }
+
+  @Override
+  public void end(boolean interrupted) {
+    Subsystems.drivetrainSubsystem.setDmsMode(false);
   }
 
   // Returns true when the command should end.

@@ -99,6 +99,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final SwerveModule m_backRightModule;
 
     private final DMSHelper dmsHelper;
+    private boolean dmsMode = false;
 
     private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
     private SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(m_kinematics, this.getGyroscopeRotation());
@@ -189,6 +190,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
         return this.m_kinematics;
     }
 
+    public void setDmsMode(boolean mode) {
+        this.dmsMode = mode;
+    }
+
     /**
      * Sets the gyroscope angle to zero. This can be used to set the direction the
      * robot is currently facing to the
@@ -211,8 +216,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
-        setSwerveModuleStates(states);
+        if (!dmsMode) {
+            SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
+            setSwerveModuleStates(states);
+        }
     }
 
     public void setSwerveModuleStates(SwerveModuleState[] states) {
