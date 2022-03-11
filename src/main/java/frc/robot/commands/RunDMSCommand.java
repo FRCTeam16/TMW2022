@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Subsystems;
 
@@ -18,6 +19,7 @@ public class RunDMSCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return Subsystems.ledSubsystem.isStopped();
+    System.out.println("DMS isFinished");
+    return Subsystems.ledSubsystem.isStopped() || DriverStation.isDisabled();
   }
 }

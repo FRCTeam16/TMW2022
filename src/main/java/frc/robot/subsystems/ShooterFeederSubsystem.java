@@ -35,10 +35,14 @@ public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
     queuingEnabled = false;
   }
 
-  public void pull() {
-    if (Subsystems.shooterSubsystem.atMinimumSpeed()) {
+  public void pull(boolean override) {
+    if (override || Subsystems.shooterSubsystem.atMinimumSpeed()) {
       this.shooting = true;
     }
+  }
+
+  public void pull() {
+    this.pull(false);
   }
 
   public void dontPull() {

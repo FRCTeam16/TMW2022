@@ -132,7 +132,7 @@ public class RobotContainer {
 
     private void configureShooterButtonBindings() {
         new Button(rightJoy::getTrigger)
-                .whenPressed(m_feederSubsystem::pull)
+                .whenPressed(() -> m_feederSubsystem.pull())
                 .whenReleased(m_feederSubsystem::dontPull);
 
         new Button(() -> rightJoy.getPOV() == 90)

@@ -6,13 +6,14 @@ package frc.robot.subsystems.DMS;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Subsystems;
 
 public class LEDSubsystem extends SubsystemBase {
-    private boolean running = false;
+    private boolean running = true;
     private Timer timer = new Timer();
     private SerialPort serial;
 
@@ -50,7 +51,7 @@ public class LEDSubsystem extends SubsystemBase {
         // }
 
         try {
-            serial = new SerialPort(115200, SerialPort.Port.kUSB1);
+            serial = new SerialPort(57600, SerialPort.Port.kUSB1);
         } catch (Exception e) {
             System.err.println("Unable to create DMS/LED subsystem, problem with serial port: " + e.getMessage());
             // TODO: probably set bool preventing running
@@ -58,6 +59,8 @@ public class LEDSubsystem extends SubsystemBase {
     }
 
     public void Report() {
+        SmartDashboard.putBoolean("DMS/Running", running);
+        SmartDashboard.putBoolean("DMS/HasSerial", (serial != null));
         if (running && serial != null) {
             SendData(new DriveInfo<Double>(0.0), new DriveInfo<Double>(0.0));
         }
@@ -99,6 +102,7 @@ public class LEDSubsystem extends SubsystemBase {
         buffer[14] = (byte) 255;
 
         this.serial.write(buffer, buffer.length);
+        this.serial.flush();
     }
 
     public void begin() {
@@ -130,6 +134,7 @@ public class LEDSubsystem extends SubsystemBase {
     }
     
     public void stopDMS() {
+        System.out.println("Stopping DMS");
         currentPhase = DMSPhase.Stopped;
         
         driveStatus = new DriveInfo<Integer>(0);
@@ -140,6 +145,7 @@ public class LEDSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         if (running) {
+            // System.out.println("Running DMS: " + currentPhase + " | " + timer.get());
             switch (currentPhase) {
                 case Stopped:
                     break;
@@ -177,10 +183,10 @@ public class LEDSubsystem extends SubsystemBase {
                 
                 driveStatus = driveDmsStatus.calculateStatus();
                 DMSStats.print("[Drive Status]", driveStatus);
-            } else {
-                currentPhase = DMSPhase.RunSteerMotors;
-                timer.reset();
             }
+        } else {
+            currentPhase = DMSPhase.RunSteerMotors;
+            timer.reset();
         }
     }
 
@@ -203,10 +209,10 @@ public class LEDSubsystem extends SubsystemBase {
                 
                 steerStatus = steerDmsStatus.calculateStatus();
                 DMSStats.print("[Steer Status]", driveStatus);
-            } else {
-                currentPhase = DMSPhase.DisplayResults;
-                timer.reset();
-            }
+            } 
+        } else {
+            currentPhase = DMSPhase.DisplayResults;
+            timer.reset();
         }
     }
 

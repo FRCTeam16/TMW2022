@@ -11,6 +11,7 @@ import java.time.Instant;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -34,11 +35,9 @@ public class FiveBallStragety extends SequentialCommandGroup {
 
     addCommands(
         initialState(),
-        shootFirstBallWithVisionThenPickup(),
-        //pickupFirstBall(),
-        // shootFirstLoad(),
+        pickupFirstBall(),
+        shootLoad(),
         pickupSecondBall(),
-        // shootSecondLoad(),
         pickupThirdBall(),
         finishAuto()
         );
@@ -46,56 +45,35 @@ public class FiveBallStragety extends SequentialCommandGroup {
 
   private Command initialState() {
     return CommandGroupBase.parallel(
-        // new InstantCommand(Subsystems.drivetrainSubsystem.set)
-        new InstantCommand(() -> Subsystems.drivetrainSubsystem.resetOdometry(new Pose2d(0, 0, new Rotation2d()))),
-        // new ZeroAndSetOffsetCommand(-90)
-        new InstantCommand(Subsystems.drivetrainSubsystem::zeroGyroscope).andThen(
-        new InstantCommand(() -> Subsystems.drivetrainSubsystem.setGyroOffset(-90))),
-        new InstantCommand(()-> Subsystems.shooterSubsystem.setProfile(ShooterProfile.TarmacEdge)),
-        new InstantCommand(Subsystems.feederSubsystem::dontPull),
-        new InstantCommand(Subsystems.shooterSubsystem::enable),
-        new InstantCommand(Subsystems.intakeSubsystem::DropIntake),
-        new InstantCommand(Subsystems.turretSubsystem::enableVisionTracking)
-        );
+      new InstantCommand(() -> Subsystems.drivetrainSubsystem.resetOdometry(new Pose2d(0, 0, new Rotation2d()))),
+      new InstantCommand(Subsystems.drivetrainSubsystem::zeroGyroscope).andThen(
+          new InstantCommand(() -> Subsystems.drivetrainSubsystem.setGyroOffset(-90))), // FIXME need to find out the
+                                                                                        // angle to the ball from the
+                                                                                        // starting position
+      new InstantCommand(() -> Subsystems.shooterSubsystem.setProfile(ShooterProfile.TarmacEdge)),
+      new InstantCommand(Subsystems.feederSubsystem::dontPull),
+      new InstantCommand(Subsystems.shooterSubsystem::enable),
+      new InstantCommand(Subsystems.intakeSubsystem::DropIntake));
   }
 
-  private Command shootFirstBallWithVisionThenPickup() {
+  private Command pickupFirstBall() {
     return CommandGroupBase.sequence(
-        new WaitCommand(0.5), // wait for RPM speedup and vision?
-
-        // Shoot first ball
-        // CommandGroupBase.parallel(
-        //     new InstantCommand(Subsystems.feederSubsystem::pull),
-        //     new WaitCommand(2.5)), // FIXME Adjust me with the wait
-
-        // Stop shooting and pickup ball
+        new WaitCommand(0.5), // wait for RPM speedup?
         CommandGroupBase.parallel(
             new InstantCommand(Subsystems.feederSubsystem::dontPull), // FIXME would rather queue
             new InstantCommand(Subsystems.intakeSubsystem::enable),
             new ProfiledDistanceDriveCommand(-90, 0.3, 0, -1.20).withThreshold(0.03).withTimeout(2.0)),
-        
         new ProfiledDistanceDriveCommand(-90, 0, 0, 0).withTimeout(0.5),
         new InstantCommand(() -> System.out.println("****** after pickup first *****"))); // should be 1.06
   }
 
-  // the first ball is a straight backup from the starting position, 1.06 meters
-  // form the outer tarmac line
-  private Command pickupFirstBall() {
+  private Command shootLoad() {
     return CommandGroupBase.sequence(
-        new ProfiledDistanceDriveCommand(-115, 0, 0, -0.1).withTimeout(1.0),
-        new WaitCommand(0.5), // wait for RPM speedup?
-        //  new TurnToAngleCommand(-115, Subsystems.drivetrainSubsystem).withTimeout(0.5),
-        CommandGroupBase.parallel(
-          new ProfiledDistanceDriveCommand(-115, 0, 0, 0).withTimeout(0.5),
-          new InstantCommand(Subsystems.feederSubsystem::pull),
-          new WaitCommand(2.5)),  //FIXME Adjust me with the wait
-        CommandGroupBase.parallel(
-            new InstantCommand(Subsystems.feederSubsystem::dontPull), // FIXME would rather queue
-            new InstantCommand(Subsystems.intakeSubsystem::enable),
-            new ProfiledDistanceDriveCommand(-90, 0.3, 0, -1.20).withThreshold(0.03).withTimeout(2.0)),
-          new ProfiledDistanceDriveCommand(-115, 0, 0, 0).withTimeout(0.5),
-          new InstantCommand(() -> System.out.println("****** after pickup first *****"))); // should be 1.06
+        new TrackVisionTargetWithTurretCommand().withTimeout(1.0),
+        new InstantCommand(() -> Subsystems.feederSubsystem.pull(true))); // maybe don't pull if the wrong direction
   }
+
+  
   
   // hypotenuce to the second ball is 3.09 meters from the first cargo location
   // can't do this one until we run to see positioning on the robot after
@@ -103,13 +81,18 @@ public class FiveBallStragety extends SequentialCommandGroup {
   private Command pickupSecondBall() {
     return CommandGroupBase.sequence(
       new InstantCommand(() -> System.out.println("****** pickupSecondBall *****")),
+      new InstantCommand(Subsystems.feederSubsystem::dontPull),
       new ProfiledDistanceDriveCommand(141, 0.5, -3.05, 0.6),  // -2.54, 1.76
-      new ProfiledDistanceDriveCommand(-170, 1, 0, -0.1),
+      new WaitCommand(0.25),
+
+      // Turn to third ball
+      new ProfiledDistanceDriveCommand(-170, 1, 0, -0.1).withTimeout(0.5),
       new TrackVisionTargetWithTurretCommand().withTimeout(1.0),
+      new ProfiledDistanceDriveCommand(-170, 0.1, 0, -0.1).withTimeout(0.25),
 
       // Shoot balls
       CommandGroupBase.parallel(
-            new InstantCommand(Subsystems.feederSubsystem::pull),
+            new InstantCommand(() -> Subsystems.feederSubsystem.pull(true)),
             new WaitCommand(1.5)), // FIXME Adjust me with the wait
       
       new InstantCommand(Subsystems.feederSubsystem::dontPull)
@@ -124,20 +107,7 @@ public class FiveBallStragety extends SequentialCommandGroup {
       new ProfiledDistanceDriveCommand(-170, 1.9, -4.2, -0.3));   // 0.5, -4.2, -0.3
   }
 
-  private Command shootFirstLoad() {
-    return CommandGroupBase.sequence(
-       new InstantCommand(Subsystems.turretSubsystem::enableVisionTracking),
-        new ProfiledDistanceDriveCommand(0, .5, -1.1, 1.55),
-        new InstantCommand(Subsystems.feederSubsystem::pull));
-  }
-
-  private Command shootSecondLoad() {
-    return CommandGroupBase.sequence(
-      new InstantCommand(() -> Subsystems.shooterSubsystem.setProfile(ShooterProfile.Short)),
-        new InstantCommand(Subsystems.feederSubsystem::pull));
-  }
-
-  /*
+   /*
    * finishAuto() is so we can have the robot sit at the tarmac for the human
    * player to feed a ball to if we want it to until auto is complete
    */
@@ -145,6 +115,40 @@ public class FiveBallStragety extends SequentialCommandGroup {
     return CommandGroupBase.sequence(
         CommandGroupBase.parallel(
             new InstantCommand(Subsystems.intakeSubsystem::enable),
-            new InstantCommand(Subsystems.feederSubsystem::pull)));
+            new InstantCommand(() -> Subsystems.feederSubsystem.pull(true))));
   }
+
+    // the first ball is a straight backup from the starting position, 1.06 meters
+  // form the outer tarmac line
+  private Command XXXpickupFirstBall() {
+    return CommandGroupBase.sequence(
+        new ProfiledDistanceDriveCommand(-115, 0, 0, -0.1).withTimeout(1.0),
+        new WaitCommand(0.5), // wait for RPM speedup?
+        //  new TurnToAngleCommand(-115, Subsystems.drivetrainSubsystem).withTimeout(0.5),
+        CommandGroupBase.parallel(
+          new ProfiledDistanceDriveCommand(-115, 0, 0, -0.1).withTimeout(0.5),
+          new InstantCommand(() -> Subsystems.feederSubsystem.pull(true)),
+          new WaitCommand(2.5)),  //FIXME Adjust me with the wait
+        CommandGroupBase.parallel(
+            new InstantCommand(Subsystems.feederSubsystem::dontPull), // FIXME would rather queue
+            new InstantCommand(Subsystems.intakeSubsystem::enable),
+            new ProfiledDistanceDriveCommand(-90, 0.3, 0, -1.20).withThreshold(0.03).withTimeout(2.0)),
+          new ProfiledDistanceDriveCommand(-115, 0, 0, 0).withTimeout(0.5),
+          new InstantCommand(() -> System.out.println("****** after pickup first *****"))); // should be 1.06
+  }
+
+  private Command XXXshootFirstLoad() {
+    return CommandGroupBase.sequence(
+       new InstantCommand(Subsystems.turretSubsystem::enableVisionTracking),
+        new ProfiledDistanceDriveCommand(0, .5, -1.1, 1.55),
+        new InstantCommand(Subsystems.feederSubsystem::pull));
+  }
+
+  private Command XXXshootSecondLoad() {
+    return CommandGroupBase.sequence(
+      new InstantCommand(() -> Subsystems.shooterSubsystem.setProfile(ShooterProfile.Short)),
+        new InstantCommand(Subsystems.feederSubsystem::pull));
+  }
+
+ 
 }
