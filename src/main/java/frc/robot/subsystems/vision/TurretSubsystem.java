@@ -47,6 +47,9 @@ public class TurretSubsystem extends SubsystemBase implements Lifecycle{
   private double position_kD = 0.0;
   private double targetPosition = 0.0;
 
+  /** How many units left/right the turret can be and be considered zeroed for climbing */
+  private final double TURRET_ZERO_THRESHOLD = 1;
+
   public TurretSubsystem() {
     turretMotor.restoreFactoryDefaults();
     turretMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
@@ -69,6 +72,7 @@ public class TurretSubsystem extends SubsystemBase implements Lifecycle{
     positionPID.setP(position_kP);
     positionPID.setI(position_kI);
     positionPID.setD(position_kD);
+    positionPID.setOutputRange(-0.4, 0.4);
 
     turretMotor.setSoftLimit(SoftLimitDirection.kReverse, -SOFT_LIMIT);
     turretMotor.setSoftLimit(SoftLimitDirection.kForward, SOFT_LIMIT);
@@ -148,10 +152,17 @@ public class TurretSubsystem extends SubsystemBase implements Lifecycle{
     setTurretPosition(TurretPositions.Center);
   }
 
+  public boolean atZero() {
+    var position = this.turretMotor.getEncoder().getPosition();
+    System.out.println("Turret position: " + position);
+    return Math.abs(position) < TURRET_ZERO_THRESHOLD;
+  }
+
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Turret/EncPosition", turretMotor.getEncoder().getPosition());
     SmartDashboard.putString("Turret/RunState", runState.name());
+    SmartDashboard.putBoolean("Turret/AtZero", this.atZero());
     
     if (runState == RunState.ClosedLoop) {
       positionPIDPeriodic();
@@ -243,6 +254,7 @@ public class TurretSubsystem extends SubsystemBase implements Lifecycle{
       position_kD = d;
       positionPID.setD(position_kD);
     }
+
 
     positionPID.setReference(targetPosition, ControlType.kPosition);
    

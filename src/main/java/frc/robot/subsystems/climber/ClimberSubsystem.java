@@ -101,6 +101,13 @@ public class ClimberSubsystem extends SubsystemBase {
   }
 
   public void setClosedLoopPosition(Positions position) {
+    Subsystems.turretSubsystem.disableVisionTracking();
+    Subsystems.turretSubsystem.centerTurret();
+
+    if (!Subsystems.turretSubsystem.atZero()) {
+      System.out.println("!!! TURRET IS NOT CENTERED !!!");
+    }
+
     double target = 0.0;
     switch (position) {
       case Retracted:
@@ -111,8 +118,6 @@ public class ClimberSubsystem extends SubsystemBase {
         break;
       case Extended:
         target = SmartDashboard.getNumber("Climber/Closed/Position/Extended", position.value);
-        Subsystems.turretSubsystem.disableVisionTracking();
-        Subsystems.turretSubsystem.centerTurret();
         break;
       case ShortPull:
         target = SmartDashboard.getNumber("Climber/Closed/Position/ShortPull", position.value);
