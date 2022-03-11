@@ -71,7 +71,7 @@ public class FiveBallStragety extends SequentialCommandGroup {
     return CommandGroupBase.sequence(
         new TrackVisionTargetWithTurretCommand().withTimeout(1.0),
         new InstantCommand(() -> Subsystems.feederSubsystem.pull(true)),
-        new WaitCommand(1.5)); // maybe don't pull if the wrong direction
+        new WaitCommand(2.5)); // maybe don't pull if the wrong direction
   }
 
   
@@ -84,7 +84,7 @@ public class FiveBallStragety extends SequentialCommandGroup {
       new InstantCommand(() -> System.out.println("****** pickupSecondBall *****")),
       new InstantCommand(Subsystems.feederSubsystem::dontPull),
       new ProfiledDistanceDriveCommand(141, 0.5, -3.05, 0.6),  // -2.54, 1.76
-      new InstantCommand(() -> Subsystems.shooterSubsystem.setProfile(ShooterProfile.Long)),
+      new InstantCommand(() -> Subsystems.shooterSubsystem.setProfile(ShooterProfile.AutoCenterEdge)),
       new WaitCommand(0.5),
 
       // Turn to third ball
