@@ -84,7 +84,8 @@ public class FiveBallStragety extends SequentialCommandGroup {
       new InstantCommand(() -> System.out.println("****** pickupSecondBall *****")),
       new InstantCommand(Subsystems.feederSubsystem::dontPull),
       new ProfiledDistanceDriveCommand(141, 0.5, -3.05, 0.6),  // -2.54, 1.76
-      new WaitCommand(0.25),
+      new InstantCommand(() -> Subsystems.shooterSubsystem.setProfile(ShooterProfile.Long)),
+      new WaitCommand(0.5),
 
       // Turn to third ball
       new ProfiledDistanceDriveCommand(-170, 1, 0, -0.1).withTimeout(0.5),
@@ -103,9 +104,9 @@ public class FiveBallStragety extends SequentialCommandGroup {
   // hypotenuce to the tarmac ball is 4.2 meters
   private Command pickupThirdBall() {
     return CommandGroupBase.sequence(
-      new InstantCommand(() -> Subsystems.shooterSubsystem.setProfile(ShooterProfile.Long)),
+      new InstantCommand(() -> Subsystems.shooterSubsystem.setProfile(ShooterProfile.Downtown)),
       // new ProfiledDistanceDriveCommand(-170, 0.5, -4.2, -0.3));   // 0.5, -4.2, -0.3
-      new ProfiledDistanceDriveCommand(-170, 1.9, -4.2, -0.15));   // 0.5, -4.2, -0.3
+      new ProfiledDistanceDriveCommand(-170, 1.9, -4.2, -0.05));   // 0.5, -4.2, -0.3
   }
 
    /*

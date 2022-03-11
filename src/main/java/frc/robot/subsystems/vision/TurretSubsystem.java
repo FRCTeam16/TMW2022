@@ -154,7 +154,6 @@ public class TurretSubsystem extends SubsystemBase implements Lifecycle{
 
   public boolean atZero() {
     var position = this.turretMotor.getEncoder().getPosition();
-    System.out.println("Turret position: " + position);
     return Math.abs(position) < TURRET_ZERO_THRESHOLD;
   }
 
