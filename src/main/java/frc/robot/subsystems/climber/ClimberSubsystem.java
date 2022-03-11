@@ -17,8 +17,8 @@ import frc.robot.Subsystems;
 public class ClimberSubsystem extends SubsystemBase {
 
  
-  private final CANSparkMax followerMotor = new CANSparkMax(Constants.RIGHTCLIMBER_MOTOR_ID, MotorType.kBrushless);
-  private final CANSparkMax climberMotor  = new CANSparkMax(Constants.LEFTCLIMBER_MOTOR_ID, MotorType.kBrushless);
+  private final CANSparkMax climberMotor = new CANSparkMax(Constants.RIGHTCLIMBER_MOTOR_ID, MotorType.kBrushless);
+  private final CANSparkMax followerMotor  = new CANSparkMax(Constants.LEFTCLIMBER_MOTOR_ID, MotorType.kBrushless);
   private final DoubleSolenoid climberSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 1, 5);
   private final DoubleSolenoid climberSolenoid2 = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 4);
 
@@ -32,7 +32,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
 
   public enum Positions {
-    Retracted(0.0), ReleaseBar(23.0), Extended(118.0), ShortPull(60);
+    Retracted(0.0), ReleaseBar(-23.0), Extended(-118.0), ShortPull(-60);
 
     private final double value;
     private Positions(double value) {
@@ -68,8 +68,8 @@ public class ClimberSubsystem extends SubsystemBase {
     SmartDashboard.putData("Climber Closd Loop", new InstantCommand(() -> runState = RunState.ClosedLoop).withName("Climber Closed"));
 
     // Open Loop Speed Defaults
-    SmartDashboard.putNumber("Climber/OpenLoop/Extend Speed", 0.35);
-    SmartDashboard.putNumber("Climber/OpenLoop/Pull Speed", -0.2);
+    SmartDashboard.putNumber("Climber/OpenLoop/Extend Speed", -0.35);
+    SmartDashboard.putNumber("Climber/OpenLoop/Pull Speed", 0.2);
   }
 
   public void enableSoftLimits() {
@@ -86,9 +86,9 @@ public class ClimberSubsystem extends SubsystemBase {
   public void setOpenLoopSpeed(double value) {
     // We could use the actual value and clamp it, etc.
     if (value > 0.1) {
-      value = SmartDashboard.getNumber("Climber/OpenLoop/Extend Speed", 0.35);
+      value = SmartDashboard.getNumber("Climber/OpenLoop/Extend Speed", -0.35);
     } else if (value < -0.1) {
-      value = SmartDashboard.getNumber("Climber/OpenLoop/Pull Speed", -0.2);
+      value = SmartDashboard.getNumber("Climber/OpenLoop/Pull Speed", 0.2);
     } else {
       value = 0;
     }
@@ -112,7 +112,7 @@ public class ClimberSubsystem extends SubsystemBase {
       case Extended:
         target = SmartDashboard.getNumber("Climber/Closed/Position/Extended", position.value);
         Subsystems.turretSubsystem.disableVisionTracking();
-        // FIXME: test Subsystems.turretSubsystem.centerTurret();
+        Subsystems.turretSubsystem.centerTurret();
         break;
       case ShortPull:
         target = SmartDashboard.getNumber("Climber/Closed/Position/ShortPull", position.value);
@@ -159,6 +159,8 @@ public class ClimberSubsystem extends SubsystemBase {
   }
 
   public void zeroClimberEncoder() {
+    this.runState = RunState.OpenLoop;
+    this.openLoopValue = 0.0;
     var response = climberMotor.getEncoder().setPosition(0);
     System.out.println("===> Zero Climber Response: " + response.name());
   }

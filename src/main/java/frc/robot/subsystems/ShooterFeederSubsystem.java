@@ -14,7 +14,7 @@ import frc.robot.sensor.RapidReactColorMatcher.MatchedColor;
 
 public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
   private boolean shooting = false;
-  private boolean queuingEnabled = true;
+  private boolean queuingEnabled = false;
 
   private final CANSparkMax feederMotor = new CANSparkMax(Constants.SHOOTERFEEDER_MOTOR_ID, MotorType.kBrushless);
   private final double DEFAULT_FEEDER_SPEED = -1;
@@ -32,6 +32,7 @@ public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
 
   @Override
   public void autoInit() {
+    queuingEnabled = false;
   }
 
   public void pull() {

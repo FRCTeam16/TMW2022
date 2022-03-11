@@ -66,8 +66,7 @@ public class AbstractTwoBallStrategy extends SequentialCommandGroup {
 
   private Command pickupFirstBall() {
     return CommandGroupBase.sequence(
-        new TrackVisionTargetWithTurretCommand().withTimeout(1.0),
-        new WaitCommand(1.0), // wait for RPM speedup?
+        new WaitCommand(0.5), // wait for RPM speedup?
         CommandGroupBase.parallel(
             new InstantCommand(Subsystems.feederSubsystem::dontPull), // FIXME would rather queue
             new InstantCommand(Subsystems.intakeSubsystem::enable),
@@ -78,7 +77,7 @@ public class AbstractTwoBallStrategy extends SequentialCommandGroup {
 
   private Command shootLoad() {
     return CommandGroupBase.sequence(
-        // new ProfiledDistanceDriveCommand(160, .3, -1, 1),
+        new TrackVisionTargetWithTurretCommand().withTimeout(1.0),
         new InstantCommand(Subsystems.feederSubsystem::pull)); // maybe don't pull if the wrong direction
   }
 }

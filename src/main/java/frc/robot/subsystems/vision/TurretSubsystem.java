@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Subsystems;
 import frc.robot.subsystems.Lifecycle;
+import frc.robot.subsystems.vision.Limelight.LEDMode;
 import frc.robot.subsystems.vision.VisionSubsystem.VisionInfo;
 
 public class TurretSubsystem extends SubsystemBase implements Lifecycle{
@@ -19,7 +20,7 @@ public class TurretSubsystem extends SubsystemBase implements Lifecycle{
   private final double DEFAULT_TURRET_SPEED = -0.2;
   private final double VISION_THRESHOLD = 1.0;
   private final PIDController visionpPID;
-  private final float SOFT_LIMIT = 10.61f;
+  private final float SOFT_LIMIT = 19.61f;
 
   enum RunState {
     OpenLoop, ClosedLoop, Vision
@@ -41,7 +42,7 @@ public class TurretSubsystem extends SubsystemBase implements Lifecycle{
   private double vision_kI = 0.0;
   private double vision_kD = 0.0;
 
-  private double position_kP = 0.00166;
+  private double position_kP = 0.15;
   private double position_kI = 0.0;
   private double position_kD = 0.0;
   private double targetPosition = 0.0;
@@ -92,9 +93,11 @@ public class TurretSubsystem extends SubsystemBase implements Lifecycle{
   public void enableVisionTracking() {
     runState = RunState.Vision;
     openLoopSpeed = 0.0;
+    Subsystems.visionSubsystem.getLimelight().setLEDMode(LEDMode.CurrentPipeline);
   }
 
   public void disableVisionTracking() {
+    Subsystems.visionSubsystem.getLimelight().setLEDMode(LEDMode.ForceOff);
     runState = RunState.OpenLoop;
     openLoopSpeed = 0.0;
   }

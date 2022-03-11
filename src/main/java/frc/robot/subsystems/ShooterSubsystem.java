@@ -51,7 +51,7 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
     SmartDashboard.setDefaultNumber("Shooter/Profile/Short", ShooterProfile.Short.value);
     SmartDashboard.setDefaultNumber("Shooter/Profile/Long", ShooterProfile.Long.value);
     SmartDashboard.setDefaultNumber("Shooter/Profile/LowGoal", ShooterProfile.LowGoal.value);
-    SmartDashboard.setDefaultNumber("Shooter/Profile/TarmacEdge", ShooterProfile.TarmacEdge.value)
+    SmartDashboard.setDefaultNumber("Shooter/Profile/TarmacEdge", ShooterProfile.TarmacEdge.value);
 
     kP = 0.00028;
     kI = 0;
@@ -145,7 +145,7 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
         shooterHood.set(true);
         break;
       case TarmacEdge:
-        rpm = SmartDashboard.getNumber("Shooter/Profile/TarmacEdge", ShooterProfile.LowGoal.value);
+        rpm = SmartDashboard.getNumber("Shooter/Profile/TarmacEdge", ShooterProfile.TarmacEdge.value);
         shooterHood.set(true);
         break;
     }

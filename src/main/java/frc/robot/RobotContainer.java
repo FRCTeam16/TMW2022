@@ -55,7 +55,7 @@ public class RobotContainer {
     private final Joystick rightJoy = new Joystick(1);
 
     private final static double minPressure = 110;
-    private final static double maxPressure = 120;
+    private final static double maxPressure = 118;
 
     private final PneumaticHub pneuHub = new PneumaticHub();
 
