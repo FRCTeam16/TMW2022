@@ -53,6 +53,7 @@ public class FiveBallStragety extends SequentialCommandGroup {
       new InstantCommand(() -> Subsystems.shooterSubsystem.setProfile(ShooterProfile.TarmacEdge)),
       new InstantCommand(Subsystems.feederSubsystem::dontPull),
       new InstantCommand(Subsystems.shooterSubsystem::enable),
+      new InstantCommand(Subsystems.turretSubsystem::enableVisionTracking),
       new InstantCommand(Subsystems.intakeSubsystem::DropIntake));
   }
 
