@@ -70,7 +70,8 @@ public class FiveBallStragety extends SequentialCommandGroup {
   private Command shootLoad() {
     return CommandGroupBase.sequence(
         new TrackVisionTargetWithTurretCommand().withTimeout(1.0),
-        new InstantCommand(() -> Subsystems.feederSubsystem.pull(true))); // maybe don't pull if the wrong direction
+        new InstantCommand(() -> Subsystems.feederSubsystem.pull(true)),
+        new WaitCommand(1.5)); // maybe don't pull if the wrong direction
   }
 
   
