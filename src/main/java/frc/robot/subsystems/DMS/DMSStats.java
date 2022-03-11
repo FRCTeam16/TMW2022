@@ -10,16 +10,16 @@ public class DMSStats {
 
     public void addDriveCurrent(DriveInfo<Double> driveOutputCurrent) {
         current.FL = (current.FL + Math.abs(driveOutputCurrent.FL)) / 2.0;
-        current.FR = (current.FL + Math.abs(driveOutputCurrent.FR)) / 2.0;
-        current.FL = (current.RL + Math.abs(driveOutputCurrent.RL)) / 2.0;
-        current.FL = (current.RR + Math.abs(driveOutputCurrent.RR)) / 2.0;
+        current.FR = (current.FR + Math.abs(driveOutputCurrent.FR)) / 2.0;
+        current.RL = (current.RL + Math.abs(driveOutputCurrent.RL)) / 2.0;
+        current.RR = (current.RR + Math.abs(driveOutputCurrent.RR)) / 2.0;
     }
 
     public void addDriveVelocity(DriveInfo<Double> driveVelocity) {
         velocity.FL = (velocity.FL + Math.abs(driveVelocity.FL)) / 2.0;
-        velocity.FR = (velocity.FL + Math.abs(driveVelocity.FR)) / 2.0;
-        velocity.FL = (velocity.RL + Math.abs(driveVelocity.RL)) / 2.0;
-        velocity.FL = (velocity.RR + Math.abs(driveVelocity.RR)) / 2.0;
+        velocity.FR = (velocity.FR + Math.abs(driveVelocity.FR)) / 2.0;
+        velocity.RL = (velocity.RL + Math.abs(driveVelocity.RL)) / 2.0;
+        velocity.RR = (velocity.RR + Math.abs(driveVelocity.RR)) / 2.0;
     }
 
     public static void print(String label, DriveInfo<?> info) {
