@@ -282,6 +282,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_gyro.setGyroOffset(offsetAngleDegrees);
     }
 
+
     public void DMSDrive(double speed) {
         dmsHelper.driveMotors.FL.set(ControlMode.PercentOutput, speed);
         dmsHelper.driveMotors.FR.set(ControlMode.PercentOutput, speed);
@@ -341,7 +342,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
             steerMotors.FL = SDSwerveModuleUtil.getSteerMotor(m_frontLeftModule);
             steerMotors.FR = SDSwerveModuleUtil.getSteerMotor(m_frontRightModule);
-            steerMotors.RL = SDSwerveModuleUtil.getDriveMotor(m_backLeftModule);
+            steerMotors.RL = SDSwerveModuleUtil.getSteerMotor(m_backLeftModule);
             steerMotors.RR = SDSwerveModuleUtil.getSteerMotor(m_backRightModule);
         }
     }

@@ -149,17 +149,20 @@ public class LEDSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         if (running) {
-            // System.out.println("Running DMS: " + currentPhase + " | " + timer.get());
+            
             switch (currentPhase) {
                 case Stopped:
                     break;
                 case RunDriveMotors:
+                System.out.println("Running DMS: " + currentPhase + " | " + timer.get());
                     runMotorTest();
                     break;
                 case RunSteerMotors:
+                System.out.println("Running DMS: " + currentPhase + " | " + timer.get());
                     runSteerTest();
                     break;
                 case DisplayResults:
+                System.out.println("Running DMS: " + currentPhase + " | " + timer.get());
                     displayResults();
                     break;
 

@@ -17,7 +17,7 @@ public class SDSwerveModuleUtil {
 
     private static <T> T getMotor(SwerveModule module, String controllerName) {
         try {
-            Field field = module.getClass().getDeclaredField("driveController");
+            Field field = module.getClass().getDeclaredField(controllerName);
             field.setAccessible(true);;
             Object controller = field.get(module);
             Field motorField = controller.getClass().getDeclaredField("motor");
