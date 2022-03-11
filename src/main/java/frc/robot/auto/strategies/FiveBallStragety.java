@@ -104,7 +104,7 @@ public class FiveBallStragety extends SequentialCommandGroup {
     return CommandGroupBase.sequence(
       new InstantCommand(() -> Subsystems.shooterSubsystem.setProfile(ShooterProfile.Long)),
       // new ProfiledDistanceDriveCommand(-170, 0.5, -4.2, -0.3));   // 0.5, -4.2, -0.3
-      new ProfiledDistanceDriveCommand(-170, 1.9, -4.2, -0.3));   // 0.5, -4.2, -0.3
+      new ProfiledDistanceDriveCommand(-170, 1.9, -4.2, -0.15));   // 0.5, -4.2, -0.3
   }
 
    /*
