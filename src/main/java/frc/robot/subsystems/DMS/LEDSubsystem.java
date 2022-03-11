@@ -193,6 +193,19 @@ public class LEDSubsystem extends SubsystemBase {
                 DMSStats.print("[Drive Status]", driveStatus);
             }
         } else {
+            SmartDashboard.putNumber("DMS/Result/FL/Drive/Status", driveStatus.FL);
+            SmartDashboard.putNumber("DMS/Result/FL/Drive/Vel", driveDmsStatus.velocity.FL);
+            SmartDashboard.putNumber("DMS/Result/FL/Drive/Amp", driveDmsStatus.current.FL);
+            SmartDashboard.putNumber("DMS/Result/FR/Drive/Status", driveStatus.FR);
+            SmartDashboard.putNumber("DMS/Result/FR/Drive/Vel", driveDmsStatus.velocity.FR);
+            SmartDashboard.putNumber("DMS/Result/FR/Drive/Amp", driveDmsStatus.current.FR);
+            SmartDashboard.putNumber("DMS/Result/RL/Drive/Status", driveStatus.RL);
+            SmartDashboard.putNumber("DMS/Result/RL/Drive/Vel", driveDmsStatus.velocity.RL);
+            SmartDashboard.putNumber("DMS/Result/RL/Drive/Amp", driveDmsStatus.current.RL);
+            SmartDashboard.putNumber("DMS/Result/RR/Drive/Status", driveStatus.RR);
+            SmartDashboard.putNumber("DMS/Result/RR/Drive/Vel", driveDmsStatus.velocity.RR);
+            SmartDashboard.putNumber("DMS/Result/RR/Drive/Amp", driveDmsStatus.current.RR);
+
             currentPhase = DMSPhase.RunSteerMotors;
             timer.reset();
         }
@@ -216,12 +229,25 @@ public class LEDSubsystem extends SubsystemBase {
                 System.out.println("Vel Avg: " + velAvg + " | Amp Avg: " + ampAvg);
                 
                 steerStatus = steerDmsStatus.calculateStatus();
-                DMSStats.print("[Steer Status]", driveStatus);
+                DMSStats.print("[Steer Status]", steerStatus);
             } 
         } else {
             Subsystems.drivetrainSubsystem.DMSDrive(0.0);
             Subsystems.drivetrainSubsystem.DMSSteer(0.0);
             currentPhase = DMSPhase.DisplayResults;
+            SmartDashboard.putNumber("DMS/Result/FL/Steer/Status", steerStatus.FL);
+            SmartDashboard.putNumber("DMS/Result/FL/Steer/Vel", steerDmsStatus.velocity.FL);
+            SmartDashboard.putNumber("DMS/Result/FL/Steer/Amp", steerDmsStatus.current.FL);
+            SmartDashboard.putNumber("DMS/Result/FR/Steer/Status", steerStatus.FR);
+            SmartDashboard.putNumber("DMS/Result/FR/Steer/Vel", steerDmsStatus.velocity.FR);
+            SmartDashboard.putNumber("DMS/Result/FR/Steer/Amp", steerDmsStatus.current.FR);
+            SmartDashboard.putNumber("DMS/Result/RL/Steer/Status", steerStatus.RL);
+            SmartDashboard.putNumber("DMS/Result/RL/Steer/Vel", steerDmsStatus.velocity.RL);
+            SmartDashboard.putNumber("DMS/Result/RL/Steer/Amp", steerDmsStatus.current.RL);
+            SmartDashboard.putNumber("DMS/Result/RR/Steer/Status", steerStatus.RR);
+            SmartDashboard.putNumber("DMS/Result/RR/Steer/Vel", steerDmsStatus.velocity.RR);
+            SmartDashboard.putNumber("DMS/Result/RR/Steer/Amp", steerDmsStatus.current.RR);
+
             timer.reset();
         }
     }
