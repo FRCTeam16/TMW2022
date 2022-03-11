@@ -17,7 +17,7 @@ public class LEDSubsystem extends SubsystemBase {
     private SerialPort serial;
 
     private enum DMSPhase {
-        Stopped, RunDriveMotors, RunSteerMotors
+        Stopped, RunDriveMotors, RunSteerMotors, DisplayResults
     }
     private DMSPhase currentPhase = DMSPhase.Stopped;
     private DMSStats driveDmsStatus = new DMSStats();
@@ -104,6 +104,10 @@ public class LEDSubsystem extends SubsystemBase {
     public void begin() {
         timer.reset();
     }
+    
+    public void startSubsystem() {
+        running = true;
+    }
 
     public void stopSubsystem() {
         running = false;
@@ -130,6 +134,7 @@ public class LEDSubsystem extends SubsystemBase {
         
         driveStatus = new DriveInfo<Integer>(0);
         steerStatus = new DriveInfo<Integer>(0);
+        timer.stop();
     }
 
     @Override
@@ -144,6 +149,10 @@ public class LEDSubsystem extends SubsystemBase {
                 case RunSteerMotors:
                     runSteerTest();
                     break;
+                case DisplayResults:
+                    displayResults();
+                    break;
+
             }
             ;
         }
@@ -195,8 +204,16 @@ public class LEDSubsystem extends SubsystemBase {
                 steerStatus = steerDmsStatus.calculateStatus();
                 DMSStats.print("[Steer Status]", driveStatus);
             } else {
-                currentPhase = DMSPhase.Stopped;
+                currentPhase = DMSPhase.DisplayResults;
+                timer.reset();
             }
+        }
+    }
+
+    private void displayResults() {
+        final double now = timer.get();
+        if (now > MOTOR_TEST_TIME) {
+            currentPhase = DMSPhase.Stopped;
         }
     }
 
