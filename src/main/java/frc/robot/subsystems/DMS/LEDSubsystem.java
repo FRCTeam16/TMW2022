@@ -28,6 +28,7 @@ public class LEDSubsystem extends SubsystemBase {
 
     private static final double INITIAL_IGNORE_TIME = 1.0;
     private static final double MOTOR_TEST_TIME = 4.0;
+    private static final double RESULTS_DISPLAY_TIME = 10.0;
 
 
     /** Creates a new LEDSubsystem. */
@@ -218,6 +219,8 @@ public class LEDSubsystem extends SubsystemBase {
                 DMSStats.print("[Steer Status]", driveStatus);
             } 
         } else {
+            Subsystems.drivetrainSubsystem.DMSDrive(0.0);
+            Subsystems.drivetrainSubsystem.DMSSteer(0.0);
             currentPhase = DMSPhase.DisplayResults;
             timer.reset();
         }
@@ -225,7 +228,7 @@ public class LEDSubsystem extends SubsystemBase {
 
     private void displayResults() {
         final double now = timer.get();
-        if (now > MOTOR_TEST_TIME) {
+        if (now > RESULTS_DISPLAY_TIME) {
             currentPhase = DMSPhase.Stopped;
         }
     }

@@ -20,6 +20,7 @@ public class RunDMSCommand extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     Subsystems.drivetrainSubsystem.setDmsMode(false);
+    Subsystems.ledSubsystem.stopDMS();
   }
 
   // Returns true when the command should end.
