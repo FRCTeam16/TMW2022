@@ -120,10 +120,22 @@ public class RobotContainer {
     }
 
     private void configureIntakeButtonBindings() {
-        new Button(leftJoy::getTrigger).whenPressed(m_intakeSubsystem::enable)
+        new Button(leftJoy::getTrigger)
+                .whenPressed(() -> {
+                    m_intakeSubsystem.forward();
+                    m_intakeSubsystem.enable();
+                })
                 .whenReleased(m_intakeSubsystem::disable);
-                
-        new Button(() -> leftJoy.getRawButton(4)).whenPressed(Subsystems.intakeSubsystem::reverse).whenReleased(Subsystems.intakeSubsystem::forward);
+
+        new Button(() -> leftJoy.getRawButton(4))
+                .whenPressed(() -> {
+                    Subsystems.intakeSubsystem.reverse();
+                    Subsystems.intakeSubsystem.enable();
+                })
+                .whenReleased(() -> {
+                    Subsystems.intakeSubsystem.forward();
+                    Subsystems.intakeSubsystem.disable();
+                });
 
         new Button(() -> gamepad.getPOV() == 0).whenPressed(m_intakeSubsystem::RaiseIntake);
         new Button(() -> gamepad.getPOV() == 180).whenPressed(m_intakeSubsystem::DropIntake);
