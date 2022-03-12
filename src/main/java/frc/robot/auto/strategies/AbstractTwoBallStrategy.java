@@ -42,26 +42,11 @@ public class AbstractTwoBallStrategy extends SequentialCommandGroup {
         new InstantCommand(() -> Subsystems.shooterSubsystem.setProfile(ShooterProfile.TarmacEdge)),
         new InstantCommand(Subsystems.feederSubsystem::dontPull),
         new InstantCommand(Subsystems.shooterSubsystem::enable),
-        new InstantCommand(Subsystems.intakeSubsystem::DropIntake));
-  }
-
-  /**
-   * Waits until second ball to shoot
-   * @return
-   */
-  private Command initialStateDontShoot() {
-    return CommandGroupBase.parallel(
-        new InstantCommand(() -> Subsystems.drivetrainSubsystem.resetOdometry(new Pose2d(0, 0, new Rotation2d()))),
-        new InstantCommand(Subsystems.drivetrainSubsystem::zeroGyroscope).andThen(
-            new InstantCommand(() -> Subsystems.drivetrainSubsystem.setGyroOffset(robotAngle))), // FIXME need to find out the
-                                                                                          // angle to the ball from the
-                                                                                          // starting position
-        new InstantCommand(() -> Subsystems.shooterSubsystem.setProfile(ShooterProfile.Short)),
-        new InstantCommand(Subsystems.shooterSubsystem::enable),
         new InstantCommand(Subsystems.turretSubsystem::enableVisionTracking),
         new InstantCommand(Subsystems.intakeSubsystem::DropIntake));
   }
 
+ 
   // the first ball is a straight backup from the starting position, 1.06 meters
   // form the outer tarmac line
 
