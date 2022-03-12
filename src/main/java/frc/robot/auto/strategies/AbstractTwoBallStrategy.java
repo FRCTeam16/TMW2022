@@ -58,6 +58,7 @@ public class AbstractTwoBallStrategy extends SequentialCommandGroup {
                                                                                           // starting position
         new InstantCommand(() -> Subsystems.shooterSubsystem.setProfile(ShooterProfile.Short)),
         new InstantCommand(Subsystems.shooterSubsystem::enable),
+        new InstantCommand(Subsystems.turretSubsystem::enableVisionTracking),
         new InstantCommand(Subsystems.intakeSubsystem::DropIntake));
   }
 
