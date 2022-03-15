@@ -90,8 +90,8 @@ public class FiveBallStragety extends SequentialCommandGroup {
 
       // Turn to third ball
       new ProfiledDistanceDriveCommand(-170, 1, 0, -0.1).withTimeout(0.5),
+      new ProfiledDistanceDriveCommand(-170, 0, 0, 0).withTimeout(0.25),
       new TrackVisionTargetWithTurretCommand().withTimeout(1.0),
-      new ProfiledDistanceDriveCommand(-170, 0.1, 0, -0.1).withTimeout(0.25),
 
       // Shoot balls
       CommandGroupBase.parallel(

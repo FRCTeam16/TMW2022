@@ -42,8 +42,8 @@ public class AutoManager {
     public void initializeAuto() {
         strategyLookup.put(AutoStrategies.FiveBall, new FiveBallStragety());
         strategyLookup.put(AutoStrategies.TwoBallRight, new AbstractTwoBallStrategy(-90, 0, -1.20));
-        strategyLookup.put(AutoStrategies.TwoBallCenter, new AbstractTwoBallStrategy(-170, -1.18, -0.2));
-        strategyLookup.put(AutoStrategies.TwoBallHangar, new AbstractTwoBallStrategy(135, -1.06, 1.06));
+        strategyLookup.put(AutoStrategies.TwoBallCenter, new AbstractTwoBallStrategy(-170, -1.77, -0.31));
+        strategyLookup.put(AutoStrategies.TwoBallHangar, new AbstractTwoBallStrategy(135, -1.27, 1.27));
         strategyLookup.put(AutoStrategies.JustShoot, new JustShoot());
     }
 

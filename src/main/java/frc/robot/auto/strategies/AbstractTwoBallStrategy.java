@@ -60,6 +60,7 @@ public class AbstractTwoBallStrategy extends SequentialCommandGroup {
         new ProfiledDistanceDriveCommand(robotAngle, 0, 0, 0).withTimeout(0.5),
         new WaitCommand(1.0),
         new ProfiledDistanceDriveCommand(this.robotAngle, 0.3, -driveX, -driveY).withThreshold(0.03).withTimeout(2.0),
+        new ProfiledDistanceDriveCommand(robotAngle, 0, 0, 0).withTimeout(0.5),
         new InstantCommand(() -> System.out.println("****** after pickup first *****"))); // should be 1.06
   }
 
