@@ -64,17 +64,19 @@ public class ProfiledDistanceDriveCommand extends CommandBase {
     return this;
   }
 
-  // FIXME Robot centric does not work for this command right now
-  // public ProfiledDistanceDriveCommand withRobotCentric() {
-  //   this.fieldCentric = false;
-  //   return this;
-  // }
+  public ProfiledDistanceDriveCommand withRobotCentric() {
+    this.fieldCentric = false;
+    return this;
+  }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     this.startPose = Subsystems.drivetrainSubsystem.getPose().getTranslation();
     var translation = new Translation2d(xdist, ydist);
+    if (!fieldCentric) {
+      translation.rotateBy(Subsystems.drivetrainSubsystem.getGyroscopeRotation());
+    }
     var xy_trans = startPose.plus(translation);
     this.targetPose = new Translation2d(xy_trans.getX(), xy_trans.getY());
 

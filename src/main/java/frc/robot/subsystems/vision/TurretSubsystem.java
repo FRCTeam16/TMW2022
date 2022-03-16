@@ -20,7 +20,7 @@ public class TurretSubsystem extends SubsystemBase implements Lifecycle{
   private final double DEFAULT_TURRET_SPEED = -0.2;
   private final double VISION_THRESHOLD = 1.0;
   private final PIDController visionpPID;
-  private final float SOFT_LIMIT = 19.61f;
+  private final float SOFT_LIMIT = 16.30f;
 
   enum RunState {
     OpenLoop, ClosedLoop, Vision

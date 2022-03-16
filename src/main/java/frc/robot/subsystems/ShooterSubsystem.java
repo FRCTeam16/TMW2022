@@ -27,7 +27,7 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
   private final Solenoid shooterHood = new Solenoid(PneumaticsModuleType.REVPH, 3);
 
   public enum ShooterProfile {
-    Short(1650), Long(2055), LowGoal(800), TarmacEdge(2200), AutoCenterEdge(1700), Downtown(2500), Dynamic(0);
+    Short(1650), Long(2055), LowGoal(800), TarmacEdge(2200), AutoCenterEdge(1700), Downtown(2500), Dynamic(0), Off(0);
 
     private double value;
 
@@ -35,6 +35,8 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
       this.value = value;
     }
   }
+
+  private ShooterProfile currentProfile = ShooterProfile.Off;
 
   private boolean closedLoop = true;
   private double targetRPM = 0.0;
@@ -63,7 +65,7 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
     kFF = 0.00017;
     kMaxOutput = 1;
     kMinOutput = -1;
-    maxRPM = 4500;
+    maxRPM = 2500;
 
     // set PID coefficients
     var pidController = rightShooterMotor.getPIDController();
@@ -162,7 +164,7 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
         break;
     }
     this.enable();
-
+    this.currentProfile = profile;
     SmartDashboard.putNumber("Shooter/TargetRPM", rpm);
     this.targetRPM = rpm;
   }
@@ -174,9 +176,8 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
   public Pair<Boolean, Double> calculateDynamicRPM() {
     var info = Subsystems.visionSubsystem.getVisionInfo();
     if (info.distanceToTarget > 0) {
-      double rpm = BSMath.map(info.distanceToTarget, 0.0, 8.6, ShooterProfile.Short.value, ShooterProfile.Downtown.value);
-      boolean openHood = (info.distanceToTarget < 2);
-      return Pair.of(openHood, rpm);
+      double rpm = 1272 + (3.86 * info.distanceToTarget);
+      return Pair.of(false, rpm);
     } else {
       // Return current state
       return Pair.of(shooterHood.get(), targetRPM);
@@ -234,6 +235,13 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
       if (targetRPM != rpm) {
         targetRPM = rpm;
       }
+
+      if (currentProfile == ShooterProfile.Dynamic) {
+        var dynamicInfo = calculateDynamicRPM();
+        shooterHood.set(dynamicInfo.getFirst());
+        targetRPM = dynamicInfo.getSecond();
+      }
+
       targetRPM = MathUtil.clamp(targetRPM, -maxRPM, maxRPM);
 
 

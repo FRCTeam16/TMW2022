@@ -156,6 +156,9 @@ public class RobotContainer {
         new Button(() -> rightJoy.getPOV() == 270)
                 .whenPressed(() -> m_shooterSubsystem.setProfile(ShooterProfile.LowGoal));
 
+        new Button(() -> rightJoy.getPOV() == 180)
+                .whenPressed(() -> m_shooterSubsystem.setProfile(ShooterProfile.Dynamic));
+
         new Button(() -> gamepad.getStartButton())
                 .whenPressed(m_shooterSubsystem::enable);
 

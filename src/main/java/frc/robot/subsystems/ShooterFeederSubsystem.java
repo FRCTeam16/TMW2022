@@ -74,6 +74,9 @@ public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
         feederSpeed = SmartDashboard.getNumber(FEEDER_SPEED_KEY, DEFAULT_FEEDER_SPEED);
       }
     }
+
+    SmartDashboard.putNumber("Feeder/Amps", feederMotor.getOutputCurrent());
+
     feederMotor.set(feederSpeed);
   }
 
