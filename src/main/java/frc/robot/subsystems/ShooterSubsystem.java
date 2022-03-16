@@ -5,6 +5,7 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -147,8 +148,9 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
         shooterHood.set(false);
         break;
       case Dynamic:
-        rpm = calculateDynamicRPM();
-        shooterHood.set(false);
+        var dynamicInfo = calculateDynamicRPM();
+        shooterHood.set(dynamicInfo.getFirst());
+        rpm = dynamicInfo.getSecond();
         break;
       case LowGoal:
         rpm = SmartDashboard.getNumber("Shooter/Profile/LowGoal", ShooterProfile.LowGoal.value);
@@ -165,14 +167,20 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
     this.targetRPM = rpm;
   }
 
-  public double calculateDynamicRPM() {
-    double rpm = 0.0;
+  /**
+   * Calculates the target RPM
+   * @ return Pair<boolean, double> - shooter hood state and target RPM
+   */
+  public Pair<Boolean, Double> calculateDynamicRPM() {
     var info = Subsystems.visionSubsystem.getVisionInfo();
-    if (info.hasTarget) {
-      var distance = Subsystems.visionSubsystem.CalculateDistance(0.5, 2.64);
-      rpm = BSMath.map(distance, 3, 7, ShooterProfile.Short.value, ShooterProfile.Long.value);
+    if (info.distanceToTarget > 0) {
+      double rpm = BSMath.map(info.distanceToTarget, 0.0, 8.6, ShooterProfile.Short.value, ShooterProfile.Downtown.value);
+      boolean openHood = (info.distanceToTarget < 2);
+      return Pair.of(openHood, rpm);
+    } else {
+      // Return current state
+      return Pair.of(shooterHood.get(), targetRPM);
     }
-    return rpm;
   }
 
   @Override

@@ -1,5 +1,7 @@
 package frc.robot.subsystems.vision;
 
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.vision.Limelight.CameraMode;
 import frc.robot.subsystems.vision.Limelight.LEDMode;
@@ -7,16 +9,26 @@ import frc.robot.subsystems.vision.Limelight.SceneInfo;
 
 /**
  * Vision subsystem.  
- * 
- * May eventually move to be a PID subsystem to handle rotation/targeting duties?
  */
 public class VisionSubsystem extends SubsystemBase {
   private final Limelight limelight;
   private VisionInfo visionInfo = new VisionInfo();
 
+  private final double CAMERA_HEIGHT_IN;
+  private final double TARGET_HEIGHT_IN;
+  private final double CAMERA_ANGLE_DEGREES = 28.0;
+
+
   /** Creates a new VisionSubsystem. */
   public VisionSubsystem() {
     limelight = new Limelight();
+    double defaultCameraHeight = 33.5;
+    double defaultTargetHeight = 104.0;
+    
+    SmartDashboard.setDefaultNumber("Vision/CameraHeightInches", defaultCameraHeight);
+    SmartDashboard.setDefaultNumber("Vision/TargetHeightInches", defaultTargetHeight);
+    CAMERA_HEIGHT_IN = SmartDashboard.getNumber("Vision/CameraHeightInches", defaultCameraHeight);
+    TARGET_HEIGHT_IN = SmartDashboard.getNumber("Vision/TargetHeightInches", defaultTargetHeight);
   }
 
   public Limelight getLimelight() {
@@ -46,6 +58,14 @@ public class VisionSubsystem extends SubsystemBase {
     visionInfo.xOffset = sceneInfo.xOffset;
     visionInfo.yOffset = sceneInfo.yOffset;
     visionInfo.targetArea = sceneInfo.targetArea;
+ 
+    double distance_inches = -1.0;
+    if (visionInfo.hasTarget) {
+      distance_inches = CalculateDistance(CAMERA_HEIGHT_IN, TARGET_HEIGHT_IN, CAMERA_ANGLE_DEGREES, visionInfo.yOffset);
+    }
+    visionInfo.distanceToTarget = distance_inches;
+    
+    SmartDashboard.putNumber("Vision/DistToTargetInches", visionInfo.distanceToTarget);
   }
 
   /**
@@ -55,9 +75,10 @@ public class VisionSubsystem extends SubsystemBase {
    * @param heightToTarget
    * @return
    */
-  public double CalculateDistance(double heightToCamera, double heightToTarget) {
+  public double CalculateDistance(double heightToCamera, double heightToTarget, double cameraAngle, double yOffset) {
     if (this.visionInfo.hasTarget) {
-      return (heightToTarget - heightToCamera) / Math.tan(this.visionInfo.yOffset);
+      double goalRadians = Units.degreesToRadians(cameraAngle + yOffset);
+      return (heightToTarget - heightToCamera) / Math.tan(goalRadians);
     } else {
       return -1;
     }
@@ -66,5 +87,7 @@ public class VisionSubsystem extends SubsystemBase {
   /**
    * Vision Information
    */
-  public static class VisionInfo extends SceneInfo {}
+  public static class VisionInfo extends SceneInfo {
+    public double distanceToTarget = -1;
+  }
 }
