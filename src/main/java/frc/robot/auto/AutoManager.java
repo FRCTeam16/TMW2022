@@ -30,12 +30,12 @@ public class AutoManager {
         chooser.addOption("Debug Timed", AutoStrategies.DebugTimed);
         chooser.addOption("Debug Path", AutoStrategies.DebugPath);
         chooser.addOption("Debug Rotate", AutoStrategies.DebugRotate);
-        chooser.setDefaultOption("Five Ball", AutoStrategies.FiveBall);
+        chooser.addOption("Five Ball", AutoStrategies.FiveBall);
         chooser.addOption("TwoBall Right", AutoStrategies.TwoBallRight);
         chooser.addOption("TwoBall Center", AutoStrategies.TwoBallCenter);
         chooser.addOption("TwoBall Hangar", AutoStrategies.TwoBallHangar);
         chooser.addOption("JustShoot", AutoStrategies.JustShoot);
-        chooser.addOption("5BS Part Deux", AutoStrategies.FiveBallStrategyPartDeux);
+        chooser.setDefaultOption("5BS Part Deux", AutoStrategies.FiveBallStrategyPartDeux);
 
         // chooser.addOption(name, object);
         SmartDashboard.putData(chooser);

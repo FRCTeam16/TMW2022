@@ -19,6 +19,7 @@ public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
   private final CANSparkMax feederMotor = new CANSparkMax(Constants.SHOOTERFEEDER_MOTOR_ID, MotorType.kBrushless);
   private final double DEFAULT_FEEDER_SPEED = -1;
   private static final String FEEDER_SPEED_KEY = "Feeder Speed";
+  private boolean autoFeeder = false;
 
   public ShooterFeederSubsystem() {
     feederMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
@@ -28,10 +29,12 @@ public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
   @Override
   public void teleopInit() {
     queuingEnabled = false;
+    autoFeeder = false;
   }
 
   @Override
   public void autoInit() {
+    autoFeeder = true;
     queuingEnabled = false;
   }
 
@@ -62,8 +65,12 @@ public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
     double feederSpeed = 0.0;
 
     if (shooting) {
-      if (Subsystems.shooterSubsystem.atMinimumSpeed()) {
-        feederSpeed = SmartDashboard.getNumber(FEEDER_SPEED_KEY, DEFAULT_FEEDER_SPEED);
+      if (!autoFeeder) {
+        if (Subsystems.shooterSubsystem.atMinimumSpeed()) {
+          feederSpeed = SmartDashboard.getNumber(FEEDER_SPEED_KEY, DEFAULT_FEEDER_SPEED);
+        }
+      } else {
+        feederSpeed = -0.5;
       }
     } else if (queuingEnabled == true) {
       if (Subsystems.detectBallSubsystem.isBallDetected()) {

@@ -25,7 +25,7 @@ public class TurnToAngleCommand extends CommandBase {
   public void execute() {
     double currentDegrees = Subsystems.drivetrainSubsystem.getGyroscopeRotation().getDegrees();
     double output = Subsystems.drivetrainSubsystem.getRotationController().calculate(currentDegrees, this.targetAngle);
-    // output = MathUtil.clamp(output, -0.6, 0.6);
+    output = MathUtil.clamp(output, -0.5, 0.5);
     output *= DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND;
 
     System.out.println("TTAC: output=" + output);

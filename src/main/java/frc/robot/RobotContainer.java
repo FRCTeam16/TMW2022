@@ -286,4 +286,8 @@ public class RobotContainer {
         Subsystems.lifecycleSubsystems.stream().filter(s -> s != null).forEach((s) -> s.teleopInit());
     }
 
+    public void autoInit() {
+        Subsystems.lifecycleSubsystems.stream().filter(s -> s != null).forEach((s) -> s.autoInit());
+    }
+
 }

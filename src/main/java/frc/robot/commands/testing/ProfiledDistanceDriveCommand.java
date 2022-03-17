@@ -166,7 +166,7 @@ Test new
   @Override
   public boolean isFinished() {
     var distance = Subsystems.drivetrainSubsystem.getPose().getTranslation().getDistance(targetPose);
-    System.out.println("DIST: " + distance + " | T:" + targetPose + " | C:" + Subsystems.drivetrainSubsystem.getPose().getTranslation());
+    // System.out.println("DIST: " + distance + " | T:" + targetPose + " | C:" + Subsystems.drivetrainSubsystem.getPose().getTranslation());
     return (distance < distanceThreshold);
   }
 }
