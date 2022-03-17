@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Subsystems;
+import frc.robot.commands.auto.InitializeAutoState;
 import frc.robot.commands.testing.ProfiledDistanceDriveCommand;
 import frc.robot.commands.vision.TrackVisionTargetWithTurretCommand;
 import frc.robot.subsystems.ShooterSubsystem.ShooterProfile;
@@ -24,27 +25,11 @@ public class AbstractTwoBallStrategy extends SequentialCommandGroup {
         this.driveY = driveY;
 
         addCommands(
-            initialStateShoot(), // this shoots ball before it leaves tarmac
-            // initialStateDontShoot(), // this waits for the
+            new InitializeAutoState(robotAngle, ShooterProfile.Short),
             pickupFirstBall(), // this one shoots befor the ball is
             shootLoad()
         );
     }
-
-    // this will be our initial state if we want to shoot from the tarmac
-  private Command initialStateShoot() {
-    return CommandGroupBase.parallel(
-        new InstantCommand(() -> Subsystems.drivetrainSubsystem.resetOdometry(new Pose2d(0, 0, new Rotation2d()))),
-        new InstantCommand(Subsystems.drivetrainSubsystem::zeroGyroscope).andThen(
-            new InstantCommand(() -> Subsystems.drivetrainSubsystem.setGyroOffset(robotAngle))), // FIXME need to find out the
-                                                                                          // angle to the ball from the
-                                                                                          // starting position
-        new InstantCommand(() -> Subsystems.shooterSubsystem.setProfile(ShooterProfile.Short)),
-        new InstantCommand(Subsystems.feederSubsystem::dontPull),
-        new InstantCommand(Subsystems.shooterSubsystem::enable),
-        new InstantCommand(Subsystems.turretSubsystem::enableVisionTracking),
-        new InstantCommand(Subsystems.intakeSubsystem::DropIntake));
-  }
 
  
   // the first ball is a straight backup from the starting position, 1.06 meters

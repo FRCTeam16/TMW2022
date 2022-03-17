@@ -22,6 +22,7 @@ import frc.robot.Subsystems;
 import frc.robot.commands.SimpleDistanceDriveCommand;
 import frc.robot.commands.ProfiledTurnToAngleCommand;
 import frc.robot.commands.ZeroAndSetOffsetCommand;
+import frc.robot.commands.auto.InitializeAutoState;
 import frc.robot.commands.testing.ProfiledDistanceDriveCommand;
 import frc.robot.commands.vision.TrackVisionTargetWithTurretCommand;
 import frc.robot.subsystems.ShooterSubsystem.ShooterProfile;
@@ -34,27 +35,13 @@ public class FiveBallStragety extends SequentialCommandGroup {
   public FiveBallStragety() {
 
     addCommands(
-        initialState(),
+        new InitializeAutoState(-90.0, ShooterProfile.TarmacEdge),
         pickupFirstBall(),
         shootLoad(),
         pickupSecondBall(),
         pickupThirdBall(),
         finishAuto()
         );
-  }
-
-  private Command initialState() {
-    return CommandGroupBase.parallel(
-      new InstantCommand(() -> Subsystems.drivetrainSubsystem.resetOdometry(new Pose2d(0, 0, new Rotation2d()))),
-      new InstantCommand(Subsystems.drivetrainSubsystem::zeroGyroscope).andThen(
-          new InstantCommand(() -> Subsystems.drivetrainSubsystem.setGyroOffset(-90))), // FIXME need to find out the
-                                                                                        // angle to the ball from the
-                                                                                        // starting position
-      new InstantCommand(() -> Subsystems.shooterSubsystem.setProfile(ShooterProfile.TarmacEdge)),
-      new InstantCommand(Subsystems.feederSubsystem::dontPull),
-      new InstantCommand(Subsystems.shooterSubsystem::enable),
-      new InstantCommand(Subsystems.turretSubsystem::enableVisionTracking),
-      new InstantCommand(Subsystems.intakeSubsystem::DropIntake));
   }
 
   private Command pickupFirstBall() {

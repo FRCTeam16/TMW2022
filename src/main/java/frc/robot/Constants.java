@@ -69,7 +69,7 @@ public final class Constants {
     public static final int PIGEON_ID = 00;
 
     public static final class Auto {
-        public static final double MaxSpeedMetersPerSecond = DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND * .75;
+        public static final double MaxSpeedMetersPerSecond = DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND * 0.95;
         public static final double MaxAccelerationMetersPerSecondSquared = DrivetrainSubsystem.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED;
 
         public static final double Px = 1;

@@ -69,6 +69,11 @@ public class ProfiledDistanceDriveCommand extends CommandBase {
     return this;
   }
 
+  public ProfiledDistanceDriveCommand withConstraints(TrapezoidProfile.Constraints constraints) {
+    this.constraints = constraints;
+    return this;
+  }
+
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
