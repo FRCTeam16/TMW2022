@@ -1,12 +1,8 @@
 package frc.robot.commands;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Subsystems;
-import frc.robot.subsystems.DrivetrainSubsystem;
-
-// TODO: just use an internal PID
 
 public class TurnToAngleCommand extends CommandBase {
   private double targetAngle;
@@ -25,18 +21,19 @@ public class TurnToAngleCommand extends CommandBase {
   public void execute() {
     double currentDegrees = Subsystems.drivetrainSubsystem.getGyroscopeRotation().getDegrees();
     double output = Subsystems.drivetrainSubsystem.getRotationController().calculate(currentDegrees, this.targetAngle);
-    output = MathUtil.clamp(output, -0.5, 0.5);
-    output *= DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND;
+    // output = MathUtil.clamp(output, -0.5, 0.5);
+    var outputRads = Math.toRadians(output);
 
-    System.out.println("TTAC: output=" + output);
+    System.out.println("TTAC: output=" + outputRads);
     Subsystems.drivetrainSubsystem.drive(
-      ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, Math.toRadians(output), Subsystems.drivetrainSubsystem.getGyroscopeRotation())
+      ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, outputRads, Subsystems.drivetrainSubsystem.getGyroscopeRotation())
     );
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    System.out.println("TTAC: isFinished? " + Subsystems.drivetrainSubsystem.getRotationController().atSetpoint());
     return Subsystems.drivetrainSubsystem.getRotationController().atSetpoint();
   }
 }

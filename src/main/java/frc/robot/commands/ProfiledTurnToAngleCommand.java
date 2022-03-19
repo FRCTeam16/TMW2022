@@ -6,9 +6,8 @@ import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand;
 import frc.robot.Subsystems;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
-@Deprecated
+@Deprecated /* Use TurnToAngleCommand */
 public class ProfiledTurnToAngleCommand extends TrapezoidProfileCommand {
-  private int num_scans_seen = 0;
 
   public ProfiledTurnToAngleCommand(double targetAngle) {
     this(targetAngle, Subsystems.drivetrainSubsystem);
@@ -34,34 +33,25 @@ public class ProfiledTurnToAngleCommand extends TrapezoidProfileCommand {
         state -> {
           // Use current trajectory state here
           var currentRotation = drivetrain.getGyroscopeRotation();
-          var outputPct = drivetrain.getRotationController().calculate(currentRotation.getDegrees(), state.position);
-          var output = outputPct;
-          // var output = RotationController.clampToDPS(outputPct);
-          // outputPct = MathUtil.clamp(outputPct, -0.6, 0.6);
-          // var output = outputPct * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_DEGREES_PER_SECOND;
-          // return MathUtil.clamp(outputPercent, -0.6, 0.6) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_DEGREES_PER_SECOND;
+          var outputDeg = drivetrain.getRotationController().calculate(currentRotation.getDegrees(), state.position);
+          var outputRad = Math.toRadians(outputDeg);
 
-          System.out.println("[TTAC] S.P= " +  state.position + " | S.V=" + state.velocity + " | R=" + currentRotation + " | O= " + output + " | OP= " + outputPct);
+          System.out.println("[TTAC] S.P= " +  state.position + 
+            " | S.V=" + state.velocity + 
+            " | R=" + currentRotation +
+            " | OR=" + outputRad +
+            " | OD= " + outputDeg);
 
           drivetrain.drive(
             (fieldCentric) ? 
-              ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, Math.toRadians(outputPct), currentRotation):
-              new ChassisSpeeds(0, 0, Math.toRadians(output)));
+              ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, outputRad, currentRotation):
+              new ChassisSpeeds(0, 0, outputRad));
         });
   }
 
   @Override
   public boolean isFinished() {
-    boolean retval = false;
-    // if (num_scans_seen >= 5) {
-    //   retval = true;
-    // } else if (Subsystems.drivetrainSubsystem.getRotationController().atSetpoint()) {
-    //   num_scans_seen++;
-    // } else {
-    //   num_scans_seen = 0;
-    // }
       return Subsystems.drivetrainSubsystem.getRotationController().atSetpoint();
-      // return retval;
   }
  
 }

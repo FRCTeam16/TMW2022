@@ -28,7 +28,8 @@ public class DebugAuto extends SequentialCommandGroup {
         new InstantCommand(() -> Subsystems.drivetrainSubsystem.setGyroOffset(offset)))
         // new WaitCommand(5.0)
       ),
-      new ProfiledDistanceDriveCommand(45, 0.25, -1, 0)
+
+      new ProfiledDistanceDriveCommand(45, 0.25, -1, 0).withRobotCentric().withTimeout(3.0)
     );
   }
 
