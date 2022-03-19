@@ -73,12 +73,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = MAX_VELOCITY_METERS_PER_SECOND /
             Math.hypot(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0);
 
-    public static final double MAX_ANGULAR_VELOCITY_DEGREES_PER_SECOND = MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND * 180.0
-            / Math.PI;
+    public static final double MAX_ANGULAR_VELOCITY_DEGREES_PER_SECOND = Math.toDegrees(MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND);
 
     public static final double MAX_ANGULAR_ACCELERATION_DEGREES_PER_SECOND_SQUARED = 720.0;
-    public static final double MAX_ANGULAR_ACCELERATION_RADIANS_PER_SECOND_SQUARED = MAX_ANGULAR_ACCELERATION_DEGREES_PER_SECOND_SQUARED
-            * Math.PI / 180.0;
+    public static final double MAX_ANGULAR_ACCELERATION_RADIANS_PER_SECOND_SQUARED = Math.toRadians(MAX_ANGULAR_ACCELERATION_DEGREES_PER_SECOND_SQUARED);
 
     private final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
             // Front left
@@ -129,8 +127,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 FRONT_LEFT_MODULE_STEER_ENCODER,
                 // This is how much the steer encoder is offset from true zero (In our case,
                 // zero is facing straight forward)
-                FRONT_LEFT_MODULE_STEER_OFFSET);
-                //-Math.toRadians(offsets.getDouble("FLOFF", 0.0)));
+                // FRONT_LEFT_MODULE_STEER_OFFSET);
+                -Math.toRadians(offsets.getDouble("FLOFF", 0.0)));
 
         // We will do the same for the other modules
         m_frontRightModule = Mk4SwerveModuleHelper.createFalcon500(
@@ -141,8 +139,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 FRONT_RIGHT_MODULE_DRIVE_MOTOR,
                 FRONT_RIGHT_MODULE_STEER_MOTOR,
                 FRONT_RIGHT_MODULE_STEER_ENCODER,
-                FRONT_RIGHT_MODULE_STEER_OFFSET);
-                //-Math.toRadians(offsets.getDouble("FROFF", 0.0)));
+                // FRONT_RIGHT_MODULE_STEER_OFFSET);
+                -Math.toRadians(offsets.getDouble("FROFF", 0.0)));
 
         m_backLeftModule = Mk4SwerveModuleHelper.createFalcon500(
                 tab.getLayout("Back Left Module", BuiltInLayouts.kList)
@@ -152,8 +150,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 BACK_LEFT_MODULE_DRIVE_MOTOR,
                 BACK_LEFT_MODULE_STEER_MOTOR,
                 BACK_LEFT_MODULE_STEER_ENCODER,
-                BACK_LEFT_MODULE_STEER_OFFSET);
-                // -Math.toRadians(offsets.getDouble("RLOFF", 0.0)));
+                // BACK_LEFT_MODULE_STEER_OFFSET);
+                -Math.toRadians(offsets.getDouble("RLOFF", 0.0)));
 
         m_backRightModule = Mk4SwerveModuleHelper.createFalcon500(
                 tab.getLayout("Back Right Module", BuiltInLayouts.kList)
@@ -163,8 +161,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 BACK_RIGHT_MODULE_DRIVE_MOTOR,
                 BACK_RIGHT_MODULE_STEER_MOTOR,
                 BACK_RIGHT_MODULE_STEER_ENCODER,
-                BACK_RIGHT_MODULE_STEER_OFFSET);
-                // -Math.toRadians(offsets.getDouble("RROFF", 0.0)));
+                // BACK_RIGHT_MODULE_STEER_OFFSET);
+                -Math.toRadians(offsets.getDouble("RROFF", 0.0)));
 
         this.dmsHelper = new DMSHelper();
         storeContantsInNT();
