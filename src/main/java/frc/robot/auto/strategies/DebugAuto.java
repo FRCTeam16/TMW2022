@@ -13,23 +13,19 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Subsystems;
 import frc.robot.commands.SimpleDistanceDriveCommand;
+import frc.robot.commands.auto.InitializeAutoState;
 import frc.robot.commands.testing.ProfiledDistanceDriveCommand;
 import frc.robot.commands.testing.TimedDriveProfiledCommand;
+import frc.robot.subsystems.ShooterSubsystem.ShooterProfile;
 
 public class DebugAuto extends SequentialCommandGroup {
   public DebugAuto() {
     double speed = 0.5;
     double offset = -90.0;
     addCommands(
-      CommandGroupBase.parallel(
-        // new InstantCommand(() -> Subsystems.intakeSubsystem.RaiseIntake()),
-        new InstantCommand(() -> Subsystems.drivetrainSubsystem.resetOdometry(new Pose2d(0, 0, new Rotation2d()))),
-        new InstantCommand(Subsystems.drivetrainSubsystem::zeroGyroscope).andThen(
-        new InstantCommand(() -> Subsystems.drivetrainSubsystem.setGyroOffset(offset)))
-        // new WaitCommand(5.0)
-      ),
-
-      new ProfiledDistanceDriveCommand(45, 0.25, -1, 0).withRobotCentric().withTimeout(3.0)
+      new InitializeAutoState(45, ShooterProfile.Dynamic),
+      new ProfiledDistanceDriveCommand(45, 0.25, -1, 0).withRobotCentric().withTimeout(3.0),
+      new ProfiledDistanceDriveCommand(45, 0.25, 0, -1).withRobotCentric().withTimeout(3.0)
     );
   }
 

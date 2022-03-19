@@ -82,7 +82,7 @@ public class ProfiledDistanceDriveCommand extends CommandBase {
     this.startPose = Subsystems.drivetrainSubsystem.getPose().getTranslation();
     var translation = new Translation2d(xdist, ydist);
     if (!fieldCentric) {
-      translation.rotateBy(Subsystems.drivetrainSubsystem.getGyroscopeRotation());
+      translation = translation.rotateBy(Subsystems.drivetrainSubsystem.getGyroscopeRotation());
     }
     var xy_trans = startPose.plus(translation);
     this.targetPose = new Translation2d(xy_trans.getX(), xy_trans.getY());
