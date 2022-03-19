@@ -12,6 +12,8 @@ import frc.robot.Subsystems;
 
 public class ProfiledDistanceDriveCommand extends CommandBase {
 
+  public static boolean debug = false;  // controls writing sysouts
+
   private double distanceThreshold = 0.05;
   private double angle;
   private double maxSpeed;
@@ -134,11 +136,12 @@ Test new
     double vyMetersPerSecond = speed * Math.sin(driveAngle);
 */
 
+    if (debug) {
     System.out.println(
       "DA: " + driveAngle +
       " | VX: " + vxMetersPerSecond / Constants.Auto.MaxSpeedMetersPerSecond + 
       " | VY: " + vyMetersPerSecond / Constants.Auto.MaxSpeedMetersPerSecond);
-
+    }
 
     var twist = Subsystems.drivetrainSubsystem.getRotationController().calculate(
         Subsystems.drivetrainSubsystem.getGyroscopeRotation().getDegrees(), angle);
@@ -166,7 +169,9 @@ Test new
   @Override
   public boolean isFinished() {
     var distance = Subsystems.drivetrainSubsystem.getPose().getTranslation().getDistance(targetPose);
-    // System.out.println("DIST: " + distance + " | T:" + targetPose + " | C:" + Subsystems.drivetrainSubsystem.getPose().getTranslation());
+    if (debug) {
+      System.out.println("DIST: " + distance + " | T:" + targetPose + " | C:" + Subsystems.drivetrainSubsystem.getPose().getTranslation());
+    }
     return (distance < distanceThreshold);
   }
 }
