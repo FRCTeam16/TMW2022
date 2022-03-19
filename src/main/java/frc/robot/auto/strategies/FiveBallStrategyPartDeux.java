@@ -128,7 +128,7 @@ public class FiveBallStrategyPartDeux extends SequentialCommandGroup {
     double robotAngle = -170.0;
     double speed = 1.0;
     double distX = -4.25;  // -4.5
-    double distY = -0.25;  // -1.0
+    double distY = -0.5;  // -1.0
 
     return CommandGroupBase.sequence(
       // new ProfiledDistanceDriveCommand(robotAngle, speed, 0, -0.1).withTimeout(0.5),
