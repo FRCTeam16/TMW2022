@@ -3,6 +3,7 @@ package frc.robot.subsystems.vision;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.Lifecycle;
 import frc.robot.subsystems.vision.Limelight.CameraMode;
 import frc.robot.subsystems.vision.Limelight.LEDMode;
 import frc.robot.subsystems.vision.Limelight.SceneInfo;
@@ -10,7 +11,7 @@ import frc.robot.subsystems.vision.Limelight.SceneInfo;
 /**
  * Vision subsystem.  
  */
-public class VisionSubsystem extends SubsystemBase {
+public class VisionSubsystem extends SubsystemBase implements Lifecycle {
   private final Limelight limelight;
   private VisionInfo visionInfo = new VisionInfo();
 

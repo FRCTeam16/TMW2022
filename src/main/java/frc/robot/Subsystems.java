@@ -43,9 +43,14 @@ public class Subsystems {
         detectBallSubsystem = new DetectBallSubsystem();
         ledSubsystem = new LEDSubsystem();
 
+        lifecycleSubsystems.add(intakeSubsystem);
+        lifecycleSubsystems.add(climberSubsystem);
+        lifecycleSubsystems.add(visionSubsystem);
         lifecycleSubsystems.add(shooterSubsystem);
         lifecycleSubsystems.add(feederSubsystem);
         lifecycleSubsystems.add(turretSubsystem);
+        lifecycleSubsystems.add(detectBallSubsystem);
+        lifecycleSubsystems.add(ledSubsystem);
     }
 
     public static Subsystems getInstance() {

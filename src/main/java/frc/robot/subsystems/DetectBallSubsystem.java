@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.sensor.RapidReactColorMatcher;
 
-public class DetectBallSubsystem extends SubsystemBase {
+public class DetectBallSubsystem extends SubsystemBase implements Lifecycle {
   private final ColorSensorV3 colorSensor = new ColorSensorV3(Port.kOnboard);
   public final RapidReactColorMatcher detector = new RapidReactColorMatcher(colorSensor);
 

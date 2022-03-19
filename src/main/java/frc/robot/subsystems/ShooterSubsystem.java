@@ -90,7 +90,7 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
 
   @Override
   public void teleopInit() {
-    this.targetRPM = 0;
+    this.disable();
   }
  
   public Boolean atMinimumSpeed() {

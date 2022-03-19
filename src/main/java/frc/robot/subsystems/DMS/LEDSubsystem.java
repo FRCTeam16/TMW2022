@@ -11,8 +11,9 @@ import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Subsystems;
+import frc.robot.subsystems.Lifecycle;
 
-public class LEDSubsystem extends SubsystemBase {
+public class LEDSubsystem extends SubsystemBase implements Lifecycle {
     private boolean running = true;
     private Timer timer = new Timer();
     private SerialPort serial;

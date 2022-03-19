@@ -31,6 +31,7 @@ public class IntakeSubsystem extends SubsystemBase implements Lifecycle {
   @Override
   public void teleopInit() {
     reversed = false;
+    disable();
   }
 
   public void enable() {

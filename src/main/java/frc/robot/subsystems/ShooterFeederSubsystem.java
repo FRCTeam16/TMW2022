@@ -30,6 +30,7 @@ public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
   public void teleopInit() {
     queuingEnabled = false;
     autoFeeder = false;
+    this.dontPull();
   }
 
   @Override
