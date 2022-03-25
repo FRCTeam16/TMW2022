@@ -14,12 +14,13 @@ import frc.robot.auto.strategies.FiveBallStrategyPartDeux;
 import frc.robot.auto.strategies.JustShoot;
 import frc.robot.auto.strategies.RotateTuneStrategy;
 import frc.robot.auto.strategies.SwervePathStrategy;
+import frc.robot.auto.strategies.ShootFirstBall5Ball;
 
 public class AutoManager {
     public enum AutoStrategies {
         DebugAuto, DebugTimed, DebugPath, DebugRotate, 
         FiveBall, TwoBallRight, TwoBallHangar, TwoBallCenter, JustShoot,
-        FiveBallStrategyPartDeux
+        FiveBallStrategyPartDeux,ShootFirstBall5Ball
     }
 
     private final SendableChooser<AutoStrategies> chooser = new SendableChooser<>();
@@ -36,6 +37,8 @@ public class AutoManager {
         chooser.addOption("TwoBall Hangar", AutoStrategies.TwoBallHangar);
         chooser.addOption("JustShoot", AutoStrategies.JustShoot);
         chooser.setDefaultOption("5BS Part Deux", AutoStrategies.FiveBallStrategyPartDeux);
+        chooser.setDefaultOption("First Ball 5 Ball", AutoStrategies.ShootFirstBall5Ball);
+
 
         // chooser.addOption(name, object);
         SmartDashboard.putData(chooser);
@@ -50,6 +53,7 @@ public class AutoManager {
         strategyLookup.put(AutoStrategies.TwoBallHangar, new AbstractTwoBallStrategy(135, -1.27, 1.27));
         strategyLookup.put(AutoStrategies.JustShoot, new JustShoot());
         strategyLookup.put(AutoStrategies.FiveBallStrategyPartDeux, new FiveBallStrategyPartDeux());
+        strategyLookup.put(AutoStrategies.ShootFirstBall5Ball, new ShootFirstBall5Ball());
     }
 
     public Command getSelectedCommand() {

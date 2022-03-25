@@ -18,13 +18,13 @@ public class ShootFirstBall5Ball extends SequentialCommandGroup {
 
     addCommands(
         new InitializeAutoState(-90.0, ShooterProfile.Short),
-        shootFirstBall(2.0),
+        shootFirstBall(1.3),
         pickupFirstBallAndReturn(),
         //pickupIntakeAndMoveBack(),
-        shootLoad(2.0),
+        //shootLoad(2.0),
         // pickupSecondBall(),
         pickupSecondBallAngle(),  
-        shootLoad(1.5),
+        shootLoad(2.0),
         pickupThirdBall(),
         finishAuto()
         );
@@ -34,6 +34,7 @@ public class ShootFirstBall5Ball extends SequentialCommandGroup {
     return CommandGroupBase.sequence(
       new InstantCommand(() -> System.out.println("**** shootLoad: " + DriverStation.getMatchTime())),
       new TrackVisionTargetWithTurretCommand().withTimeout(0.25),
+      new WaitCommand(1),
       new InstantCommand(() -> Subsystems.feederSubsystem.pull(true)),
       new WaitCommand(shootTime), // maybe don't pull if the wrong direction
       new InstantCommand(Subsystems.feederSubsystem::dontPull)
@@ -47,11 +48,12 @@ public class ShootFirstBall5Ball extends SequentialCommandGroup {
 
     return CommandGroupBase.sequence(
         CommandGroupBase.parallel(
+           new InstantCommand(() -> Subsystems.feederSubsystem.pull(false)),
             new InstantCommand(Subsystems.intakeSubsystem::enable),
             new ProfiledDistanceDriveCommand(robotAngle, speed, driveX, driveY)
               .withEndSpeed(0.2)
               .withThreshold(0.02)
-              .withTimeout(3.0)
+              .withTimeout(1.0)
         ),
         new InstantCommand(() -> System.out.println("**** after move: " + DriverStation.getMatchTime())),
         stop(robotAngle).withTimeout(0.1),
@@ -64,26 +66,6 @@ public class ShootFirstBall5Ball extends SequentialCommandGroup {
         
     );
   }
-
-  // private Command pickupIntakeAndMoveBack() {
-  //   double robotAngle = -90.0;
-  //   double speed = 1.0;
-  //   double driveX = 0;
-  //   double driveY = -0.25;
-  //   return CommandGroupBase.sequence(
-  //     new WaitCommand(0.75),
-  //     new InstantCommand(Subsystems.intakeSubsystem::disable),
-  //     new InstantCommand(Subsystems.intakeSubsystem::RaiseIntake),
-  //     CommandGroupBase.parallel(
-  //       new ProfiledDistanceDriveCommand(robotAngle, speed, driveX, driveY)
-  //             .withEndSpeed(0.1)
-  //             .withThreshold(0.02)
-  //             .withTimeout(2.0)
-  //     ),
-  //     stop(robotAngle)
-  //   );
-  // }
-
 
   private Command shootLoad(double shootTime) {
     return CommandGroupBase.sequence(
