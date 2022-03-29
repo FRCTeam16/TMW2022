@@ -176,7 +176,7 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
   public Pair<Boolean, Double> calculateDynamicRPM() {
     var info = Subsystems.visionSubsystem.getVisionInfo();
     if (info.distanceToTarget > 0) {
-      double rpm = 1272 + (3.86 * info.distanceToTarget);
+      double rpm = (100.993*java.lang.Math.sqrt(1.49073*(info.distanceToTarget)-75.6047)+623.172);
       return Pair.of(false, rpm);
     } else {
       // Return current state
