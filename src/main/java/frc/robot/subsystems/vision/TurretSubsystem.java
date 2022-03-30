@@ -122,7 +122,7 @@ public class TurretSubsystem extends SubsystemBase implements Lifecycle{
   }
 
   public void openStop() {
-    runState = RunState.OpenLoop;
+    runState = RunState.Vision;
     openLoopSpeed = 0.0;
   }
 
