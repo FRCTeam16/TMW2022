@@ -36,7 +36,7 @@ public class AutoManager {
         chooser.addOption("TwoBall Center", AutoStrategies.TwoBallCenter);
         chooser.addOption("TwoBall Hangar", AutoStrategies.TwoBallHangar);
         chooser.addOption("JustShoot", AutoStrategies.JustShoot);
-        chooser.setDefaultOption("5BS Part Deux", AutoStrategies.FiveBallStrategyPartDeux);
+        chooser.addOption("5BS Part Deux", AutoStrategies.FiveBallStrategyPartDeux);
         chooser.setDefaultOption("First Ball 5 Ball", AutoStrategies.ShootFirstBall5Ball);
 
 
