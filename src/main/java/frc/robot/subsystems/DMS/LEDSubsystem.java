@@ -92,13 +92,13 @@ public class LEDSubsystem extends SubsystemBase implements Lifecycle {
 
         buffer[0] = (byte) 254;
         buffer[1] = driveStatus.FL.byteValue();
-        buffer[2] = driveStatus.FR.byteValue();
-        buffer[3] = driveStatus.RL.byteValue();
-        buffer[4] = driveStatus.RR.byteValue();
-        buffer[5] = steerStatus.FL.byteValue();
-        buffer[6] = steerStatus.FL.byteValue();
-        buffer[7] = steerStatus.FL.byteValue();
-        buffer[8] = steerStatus.FL.byteValue();
+        buffer[2] = steerStatus.FL.byteValue();
+        buffer[3] = driveStatus.FR.byteValue();
+        buffer[4] = steerStatus.FR.byteValue();
+        buffer[5] = driveStatus.RL.byteValue();
+        buffer[6] = steerStatus.RL.byteValue();
+        buffer[7] = driveStatus.RR.byteValue();
+        buffer[8] = steerStatus.RR.byteValue();
         buffer[9] = (byte) robotState;
         buffer[10] = (byte) allianceColor;
         buffer[11] = (byte) (Subsystems.shooterSubsystem.atMinimumSpeed() ? 1 : 0); // Subsystems.shooterSubsystem.targetRPM; //need to add a shooter up to speed
