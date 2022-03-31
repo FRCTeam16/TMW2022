@@ -91,4 +91,9 @@ public class AutoManager {
         return selected;
     }
 
+    public void showSelectedAuto() {
+        var selected = chooser.getSelected();
+        SmartDashboard.putString("Selected Auto", (selected != null) ? selected.name() : "Unknown" );
+    }
+
 }

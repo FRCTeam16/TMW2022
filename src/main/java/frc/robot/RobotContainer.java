@@ -276,6 +276,10 @@ public class RobotContainer {
         m_autoManager.initializeAuto();
     }
 
+    public void disabledPeriodic() {
+        m_autoManager.showSelectedAuto();
+    }
+
     /**
      * Handle settings initial robot states for teleop
      */
