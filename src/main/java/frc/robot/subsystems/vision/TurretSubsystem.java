@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Subsystems;
 import frc.robot.subsystems.Lifecycle;
+import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.vision.Limelight.LEDMode;
 import frc.robot.subsystems.vision.VisionSubsystem.VisionInfo;
 
@@ -187,9 +188,13 @@ public class TurretSubsystem extends SubsystemBase implements Lifecycle{
     double speed = SmartDashboard.getNumber("Turret/Open/DefaultSpeed", DEFAULT_TURRET_SPEED);
     VisionInfo info = Subsystems.visionSubsystem.getVisionInfo();
 
-    if (info.hasTarget && (Math.abs(info.xOffset) > threshold)) {
+    double visionOffset = info.xOffset;
+    if (ShooterSubsystem.ShooterProfile.Short.equals(Subsystems.shooterSubsystem.getProfile())) {
+      visionOffset += 1.5;  // offset short 1.5 degrees
+    }
+    if (info.hasTarget && (Math.abs(visionOffset) > threshold)) {
       double p = SmartDashboard.getNumber("Turret/Vision/P", vision_kP);
-      speed = MathUtil.clamp(info.xOffset * -p, -0.4 , 0.4);
+      speed = MathUtil.clamp(visionOffset * -p, -0.4 , 0.4);
     } else {
       // No target or within threshold
       speed = 0.0;

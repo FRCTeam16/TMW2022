@@ -130,6 +130,10 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
     shooterHood.set(true);
   }
 
+  public ShooterProfile getProfile() {
+    return this.currentProfile;
+  }
+
   public void setProfile(ShooterProfile profile) {
     double rpm = 0.0;
     switch (profile) {
