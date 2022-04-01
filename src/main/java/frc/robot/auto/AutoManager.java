@@ -46,7 +46,7 @@ public class AutoManager {
 
 
         // chooser.addOption(name, object);
-        SmartDashboard.putData(chooser);
+        SmartDashboard.putData("Auto Selector", chooser);
 
         initializeAuto();
     }

@@ -116,10 +116,10 @@ public class ShootFirstBall5Ball extends SequentialCommandGroup {
 
   // hypotenuce to the tarmac ball is 4.2 meters
   private Command pickupThirdBall() {
-    double robotAngle = -170.0;
+    double robotAngle = -160.0;
     double speed = 1.0;
     double distX = -4.25;  // -4.5
-    double distY = -0.5;  // -1.0
+    double distY = -0.25;  // -1.0
 
     return CommandGroupBase.sequence(
       // new ProfiledDistanceDriveCommand(robotAngle, speed, 0, -0.1).withTimeout(0.5),
