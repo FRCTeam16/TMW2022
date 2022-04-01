@@ -180,6 +180,9 @@ public class RobotContainer {
         SmartDashboard.putData("Climber/Cmd/Enable Soft Limits", new InstantCommand(Subsystems.climberSubsystem::enableSoftLimits).withName("Enable Limits"));
         SmartDashboard.putData("Climber/Cmd/Disable Soft Limits", new InstantCommand(Subsystems.climberSubsystem::disableSoftLimits).withName("Disable Limits"));
 
+        SmartDashboard.putData("Disable Climber Soft Limits SD", new InstantCommand(Subsystems.climberSubsystem::disableSoftLimits));
+
+
         new Button(() -> (Math.abs(gamepad.getRightY()) > 0.10))
                 .whileHeld(() -> {
                     Subsystems.climberSubsystem.setOpenLoopSpeed(-gamepad.getRightY());
@@ -231,6 +234,12 @@ public class RobotContainer {
 
         SmartDashboard.putData("Turret/Cmd/Enable Soft Limits", new InstantCommand(Subsystems.turretSubsystem::enableSoftLimits).withName("Enable Limits"));
         SmartDashboard.putData("Turret/Cmd/Disable Soft Limits", new InstantCommand(Subsystems.turretSubsystem::disableSoftLimits).withName("Disable Limits"));
+
+        // Smart Dashboard specific
+        SmartDashboard.putData("Disable Turret Soft Limits SD", new InstantCommand(Subsystems.turretSubsystem::disableSoftLimits));
+        SmartDashboard.putData("Enable Soft Limits SD", new InstantCommand(Subsystems.turretSubsystem::enableSoftLimits));
+        SmartDashboard.putData("Zero Turret SD", new RunWithDisabledInstantCommand(Subsystems.turretSubsystem::zeroEncoder));
+
     }
 
     private void configureVisionButtonBindings() {
