@@ -190,7 +190,7 @@ public class TurretSubsystem extends SubsystemBase implements Lifecycle{
 
     double visionOffset = info.xOffset;
     if (ShooterSubsystem.ShooterProfile.Short.equals(Subsystems.shooterSubsystem.getProfile())) {
-      visionOffset += 1.5;  // offset short 1.5 degrees
+      visionOffset += 3;  // offset short 1.5 degrees
     }
     if (info.hasTarget && (Math.abs(visionOffset) > threshold)) {
       double p = SmartDashboard.getNumber("Turret/Vision/P", vision_kP);
