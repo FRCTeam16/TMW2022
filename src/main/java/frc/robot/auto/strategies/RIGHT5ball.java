@@ -108,7 +108,7 @@ public class RIGHT5ball extends SequentialCommandGroup {
       new ProfiledDistanceDriveCommand(robotAngle, speed, distX, distY).withEndSpeed(0.2).withTimeout(3),
       stop(robotAngle),
       // Turn to next
-      new ProfiledDistanceDriveCommand(180.0, 0.2, -0.25, -0.25).withTimeout(0.5),
+      new ProfiledDistanceDriveCommand(180.0, 0.2, -0.25, -0.25).withTimeout(0.7),
       stop(180.0)
     );
   }
