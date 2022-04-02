@@ -14,7 +14,7 @@ import frc.robot.Subsystems;
 import frc.robot.subsystems.Lifecycle;
 
 public class LEDSubsystem extends SubsystemBase implements Lifecycle {
-    private boolean running = true;
+    private boolean running = false;  // FIXME
     private Timer timer = new Timer();
     private SerialPort serial;
 
@@ -53,7 +53,9 @@ public class LEDSubsystem extends SubsystemBase implements Lifecycle {
         // }
 
         try {
-            serial = new SerialPort(57600, SerialPort.Port.kUSB1);
+            if (running) {
+                serial = new SerialPort(57600, SerialPort.Port.kUSB1);
+            }
         } catch (Exception e) {
             System.err.println("Unable to create DMS/LED subsystem, problem with serial port: " + e.getMessage());
             // TODO: probably set bool preventing running
@@ -68,7 +70,13 @@ public class LEDSubsystem extends SubsystemBase implements Lifecycle {
         SmartDashboard.putBoolean("DMS/Running", running);
         SmartDashboard.putBoolean("DMS/HasSerial", (serial != null));
         if (running && serial != null) {
-            SendData(new DriveInfo<Double>(0.0), new DriveInfo<Double>(0.0));
+            try {
+                SendData(new DriveInfo<Double>(0.0), new DriveInfo<Double>(0.0));
+            } catch (Exception e) {
+                // error sending data
+            } catch (Error e) {
+                running = false;
+            }
         }
     }
 

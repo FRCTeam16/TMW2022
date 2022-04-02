@@ -6,6 +6,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -25,6 +26,7 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
   private final CANSparkMax followerMotor = new CANSparkMax(Constants.SHOOTERWHEELLEFT_MOTOR_ID, MotorType.kBrushless);
   public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM;
   private final Solenoid shooterHood = new Solenoid(PneumaticsModuleType.REVPH, 3);
+  //private LinearFilter filter = LinearFilter.singlePoleIIR(0.1, 0.02);
 
   public enum ShooterProfile {
     Short(1650), Long(2055), LowGoal(800), TarmacEdge(2200), AutoCenterEdge(1700), Downtown(2500), Dynamic(0), Off(0);
@@ -181,7 +183,11 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
     var info = Subsystems.visionSubsystem.getVisionInfo();
     if (info.distanceToTarget > 0) {
       double rpm = (100.993*java.lang.Math.sqrt(1.49073*(info.distanceToTarget)-75.6047)+623.172);
+      //SmartDashboard.putNumber("Raw RPM", rpm);
+     //rpm = filter.calculate(rpm);
+     //SmartDashboard.putNumber("Filter RPM", rpm);
       return Pair.of(false, rpm);
+     
     } else {
       // Return current state
       return Pair.of(shooterHood.get(), targetRPM);

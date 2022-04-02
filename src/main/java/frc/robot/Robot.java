@@ -32,7 +32,7 @@ public class Robot extends TimedRobot {
     // and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-    addPeriodic(Subsystems.ledSubsystem::Report, 0.25);
+    // TODO: addPeriodic(Subsystems.ledSubsystem::Report, 0.25);
   }
 
   /**
