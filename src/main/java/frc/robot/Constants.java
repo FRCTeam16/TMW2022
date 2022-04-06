@@ -44,6 +44,7 @@ public final class Constants {
     public static final int SHOOTERWHEELLEFT_MOTOR_ID = 17; // Motor ID for one of the shooter motors
     public static final int SHOOTERFEEDER_MOTOR_ID = 11; // Motor ID for the feeder for the shooter
     public static final int TURRET_MOTOR_ID = 18; //Motor ID for the turret
+    public static final int BACKSPIN_BOI_ID = 19;
     
     public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 1; // FIXME Set front left module drive motor ID
     public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 2; // FIXME Set front left module steer motor ID

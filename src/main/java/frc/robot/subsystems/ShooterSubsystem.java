@@ -19,11 +19,12 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
 
   private boolean enabled = false;
 
-  private final CANSparkMax rightShooterMotor = new CANSparkMax(Constants.SHOOTERWHEELRIGHT_MOTOR_ID,
-      MotorType.kBrushless);
+  private final CANSparkMax rightShooterMotor = new CANSparkMax(Constants.SHOOTERWHEELRIGHT_MOTOR_ID, MotorType.kBrushless);
+  private final CANSparkMax followerMotor = new CANSparkMax(Constants.SHOOTERWHEELLEFT_MOTOR_ID, MotorType.kBrushless);
+  private final CANSparkMax backspinMotor = new CANSparkMax(Constants.BACKSPIN_BOI_ID, MotorType.kBrushless);
+
   private final double DEFAULT_SHOOTER_SPEED = .3;
   private static final String SHOOTER_SPEED_KEY = "Shooter Speed";
-  private final CANSparkMax followerMotor = new CANSparkMax(Constants.SHOOTERWHEELLEFT_MOTOR_ID, MotorType.kBrushless);
   public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM;
   private final Solenoid shooterHood = new Solenoid(PneumaticsModuleType.REVPH, 3);
   //private LinearFilter filter = LinearFilter.singlePoleIIR(0.1, 0.02);
@@ -46,9 +47,16 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
   // 2100 + hoodopen for right outside the tarmac
 
   public ShooterSubsystem() {
+    rightShooterMotor.restoreFactoryDefaults();
+    followerMotor.restoreFactoryDefaults();
+
+
     followerMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
     rightShooterMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
     followerMotor.follow(rightShooterMotor, true);
+
+    backspinMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
+    backspinMotor.setInverted(true);
 
     shooterHood.set(false);
 
@@ -87,6 +95,8 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
     SmartDashboard.putNumber("Shooter/Max Output", kMaxOutput);
     SmartDashboard.putNumber("Shooter/Min Output", kMinOutput);
     SmartDashboard.setDefaultNumber("Shooter/TargetRPM", targetRPM);
+
+    SmartDashboard.setDefaultNumber("Shooter/Backspin/Percent", 0.0);
 
   }
 
@@ -268,5 +278,10 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
         rightShooterMotor.set(rightShooterSpeed);
       }
     }
+
+    
+    double backspinPercent = SmartDashboard.getNumber("Shooter/Backspin/Percent", 0.0);
+    SmartDashboard.putNumber("Shooter/Backspin/ActualRPM", backspinMotor.getEncoder().getVelocity());
+    backspinMotor.set(backspinPercent);
   }
 }

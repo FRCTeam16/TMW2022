@@ -22,6 +22,7 @@ public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
   private boolean autoFeeder = false;
 
   public ShooterFeederSubsystem() {
+    feederMotor.restoreFactoryDefaults();
     feederMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
     SmartDashboard.setDefaultNumber(FEEDER_SPEED_KEY, DEFAULT_FEEDER_SPEED);
   }
@@ -84,7 +85,7 @@ public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
     }
 
     SmartDashboard.putNumber("Feeder/Amps", feederMotor.getOutputCurrent());
-
+    // System.out.println("Setting feeder speed: " + feederSpeed + " | shooting: " + shooting + " | autoFeeder: " + autoFeeder);
     feederMotor.set(feederSpeed);
   }
 
