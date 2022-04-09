@@ -40,7 +40,7 @@ public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
   @Override
   public void autoInit() {
     autoFeeder = true;
-    queuingEnabled = false;
+    // queuingEnabled = false;
   }
 
   public void pull(boolean override) {
@@ -93,24 +93,4 @@ public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
     feederMotor.set(feederSpeed);
   }
 
-  /**
-   * Returns whether the ball matches our alliance color OR was not identified
-   */
-  public boolean doesBallMatchAlliance() {
-    RapidReactColorMatcher.MatchedColor allianceColor = MatchedColor.Unknown;
-
-    if (DriverStation.getAlliance() == Alliance.Red) {
-      allianceColor = MatchedColor.Red;
-
-    } else if (DriverStation.getAlliance() == Alliance.Blue) {
-      allianceColor = MatchedColor.Blue;
-    }
-
-    if (allianceColor == MatchedColor.Unknown ||
-        allianceColor == Subsystems.detectBallSubsystem.getDetector().getMatchedColor()) {
-      return true;
-    }
-
-    return false;
-  }
 }

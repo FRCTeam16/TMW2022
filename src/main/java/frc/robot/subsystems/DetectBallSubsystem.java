@@ -28,6 +28,10 @@ public class DetectBallSubsystem extends SubsystemBase implements Lifecycle {
     return this.detector.getDetectedColor();
   }
 
+  public boolean doesBallMatchAlliance() {
+    return this.detector.doesBallMatchAlliance();
+  }
+
   public RapidReactColorMatcher getDetector() {
     return this.detector;
   }

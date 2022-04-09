@@ -252,6 +252,11 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
         targetRPM = dynamicInfo.getSecond();
       }
 
+      // Finally do a check about alliance matching
+      if (Subsystems.detectBallSubsystem.isBallDetected() && !Subsystems.detectBallSubsystem.doesBallMatchAlliance()) {
+        System.out.println("!!! EJECTING MISMATCHED BALL !!!");
+        targetRPM = ShooterProfile.LowGoal.value;
+      }
       targetRPM = MathUtil.clamp(targetRPM, -maxRPM, maxRPM);
 
 
