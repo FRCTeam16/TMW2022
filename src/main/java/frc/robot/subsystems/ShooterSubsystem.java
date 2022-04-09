@@ -209,6 +209,7 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
 
     if (!enabled) {
       rightShooterMotor.set(0.0);
+      backspinMotor.set(0.0);
       return;
     }
 
