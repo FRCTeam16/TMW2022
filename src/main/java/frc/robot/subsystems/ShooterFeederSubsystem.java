@@ -14,7 +14,10 @@ import frc.robot.sensor.RapidReactColorMatcher.MatchedColor;
 
 public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
   private boolean shooting = false;
-  private boolean queuingEnabled = false;
+
+  private boolean queuingEnabled = true;
+  private boolean haltWhenQueued = false;
+  private static final double QUEUING_FEEDER_SPEED = -0.2;
 
   private final CANSparkMax feederMotor = new CANSparkMax(Constants.SHOOTERFEEDER_MOTOR_ID, MotorType.kBrushless);
   private final double DEFAULT_FEEDER_SPEED = -1;
@@ -24,11 +27,12 @@ public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
   public ShooterFeederSubsystem() {
     feederMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
     SmartDashboard.setDefaultNumber(FEEDER_SPEED_KEY, DEFAULT_FEEDER_SPEED);
+    SmartDashboard.setDefaultNumber("Feeder/QueuingSpeed", QUEUING_FEEDER_SPEED);
   }
 
   @Override
   public void teleopInit() {
-    queuingEnabled = false;
+    // queuingEnabled = false;
     autoFeeder = false;
     this.dontPull();
   }
@@ -66,6 +70,7 @@ public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
     double feederSpeed = 0.0;
 
     if (shooting) {
+      haltWhenQueued = false;
       if (!autoFeeder) {
         if (Subsystems.shooterSubsystem.atMinimumSpeed()) {
           feederSpeed = SmartDashboard.getNumber(FEEDER_SPEED_KEY, DEFAULT_FEEDER_SPEED);
@@ -74,17 +79,17 @@ public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
         feederSpeed = -0.5;
       }
     } else if (queuingEnabled == true) {
-      if (Subsystems.detectBallSubsystem.isBallDetected()) {
+      if (haltWhenQueued || Subsystems.detectBallSubsystem.isBallDetected()) {
         // TODO: Shooter needs to check doesBallMatchAlliance or we should signal them
         feederSpeed = 0.0;
+        haltWhenQueued = true;
       } else {
         // no ball was detected, just run feeder until we queue a ball
-        feederSpeed = SmartDashboard.getNumber(FEEDER_SPEED_KEY, DEFAULT_FEEDER_SPEED);
+        feederSpeed = SmartDashboard.getNumber("Feeder/QueuingSpeed", QUEUING_FEEDER_SPEED);
       }
     }
 
     SmartDashboard.putNumber("Feeder/Amps", feederMotor.getOutputCurrent());
-
     feederMotor.set(feederSpeed);
   }
 

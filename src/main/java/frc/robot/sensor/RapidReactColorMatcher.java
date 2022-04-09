@@ -19,6 +19,8 @@ public class RapidReactColorMatcher {
 
     private final ColorMatch colorMatcher = new ColorMatch();
 
+    private final double DISTANCE_THRESHOLD = 500;
+
     private int proximity = -1;
     private Color detectedColor;
     private MatchedColor matchedColor;
@@ -34,6 +36,10 @@ public class RapidReactColorMatcher {
     public int getProximity() {
         return proximity;
     }
+
+    public boolean isBallDetected() {
+        return this.getProximity() > DISTANCE_THRESHOLD;
+      }
 
     public Color getDetectedColor() {
         return this.detectedColor;
@@ -65,7 +71,9 @@ public class RapidReactColorMatcher {
             SmartDashboard.putNumber("ColorSensor/Blue", detectedColor.blue);
             SmartDashboard.putNumber("ColorSensor/Green", detectedColor.green);
         }
+        SmartDashboard.putBoolean("ColorSensor/Connected", colorSensor.isConnected());
         SmartDashboard.putNumber("ColorSensor/Proximity", proximity);
+        SmartDashboard.putBoolean("ColorSensor/BallDetected", this.isBallDetected());
         SmartDashboard.putString("ColorSensor/Detected Color", (matchedColor != null) ? matchedColor.name() : "Null Matched Color");
         SmartDashboard.putNumber("ColorSensor/Detected Color Confidence", matchedConfidence);
     }
