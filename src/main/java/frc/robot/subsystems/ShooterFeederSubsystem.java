@@ -28,6 +28,7 @@ public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
     feederMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
     SmartDashboard.setDefaultNumber(FEEDER_SPEED_KEY, DEFAULT_FEEDER_SPEED);
     SmartDashboard.setDefaultNumber("Feeder/QueuingSpeed", QUEUING_FEEDER_SPEED);
+    SmartDashboard.setDefaultBoolean("Feeder/QueuingEnabled", queuingEnabled);
   }
 
   @Override
@@ -79,7 +80,7 @@ public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
         feederSpeed = -0.5;
       }
     } else if (queuingEnabled == true) {
-      if (haltWhenQueued || Subsystems.detectBallSubsystem.isBallDetected()) {
+      if (Subsystems.detectBallSubsystem.isBallDetected()) {
         // TODO: Shooter needs to check doesBallMatchAlliance or we should signal them
         feederSpeed = 0.0;
         haltWhenQueued = true;
@@ -89,6 +90,7 @@ public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
       }
     }
 
+    SmartDashboard.putBoolean("Feeder/QueuingEnabled", queuingEnabled);
     SmartDashboard.putNumber("Feeder/Amps", feederMotor.getOutputCurrent());
     feederMotor.set(feederSpeed);
   }
