@@ -163,6 +163,13 @@ public class TurretSubsystem extends SubsystemBase implements Lifecycle{
     SmartDashboard.putNumber("Turret/EncPosition", turretMotor.getEncoder().getPosition());
     SmartDashboard.putString("Turret/RunState", runState.name());
     SmartDashboard.putBoolean("Turret/AtZero", this.atZero());
+
+    // Preempt turret control for mismatched balls
+    if (Subsystems.detectBallSubsystem.isBallDetected() && !Subsystems.detectBallSubsystem.doesBallMatchAlliance()) {
+      setTurretPosition(TurretPositions.Center);
+      positionPIDPeriodic();
+      return;
+    }
     
     if (runState == RunState.ClosedLoop) {
       positionPIDPeriodic();
