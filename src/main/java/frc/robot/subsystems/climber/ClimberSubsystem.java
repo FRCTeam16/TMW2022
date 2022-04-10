@@ -84,11 +84,13 @@ public class ClimberSubsystem extends SubsystemBase implements Lifecycle{
   }
 
   public void enableLimitSwitches() {
+    System.out.println("[Climber] Enabling Limit Switches");
     this.forwardLimitSwitch.enableLimitSwitch(true);
     this.backwardLimitSwitch.enableLimitSwitch(true);
   }
 
   public void disableLimitSwitches() {
+    System.out.println("[Climber] Disabling Limit Switches");
     this.forwardLimitSwitch.enableLimitSwitch(false);
     this.backwardLimitSwitch.enableLimitSwitch(false);
   }

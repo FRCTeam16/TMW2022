@@ -186,6 +186,9 @@ public class RobotContainer {
         SmartDashboard.putData("Disable Climber Soft Limits SD", new InstantCommand(Subsystems.climberSubsystem::disableSoftLimits));
         SmartDashboard.putData("Disable Climber Hard Limits SD", new InstantCommand(Subsystems.climberSubsystem::disableLimitSwitches));
 
+        new Button(() -> leftJoy.getRawButton(11)).whenPressed(Subsystems.climberSubsystem::enableLimitSwitches);
+        new Button(() -> leftJoy.getRawButton(12)).whenPressed(Subsystems.climberSubsystem::disableLimitSwitches);
+
 
         new Button(() -> (Math.abs(gamepad.getRightY()) > 0.10))
                 .whileHeld(() -> {

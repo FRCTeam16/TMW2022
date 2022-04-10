@@ -59,6 +59,7 @@ public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
   }
 
   public void disableQueuing() {
+    System.out.println("[ShooterFeederSubsystem] Disabling Queuing");
     this.queuingEnabled = false;
   }
 
