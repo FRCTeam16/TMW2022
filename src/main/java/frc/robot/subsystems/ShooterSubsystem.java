@@ -29,6 +29,8 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
   private final Solenoid shooterHood = new Solenoid(PneumaticsModuleType.REVPH, 3);
   //private LinearFilter filter = LinearFilter.singlePoleIIR(0.1, 0.02);
 
+  private boolean minimumSpeedCheckEnabled = true;
+
   public enum ShooterProfile {
     Short(1650), Long(2055), LowGoal(800), TarmacEdge(2200), AutoCenterEdge(1700), Downtown(2500), Dynamic(0), Off(0);
 
@@ -105,7 +107,10 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
     this.disable();
   }
  
-  public Boolean atMinimumSpeed() {
+  public boolean atMinimumSpeed() {
+    if (!minimumSpeedCheckEnabled) {
+      return true;
+    }
     boolean retVal = false;
     if (targetRPM != 0) {
       double speedRatio = rightShooterMotor.getEncoder().getVelocity() / targetRPM;
@@ -116,6 +121,10 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
     return retVal;
 
   };
+
+  public void disableMinimumSpeedCheck() {
+    this.minimumSpeedCheckEnabled = false;
+  }
 
   public void enable() {
     this.enabled = true;

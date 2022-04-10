@@ -68,9 +68,12 @@ public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
 
     if (shooting) {
       if (!autoFeeder) {
-        if (Subsystems.shooterSubsystem.atMinimumSpeed()) {
-          feederSpeed = SmartDashboard.getNumber(FEEDER_SPEED_KEY, DEFAULT_FEEDER_SPEED);
-        }
+        feederSpeed = SmartDashboard.getNumber(FEEDER_SPEED_KEY, DEFAULT_FEEDER_SPEED);
+        // if (Subsystems.shooterSubsystem.atMinimumSpeed()) {
+        //   feederSpeed = SmartDashboard.getNumber(FEEDER_SPEED_KEY, DEFAULT_FEEDER_SPEED);
+        // } else {
+        //   System.out.println("Not at minimum speed");
+        // }
       } else {
         feederSpeed = -0.5;
       }
