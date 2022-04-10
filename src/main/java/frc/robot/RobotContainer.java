@@ -61,6 +61,8 @@ public class RobotContainer {
 
     public static Alliance alliance = Alliance.Invalid;
 
+    // private final CameraControl cameraControl = new CameraControl();
+
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
@@ -177,10 +179,12 @@ public class RobotContainer {
 
         SmartDashboard.putData("Zero Climber Encoder", new RunWithDisabledInstantCommand(Subsystems.climberSubsystem::zeroClimberEncoder).withName("Zero Climber Encoder"));
 
-        SmartDashboard.putData("Climber/Cmd/Enable Soft Limits", new InstantCommand(Subsystems.climberSubsystem::enableSoftLimits).withName("Enable Limits"));
-        SmartDashboard.putData("Climber/Cmd/Disable Soft Limits", new InstantCommand(Subsystems.climberSubsystem::disableSoftLimits).withName("Disable Limits"));
+        SmartDashboard.putData("Climber/Cmd/Enable Soft Limits", new InstantCommand(Subsystems.climberSubsystem::enableSoftLimits).withName("Enable Soft Limits"));
+        SmartDashboard.putData("Climber/Cmd/Disable Soft Limits", new InstantCommand(Subsystems.climberSubsystem::disableSoftLimits).withName("Disable Soft Limits"));
 
+        // Smart Dashboard Specific
         SmartDashboard.putData("Disable Climber Soft Limits SD", new InstantCommand(Subsystems.climberSubsystem::disableSoftLimits));
+        SmartDashboard.putData("Disable Climber Hard Limits SD", new InstantCommand(Subsystems.climberSubsystem::disableLimitSwitches));
 
 
         new Button(() -> (Math.abs(gamepad.getRightY()) > 0.10))
