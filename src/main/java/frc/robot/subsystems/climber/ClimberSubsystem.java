@@ -1,9 +1,11 @@
 package frc.robot.subsystems.climber;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkMaxLimitSwitch.Type;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -22,6 +24,9 @@ public class ClimberSubsystem extends SubsystemBase implements Lifecycle{
   private final CANSparkMax followerMotor  = new CANSparkMax(Constants.LEFTCLIMBER_MOTOR_ID, MotorType.kBrushless);
   private final DoubleSolenoid climberSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 1, 5);
   private final DoubleSolenoid climberSolenoid2 = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 4);
+
+  private final SparkMaxLimitSwitch forwardLimitSwitch = climberMotor.getForwardLimitSwitch(Type.kNormallyOpen);
+  private final SparkMaxLimitSwitch backwardLimitSwitch = climberMotor.getReverseLimitSwitch(Type.kNormallyOpen);
 
  
   // Current control state of the subsystem
@@ -50,6 +55,11 @@ public class ClimberSubsystem extends SubsystemBase implements Lifecycle{
     climberMotor.setIdleMode(IdleMode.kBrake);
     followerMotor.setIdleMode(IdleMode.kBrake);
     followerMotor.follow(climberMotor, true);
+
+    enableLimitSwitches();
+    
+
+    
     // climberMotor.setSoftLimit(SoftLimitDirection.kForward, 124);
     // climberMotor.setSoftLimit(SoftLimitDirection.kReverse, 0);
     // enableSoftLimits();  
@@ -73,6 +83,16 @@ public class ClimberSubsystem extends SubsystemBase implements Lifecycle{
     SmartDashboard.putNumber("Climber/OpenLoop/Pull Speed", 0.2);
   }
 
+  public void enableLimitSwitches() {
+    this.forwardLimitSwitch.enableLimitSwitch(true);
+    this.backwardLimitSwitch.enableLimitSwitch(true);
+  }
+
+  public void disableLimitSwitches() {
+    this.forwardLimitSwitch.enableLimitSwitch(false);
+    this.backwardLimitSwitch.enableLimitSwitch(false);
+  }
+
   public void enableSoftLimits() {
     this.climberMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
     this.climberMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
@@ -82,7 +102,6 @@ public class ClimberSubsystem extends SubsystemBase implements Lifecycle{
     this.climberMotor.enableSoftLimit(SoftLimitDirection.kForward, false);
     this.climberMotor.enableSoftLimit(SoftLimitDirection.kReverse, false);
   }
-
 
   public void setOpenLoopSpeed(double value) {
     // We could use the actual value and clamp it, etc.
