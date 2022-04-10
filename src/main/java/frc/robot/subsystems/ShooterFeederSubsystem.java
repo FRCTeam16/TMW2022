@@ -3,21 +3,17 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Subsystems;
-import frc.robot.sensor.RapidReactColorMatcher;
-import frc.robot.sensor.RapidReactColorMatcher.MatchedColor;
 
 public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
   private boolean shooting = false;
 
   private boolean queuingEnabled = true;
   private boolean haltWhenQueued = false;
-  private static final double QUEUING_FEEDER_SPEED = -0.2;
+  private static final double QUEUING_FEEDER_SPEED = -0.1;
 
   private final CANSparkMax feederMotor = new CANSparkMax(Constants.SHOOTERFEEDER_MOTOR_ID, MotorType.kBrushless);
   private final double DEFAULT_FEEDER_SPEED = -1;
