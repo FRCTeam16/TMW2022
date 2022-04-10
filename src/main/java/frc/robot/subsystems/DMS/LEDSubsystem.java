@@ -78,7 +78,10 @@ public class LEDSubsystem extends SubsystemBase implements Lifecycle {
                 SendData(new DriveInfo<Double>(0.0), new DriveInfo<Double>(0.0));
             } catch (Exception e) {
                 // error sending data
+                System.out.println("LED EXCEPTION: " + e.getMessage());
+                running = false;
             } catch (Error e) {
+                System.out.println("LED ERROR: " + e.getMessage());
                 running = false;
             }
         }
