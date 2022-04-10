@@ -14,7 +14,7 @@ import frc.robot.Subsystems;
 import frc.robot.subsystems.Lifecycle;
 
 public class LEDSubsystem extends SubsystemBase implements Lifecycle {
-    private boolean running = false;  // FIXME
+    private boolean running = true;
     private Timer timer = new Timer();
     private SerialPort serial;
 
@@ -30,6 +30,8 @@ public class LEDSubsystem extends SubsystemBase implements Lifecycle {
     private static final double INITIAL_IGNORE_TIME = 1.0;
     private static final double MOTOR_TEST_TIME = 4.0;
     private static final double RESULTS_DISPLAY_TIME = 10.0;
+
+    private int secondsToClimb = 30;
 
 
     /** Creates a new LEDSubsystem. */
@@ -51,6 +53,8 @@ public class LEDSubsystem extends SubsystemBase implements Lifecycle {
         // LEDbuffer[13] = c;
         // LEDbuffer[14] = 255; // terminate
         // }
+
+        SmartDashboard.setDefaultNumber("LEDClimbTime", 30);
 
         try {
             if (running) {
@@ -109,15 +113,15 @@ public class LEDSubsystem extends SubsystemBase implements Lifecycle {
         buffer[8] = steerStatus.RR.byteValue();
         buffer[9] = (byte) robotState;
         buffer[10] = (byte) allianceColor;
-        buffer[11] = (byte) (Subsystems.shooterSubsystem.atMinimumSpeed() ? 1 : 0); // Subsystems.shooterSubsystem.targetRPM; //need to add a shooter up to speed
-                               // dms for derrick
-        buffer[12] = (byte) (Subsystems.turretSubsystem.hasVisionTarget() ? 1 : 0);
-        buffer[13] = (byte) 0;
+        buffer[11] = (byte) (Subsystems.shooterSubsystem.atMinimumSpeed() ? 1 : 0);
+        buffer[12] = (byte) secondsToClimb;
+        buffer[13] = (byte) (Subsystems.turretSubsystem.hasVisionTarget() ? 1 : 0);;
         buffer[14] = (byte) 255;
 
         this.serial.write(buffer, buffer.length);
         this.serial.flush();
     }
+    
 
     public void begin() {
         timer.reset();
@@ -158,6 +162,12 @@ public class LEDSubsystem extends SubsystemBase implements Lifecycle {
 
     @Override
     public void periodic() {
+
+        int climbTimeFromDashboard = (int)SmartDashboard.getNumber("LEDClimbTime", 30);
+        if (climbTimeFromDashboard != secondsToClimb) {
+            secondsToClimb = climbTimeFromDashboard;
+        }
+
         if (running) {
             
             switch (currentPhase) {
