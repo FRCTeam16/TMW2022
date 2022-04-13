@@ -126,17 +126,23 @@ public class RobotContainer {
                 .whenPressed(() -> {
                     m_intakeSubsystem.forward();
                     m_intakeSubsystem.enable();
+                    m_intakeSubsystem.DropIntake();
                 })
-                .whenReleased(m_intakeSubsystem::disable);
+                .whenReleased(() -> {
+                    m_intakeSubsystem.disable();
+                    m_intakeSubsystem.RaiseIntake();
+                });
 
         new Button(() -> leftJoy.getRawButton(4))
                 .whenPressed(() -> {
                     Subsystems.intakeSubsystem.reverse();
                     Subsystems.intakeSubsystem.enable();
+                    m_intakeSubsystem.DropIntake();
                 })
                 .whenReleased(() -> {
                     Subsystems.intakeSubsystem.forward();
                     Subsystems.intakeSubsystem.disable();
+                    m_intakeSubsystem.RaiseIntake();
                 });
 
         new Button(() -> gamepad.getPOV() == 0).whenPressed(m_intakeSubsystem::RaiseIntake);

@@ -48,6 +48,8 @@ public class TurretSubsystem extends SubsystemBase implements Lifecycle{
   private double position_kD = 0.0;
   private double targetPosition = 0.0;
 
+  private boolean badBallWasDetected = false;
+
   /** How many units left/right the turret can be and be considered zeroed for climbing */
   private final double TURRET_ZERO_THRESHOLD = 1;
 
@@ -168,7 +170,11 @@ public class TurretSubsystem extends SubsystemBase implements Lifecycle{
     if (Subsystems.detectBallSubsystem.isBallDetected() && !Subsystems.detectBallSubsystem.doesBallMatchAlliance()) {
       setTurretPosition(TurretPositions.Center);
       positionPIDPeriodic();
+      badBallWasDetected = true;
       return;
+    } else {
+      badBallWasDetected = false;
+      runState = RunState.Vision;
     }
     
     if (runState == RunState.ClosedLoop) {
