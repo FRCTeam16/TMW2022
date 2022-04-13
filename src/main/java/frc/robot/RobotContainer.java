@@ -174,6 +174,22 @@ public class RobotContainer {
                 .whenPressed(m_shooterSubsystem::disable);
         new Button(() -> rightJoy.getRawButton(16)).whenPressed(Subsystems.feederSubsystem::disableQueuing);
 
+        new Button(() -> leftJoy.getRawButton(14))
+            .whenPressed(new InstantCommand(() -> {
+                System.out.println("Disabling Bad Ball Detection");
+                Subsystems.turretSubsystem.disableBadBallDetection();
+                Subsystems.shooterSubsystem.disableBadBallDetection();
+            }));
+
+        SmartDashboard.putData("Disable Bad Ball Detection", new InstantCommand(() -> {
+            Subsystems.turretSubsystem.disableBadBallDetection();
+            Subsystems.shooterSubsystem.disableBadBallDetection();
+        }));
+        SmartDashboard.putData("Enable Bad Ball Detection", new InstantCommand(() -> {
+            Subsystems.turretSubsystem.enableBadBallDetection();
+            Subsystems.shooterSubsystem.enableBadBallDetection();
+        }));
+
         SmartDashboard.putData("Shooter Short", new InstantCommand(() -> m_shooterSubsystem.setProfile(ShooterProfile.Short)).withName("Shoot Short"));
         SmartDashboard.putData("Shooter Long", new InstantCommand(() -> m_shooterSubsystem.setProfile(ShooterProfile.Long)).withName("Shoot Long"));
         SmartDashboard.putData("Shooter Off", new InstantCommand(() -> m_shooterSubsystem.setProfile(ShooterProfile.Dynamic)).withName("Shoot Off"));

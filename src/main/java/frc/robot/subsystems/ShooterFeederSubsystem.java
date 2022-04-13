@@ -78,7 +78,6 @@ public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
       }
     } else if (queuingEnabled == true) {
       if (Subsystems.detectBallSubsystem.isBallDetected()) {
-        // TODO: Shooter needs to check doesBallMatchAlliance or we should signal them
         feederSpeed = 0.0;
         haltWhenQueued = true;
       } else {

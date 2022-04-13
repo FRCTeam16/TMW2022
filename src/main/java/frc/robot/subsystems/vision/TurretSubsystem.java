@@ -48,7 +48,7 @@ public class TurretSubsystem extends SubsystemBase implements Lifecycle{
   private double position_kD = 0.0;
   private double targetPosition = 0.0;
 
-  private boolean badBallWasDetected = false;
+  private boolean badBallDetectionEnabled = true;
 
   /** How many units left/right the turret can be and be considered zeroed for climbing */
   private final double TURRET_ZERO_THRESHOLD = 1;
@@ -160,6 +160,9 @@ public class TurretSubsystem extends SubsystemBase implements Lifecycle{
     return Math.abs(position) < TURRET_ZERO_THRESHOLD;
   }
 
+  public void enableBadBallDetection() { this.badBallDetectionEnabled = true; }
+  public void disableBadBallDetection() { this.badBallDetectionEnabled = false; }
+
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Turret/EncPosition", turretMotor.getEncoder().getPosition());
@@ -167,14 +170,14 @@ public class TurretSubsystem extends SubsystemBase implements Lifecycle{
     SmartDashboard.putBoolean("Turret/AtZero", this.atZero());
 
     // Preempt turret control for mismatched balls
-    if (Subsystems.detectBallSubsystem.isBallDetected() && !Subsystems.detectBallSubsystem.doesBallMatchAlliance()) {
-      setTurretPosition(TurretPositions.Center);
-      positionPIDPeriodic();
-      badBallWasDetected = true;
-      return;
-    } else {
-      badBallWasDetected = false;
-      runState = RunState.Vision;
+    if (badBallDetectionEnabled) {
+      if (Subsystems.detectBallSubsystem.isBallDetected() && !Subsystems.detectBallSubsystem.doesBallMatchAlliance()) {
+        setTurretPosition(TurretPositions.Center);
+        positionPIDPeriodic();
+        return;
+      } else {
+        runState = RunState.Vision;
+      }
     }
     
     if (runState == RunState.ClosedLoop) {

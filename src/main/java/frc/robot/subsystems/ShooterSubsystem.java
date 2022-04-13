@@ -6,14 +6,12 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
-import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Subsystems;
-import frc.robot.util.BSMath;
 
 public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
 
@@ -27,6 +25,7 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
   public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM;
   private final Solenoid shooterHood = new Solenoid(PneumaticsModuleType.REVPH, 3);
   //private LinearFilter filter = LinearFilter.singlePoleIIR(0.1, 0.02);
+  private boolean badBallDetectionEnabled = true;
 
   public enum ShooterProfile {
     Short(1650), Long(2055), LowGoal(800), TarmacEdge(2200), AutoCenterEdge(1700), Downtown(2500), Dynamic(0), Off(0);
@@ -115,6 +114,9 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
     this.enabled = false;
     targetRPM = 0;
   }
+
+  public void enableBadBallDetection() { this.badBallDetectionEnabled = true; }
+  public void disableBadBallDetection() { this.badBallDetectionEnabled = false; }
 
   /*
    * 2496.45 RPM works for the corner shot next to the driverstation with hood
@@ -253,7 +255,7 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
       }
 
       // Finally do a check about alliance matching
-      if (Subsystems.detectBallSubsystem.isBallDetected() && !Subsystems.detectBallSubsystem.doesBallMatchAlliance()) {
+      if (badBallDetectionEnabled && Subsystems.detectBallSubsystem.isBallDetected() && !Subsystems.detectBallSubsystem.doesBallMatchAlliance()) {
         targetRPM = ShooterProfile.LowGoal.value;
       }
       targetRPM = MathUtil.clamp(targetRPM, -maxRPM, maxRPM);
