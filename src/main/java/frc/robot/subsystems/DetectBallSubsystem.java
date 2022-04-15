@@ -39,4 +39,8 @@ public class DetectBallSubsystem extends SubsystemBase implements Lifecycle {
   public ColorSensorV3 getColorSensor() {
     return this.colorSensor;
   }
+
+public boolean isEnabled() {
+    return this.colorSensor.isConnected();
+}
 }

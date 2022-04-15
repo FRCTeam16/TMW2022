@@ -84,7 +84,7 @@ public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
       } else {
         feederSpeed = -0.5;
       }
-    } else if (queuingEnabled == true) {
+    } else if (queuingEnabled == true && Subsystems.detectBallSubsystem.isEnabled()) {
       if (Subsystems.detectBallSubsystem.isBallDetected()) {
         feederSpeed = 0.0;
         haltWhenQueued = true;

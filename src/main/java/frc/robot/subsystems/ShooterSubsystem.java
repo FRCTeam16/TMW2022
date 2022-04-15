@@ -5,7 +5,6 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -44,17 +43,24 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
 
   private boolean closedLoop = true;
   private double targetRPM = 0.0;
-  // tested 2255 for long shot
-  // 2100 + hoodopen for right outside the tarmac
+
+  private double backspinTargetRPM = 0.0;
+  private double backspinP = 0.0002;
+  private double backspinI = 0.0;
+  private double backspinD = 0.0;
+  private double backspinFF = 0.000193;
+  
 
   public ShooterSubsystem() {
     rightShooterMotor.restoreFactoryDefaults();
     followerMotor.restoreFactoryDefaults();
+    backspinMotor.restoreFactoryDefaults();
 
 
     followerMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
     rightShooterMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
     followerMotor.follow(rightShooterMotor, true);
+
 
     backspinMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
     backspinMotor.setInverted(true);
@@ -97,7 +103,18 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
     SmartDashboard.putNumber("Shooter/Min Output", kMinOutput);
     SmartDashboard.setDefaultNumber("Shooter/TargetRPM", targetRPM);
 
-    SmartDashboard.setDefaultNumber("Shooter/Backspin/Percent", 0.0);
+    SmartDashboard.setDefaultNumber("Shooter/Backspin/Percent", backspinTargetRPM);
+    SmartDashboard.setDefaultNumber("Shooter/Backspin/P Gain", backspinP);
+    SmartDashboard.setDefaultNumber("Shooter/Backspin/I Gain", backspinI);
+    SmartDashboard.setDefaultNumber("Shooter/Backspin/D Gain", backspinD);
+    SmartDashboard.setDefaultNumber("Shooter/Backspin/Feed Forward", backspinFF);
+    SmartDashboard.setDefaultNumber("Shooter/Backspin/TargetRPM", backspinTargetRPM);
+    
+    var backspinPID = backspinMotor.getPIDController();
+    backspinPID.setP(backspinP);
+    backspinPID.setI(backspinI);
+    backspinPID.setD(backspinD);
+    backspinPID.setFF(backspinFF);
 
   }
 
@@ -159,6 +176,8 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
 
   public void setProfile(ShooterProfile profile) {
     double rpm = 0.0;
+    double backRpm = 0.0;
+
     switch (profile) {
       case Short:
         rpm = SmartDashboard.getNumber("Shooter/Profile/Short", ShooterProfile.Short.value);
@@ -178,8 +197,8 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
         break;
       case Dynamic:
         var dynamicInfo = calculateDynamicRPM();
-        shooterHood.set(dynamicInfo.getFirst());
-        rpm = dynamicInfo.getSecond();
+        rpm = dynamicInfo.shooterRPM;
+        backRpm = dynamicInfo.backspinRPM;
         break;
       case LowGoal:
         rpm = SmartDashboard.getNumber("Shooter/Profile/LowGoal", ShooterProfile.LowGoal.value);
@@ -192,27 +211,43 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
     }
     this.enable();
     this.currentProfile = profile;
-    SmartDashboard.putNumber("Shooter/TargetRPM", rpm);
     this.targetRPM = rpm;
+    this.backspinTargetRPM = backRpm;
   }
 
   /**
    * Calculates the target RPM
    * @ return Pair<boolean, double> - shooter hood state and target RPM
    */
-  public Pair<Boolean, Double> calculateDynamicRPM() {
+  public ShootInfo calculateDynamicRPM() {
+    var shootInfo = new ShootInfo();
     var info = Subsystems.visionSubsystem.getVisionInfo();
     if (info.distanceToTarget > 0) {
-      double rpm = (100.993*java.lang.Math.sqrt(1.49073*(info.distanceToTarget)-75.6047)+623.172);
-      //SmartDashboard.putNumber("Raw RPM", rpm);
-     //rpm = filter.calculate(rpm);
-     //SmartDashboard.putNumber("Filter RPM", rpm);
-      return Pair.of(false, rpm);
-     
+
+      // Hood Open Profiles
+      if (info.distanceToTarget < ShootInfo.BACKSPIN_THRESHOLD) {
+        shootInfo.shooterRPM = 1300;
+        shootInfo.backspinRPM = 2000;
+        shootInfo.hoodOpen = true;
+      }
+      else if (info.distanceToTarget < ShootInfo.HOOD_THRESHOLD) {
+        shootInfo.shooterRPM = (4.55 * info.distanceToTarget) + 432;
+        shootInfo.backspinRPM = 4800;
+        shootInfo.hoodOpen = true;
+      } else {
+        // TODO: Get data for equations
+        shootInfo.shooterRPM = targetRPM;
+        shootInfo.backspinRPM = backspinTargetRPM;
+        shootInfo.hoodOpen = false;
+      }
     } else {
-      // Return current state
-      return Pair.of(shooterHood.get(), targetRPM);
+      // No target detected, return current state
+      shootInfo.shooterRPM = targetRPM;
+      shootInfo.backspinRPM = backspinTargetRPM;
+      shootInfo.hoodOpen = shooterHood.get();
     }
+    // System.out.println("Calculating Dynamic: " + shootInfo);
+    return shootInfo;
   }
 
   @Override
@@ -225,6 +260,9 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
     }
 
     if (closedLoop) {
+
+      // ------------------- Main PID --------------------//
+
       // read PID coefficients from SmartDashboard
       double p = SmartDashboard.getNumber("Shooter/P Gain", 0);
       double i = SmartDashboard.getNumber("Shooter/I Gain", 0);
@@ -268,22 +306,81 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
         targetRPM = rpm;
       }
 
+      // ------------------- Backspin PID --------------------//
+
+      double bp = SmartDashboard.getNumber("Shooter/Backspin/P Gain", 0);
+      double bi = SmartDashboard.getNumber("Shooter/Backspin/I Gain", 0);
+      double bd = SmartDashboard.getNumber("Shooter/Backspin/D Gain", 0);
+      // double biz = SmartDashboard.getNumber("Shooter/Backspin/I Zone", 0);
+      // double bff = SmartDashboard.getNumber("Shooter/Backspin/Feed Forward", 0);
+      // double bmax = SmartDashboard.getNumber("Shooter/Backspin/Max Output", 0);
+      // double bmin = SmartDashboard.getNumber("Shooter/Backspin/Min Output", 0);
+      double brpm = SmartDashboard.getNumber("Shooter/Backspin/TargetRPM", 0);
+
+     var bpidController = backspinMotor.getPIDController();
+     if ((bp != backspinP)) {
+      bpidController.setP(bp);
+      backspinP = bp;
+    }
+    if ((bi != backspinI)) {
+      bpidController.setI(bi);
+      backspinI = bi;
+    }
+    if ((bd != backspinD)) {
+      bpidController.setD(bd);
+      backspinD = bd;
+    }
+    // if ((biz != kIz)) {
+    //   bpidController.setIZone(iz);
+    //   kIz = iz;
+    // }
+    // if ((bff != backspinFF)) {
+    //   bpidController.setFF(bff);
+    //   backspinFF = ff;
+    // }
+    // if ((bmax != kMaxOutput) || (bmin != kMinOutput)) {
+    //   bpidController.setOutputRange(bmin, bmax);
+    //   kMinOutput = bmin;
+    //   kMaxOutput = bmax;
+    // }
+
+    // If our target RPM was overridden by the smart dashboard, update it
+    if (backspinTargetRPM != brpm) {
+      backspinTargetRPM = brpm;
+    }
+
+
+      // ------------------- Dynamic Override --------------------//
       if (currentProfile == ShooterProfile.Dynamic) {
         var dynamicInfo = calculateDynamicRPM();
-        shooterHood.set(dynamicInfo.getFirst());
-        targetRPM = dynamicInfo.getSecond();
+        targetRPM = dynamicInfo.shooterRPM;
+        backspinTargetRPM = dynamicInfo.backspinRPM;
+
+        // TODO: Protect against hood oscillation
+        shooterHood.set(dynamicInfo.hoodOpen);
       }
 
       // Finally do a check about alliance matching
-      if (badBallDetectionEnabled && Subsystems.detectBallSubsystem.isBallDetected() && !Subsystems.detectBallSubsystem.doesBallMatchAlliance()) {
+      if (badBallDetectionEnabled && Subsystems.detectBallSubsystem.isEnabled() && 
+          Subsystems.detectBallSubsystem.isBallDetected() && 
+          !Subsystems.detectBallSubsystem.doesBallMatchAlliance()) {
         targetRPM = ShooterProfile.LowGoal.value;
       }
+
+      // Apply safety RPMs
       targetRPM = MathUtil.clamp(targetRPM, -maxRPM, maxRPM);
 
+      // Send data to controller
+      SmartDashboard.putNumber("Shooter/TargetRPM", targetRPM);
+      SmartDashboard.putNumber("Shooter/Backspin/TargetRPM", backspinTargetRPM);
 
+      // System.out.println("SHOOTER: " + targetRPM + " | BACK: " + backspinTargetRPM);
       rightShooterMotor.getPIDController().setReference(targetRPM, ControlType.kVelocity);
-      SmartDashboard.putNumber("Actual RPM", rightShooterMotor.getEncoder().getVelocity());
+      backspinMotor.getPIDController().setReference(backspinTargetRPM, ControlType.kVelocity);
 
+      SmartDashboard.putNumber("Actual RPM", rightShooterMotor.getEncoder().getVelocity());
+      SmartDashboard.putNumber("Actual Backspin RPM", backspinMotor.getEncoder().getVelocity());
+      SmartDashboard.putNumber("Shooter/Backspin/ActualRPM", backspinMotor.getEncoder().getVelocity());
     } else {
       //
       // Handle Open Loop Control
@@ -292,12 +389,25 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
       if (enabled) {
         rightShooterSpeed = SmartDashboard.getNumber(SHOOTER_SPEED_KEY, DEFAULT_SHOOTER_SPEED);
         rightShooterMotor.set(rightShooterSpeed);
+
+        double backspinPercent = SmartDashboard.getNumber("Shooter/Backspin/Percent", 0.0);
+        SmartDashboard.putNumber("Shooter/Backspin/ActualRPM", backspinMotor.getEncoder().getVelocity());
+        backspinMotor.set(backspinPercent);
       }
     }
+  }
 
-    
-    double backspinPercent = SmartDashboard.getNumber("Shooter/Backspin/Percent", 0.0);
-    SmartDashboard.putNumber("Shooter/Backspin/ActualRPM", backspinMotor.getEncoder().getVelocity());
-    backspinMotor.set(backspinPercent);
+  private class ShootInfo {
+    public static final double BACKSPIN_THRESHOLD = 80;
+    public static final double HOOD_THRESHOLD = 170;
+
+    public double shooterRPM = 0;
+    public double backspinRPM = 0;
+    public boolean hoodOpen = false;
+
+    @Override
+    public String toString() {
+        return "ShootInfo(" + shooterRPM + ", " + backspinRPM + ", " + hoodOpen + ")";
+    }
   }
 }
