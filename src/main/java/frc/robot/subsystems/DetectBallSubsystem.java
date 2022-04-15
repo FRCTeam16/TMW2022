@@ -8,10 +8,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.sensor.RapidReactColorMatcher;
 
 public class DetectBallSubsystem extends SubsystemBase implements Lifecycle {
-  private final ColorSensorV3 colorSensor = new ColorSensorV3(Port.kOnboard);
+  private final ColorSensorV3 colorSensor = new ColorSensorV3(Port.kMXP);
   public final RapidReactColorMatcher detector = new RapidReactColorMatcher(colorSensor);
 
-  private final double DISTANCE_THRESHOLD = 500;
+  
   
   public DetectBallSubsystem() {}
 
@@ -21,11 +21,15 @@ public class DetectBallSubsystem extends SubsystemBase implements Lifecycle {
   }
 
   public boolean isBallDetected() {
-    return this.detector.getProximity() > DISTANCE_THRESHOLD;
+    return this.detector.isBallDetected();
   }
 
   public Color getDetectedColor() {
     return this.detector.getDetectedColor();
+  }
+
+  public boolean doesBallMatchAlliance() {
+    return this.detector.doesBallMatchAlliance();
   }
 
   public RapidReactColorMatcher getDetector() {

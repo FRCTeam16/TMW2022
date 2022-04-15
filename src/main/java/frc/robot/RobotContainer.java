@@ -61,6 +61,8 @@ public class RobotContainer {
 
     public static Alliance alliance = Alliance.Invalid;
 
+    // private final CameraControl cameraControl = new CameraControl();
+
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
@@ -124,17 +126,23 @@ public class RobotContainer {
                 .whenPressed(() -> {
                     m_intakeSubsystem.forward();
                     m_intakeSubsystem.enable();
+                    m_intakeSubsystem.DropIntake();
                 })
-                .whenReleased(m_intakeSubsystem::disable);
+                .whenReleased(() -> {
+                    m_intakeSubsystem.disable();
+                    m_intakeSubsystem.RaiseIntake();
+                });
 
         new Button(() -> leftJoy.getRawButton(4))
                 .whenPressed(() -> {
                     Subsystems.intakeSubsystem.reverse();
                     Subsystems.intakeSubsystem.enable();
+                    m_intakeSubsystem.DropIntake();
                 })
                 .whenReleased(() -> {
                     Subsystems.intakeSubsystem.forward();
                     Subsystems.intakeSubsystem.disable();
+                    m_intakeSubsystem.RaiseIntake();
                 });
 
         new Button(() -> gamepad.getPOV() == 0).whenPressed(m_intakeSubsystem::RaiseIntake);
@@ -166,6 +174,22 @@ public class RobotContainer {
                 .whenPressed(m_shooterSubsystem::disable);
         new Button(() -> rightJoy.getRawButton(16)).whenPressed(Subsystems.feederSubsystem::disableQueuing);
 
+        new Button(() -> leftJoy.getRawButton(14))
+            .whenPressed(new InstantCommand(() -> {
+                System.out.println("Disabling Bad Ball Detection");
+                Subsystems.turretSubsystem.disableBadBallDetection();
+                Subsystems.shooterSubsystem.disableBadBallDetection();
+            }));
+
+        SmartDashboard.putData("Disable Bad Ball Detection", new InstantCommand(() -> {
+            Subsystems.turretSubsystem.disableBadBallDetection();
+            Subsystems.shooterSubsystem.disableBadBallDetection();
+        }));
+        SmartDashboard.putData("Enable Bad Ball Detection", new InstantCommand(() -> {
+            Subsystems.turretSubsystem.enableBadBallDetection();
+            Subsystems.shooterSubsystem.enableBadBallDetection();
+        }));
+
         SmartDashboard.putData("Shooter Short", new InstantCommand(() -> m_shooterSubsystem.setProfile(ShooterProfile.Short)).withName("Shoot Short"));
         SmartDashboard.putData("Shooter Long", new InstantCommand(() -> m_shooterSubsystem.setProfile(ShooterProfile.Long)).withName("Shoot Long"));
         SmartDashboard.putData("Shooter Off", new InstantCommand(() -> m_shooterSubsystem.setProfile(ShooterProfile.Dynamic)).withName("Shoot Off"));
@@ -177,10 +201,15 @@ public class RobotContainer {
 
         SmartDashboard.putData("Zero Climber Encoder", new RunWithDisabledInstantCommand(Subsystems.climberSubsystem::zeroClimberEncoder).withName("Zero Climber Encoder"));
 
-        SmartDashboard.putData("Climber/Cmd/Enable Soft Limits", new InstantCommand(Subsystems.climberSubsystem::enableSoftLimits).withName("Enable Limits"));
-        SmartDashboard.putData("Climber/Cmd/Disable Soft Limits", new InstantCommand(Subsystems.climberSubsystem::disableSoftLimits).withName("Disable Limits"));
+        SmartDashboard.putData("Climber/Cmd/Enable Soft Limits", new InstantCommand(Subsystems.climberSubsystem::enableSoftLimits).withName("Enable Soft Limits"));
+        SmartDashboard.putData("Climber/Cmd/Disable Soft Limits", new InstantCommand(Subsystems.climberSubsystem::disableSoftLimits).withName("Disable Soft Limits"));
 
+        // Smart Dashboard Specific
         SmartDashboard.putData("Disable Climber Soft Limits SD", new InstantCommand(Subsystems.climberSubsystem::disableSoftLimits));
+        SmartDashboard.putData("Disable Climber Hard Limits SD", new InstantCommand(Subsystems.climberSubsystem::disableLimitSwitches));
+
+        new Button(() -> leftJoy.getRawButton(11)).whenPressed(Subsystems.climberSubsystem::enableLimitSwitches);
+        new Button(() -> leftJoy.getRawButton(12)).whenPressed(Subsystems.climberSubsystem::disableLimitSwitches);
 
 
         new Button(() -> (Math.abs(gamepad.getRightY()) > 0.10))

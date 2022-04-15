@@ -3,18 +3,17 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Subsystems;
-import frc.robot.sensor.RapidReactColorMatcher;
-import frc.robot.sensor.RapidReactColorMatcher.MatchedColor;
 
 public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
   private boolean shooting = false;
-  private boolean queuingEnabled = false;
+
+  private boolean queuingEnabled = true;
+  private boolean haltWhenQueued = false;
+  private static final double QUEUING_FEEDER_SPEED = -0.1;
 
   private final CANSparkMax feederMotor = new CANSparkMax(Constants.SHOOTERFEEDER_MOTOR_ID, MotorType.kBrushless);
   private final double DEFAULT_FEEDER_SPEED = -1;
@@ -25,11 +24,13 @@ public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
     feederMotor.restoreFactoryDefaults();
     feederMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
     SmartDashboard.setDefaultNumber(FEEDER_SPEED_KEY, DEFAULT_FEEDER_SPEED);
+    SmartDashboard.setDefaultNumber("Feeder/QueuingSpeed", QUEUING_FEEDER_SPEED);
+    SmartDashboard.setDefaultBoolean("Feeder/QueuingEnabled", queuingEnabled);
   }
 
   @Override
   public void teleopInit() {
-    queuingEnabled = false;
+    // queuingEnabled = false;
     autoFeeder = false;
     this.dontPull();
   }
@@ -37,7 +38,7 @@ public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
   @Override
   public void autoInit() {
     autoFeeder = true;
-    queuingEnabled = false;
+    // queuingEnabled = false;
   }
 
   public void pull(boolean override) {
@@ -59,14 +60,20 @@ public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
   }
 
   public void disableQueuing() {
+    System.out.println("[ShooterFeederSubsystem] Disabling Queuing");
     this.queuingEnabled = false;
   }
 
+  public boolean isShooting() {
+    return shooting;
+  }
+  
   @Override
   public void periodic() {
     double feederSpeed = 0.0;
 
     if (shooting) {
+      haltWhenQueued = false;
       if (!autoFeeder) {
         feederSpeed = SmartDashboard.getNumber(FEEDER_SPEED_KEY, DEFAULT_FEEDER_SPEED);
         // if (Subsystems.shooterSubsystem.atMinimumSpeed()) {
@@ -79,37 +86,17 @@ public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
       }
     } else if (queuingEnabled == true) {
       if (Subsystems.detectBallSubsystem.isBallDetected()) {
-        // TODO: Shooter needs to check doesBallMatchAlliance or we should signal them
         feederSpeed = 0.0;
+        haltWhenQueued = true;
       } else {
         // no ball was detected, just run feeder until we queue a ball
-        feederSpeed = SmartDashboard.getNumber(FEEDER_SPEED_KEY, DEFAULT_FEEDER_SPEED);
+        feederSpeed = SmartDashboard.getNumber("Feeder/QueuingSpeed", QUEUING_FEEDER_SPEED);
       }
     }
 
+    SmartDashboard.putBoolean("Feeder/QueuingEnabled", queuingEnabled);
     SmartDashboard.putNumber("Feeder/Amps", feederMotor.getOutputCurrent());
-    // System.out.println("Setting feeder speed: " + feederSpeed + " | shooting: " + shooting + " | autoFeeder: " + autoFeeder);
     feederMotor.set(feederSpeed);
   }
 
-  /**
-   * Returns whether the ball matches our alliance color OR was not identified
-   */
-  public boolean doesBallMatchAlliance() {
-    RapidReactColorMatcher.MatchedColor allianceColor = MatchedColor.Unknown;
-
-    if (DriverStation.getAlliance() == Alliance.Red) {
-      allianceColor = MatchedColor.Red;
-
-    } else if (DriverStation.getAlliance() == Alliance.Blue) {
-      allianceColor = MatchedColor.Blue;
-    }
-
-    if (allianceColor == MatchedColor.Unknown ||
-        allianceColor == Subsystems.detectBallSubsystem.getDetector().getMatchedColor()) {
-      return true;
-    }
-
-    return false;
-  }
 }

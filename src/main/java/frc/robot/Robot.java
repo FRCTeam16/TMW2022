@@ -3,6 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -32,7 +33,8 @@ public class Robot extends TimedRobot {
     // and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-    // TODO: addPeriodic(Subsystems.ledSubsystem::Report, 0.25);
+    addPeriodic(Subsystems.ledSubsystem::Report, 0.25);
+    // CameraServer.startAutomaticCapture();
   }
 
   /**
