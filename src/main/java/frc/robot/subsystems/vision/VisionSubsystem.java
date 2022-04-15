@@ -23,7 +23,7 @@ public class VisionSubsystem extends SubsystemBase implements Lifecycle {
   /** Creates a new VisionSubsystem. */
   public VisionSubsystem() {
     limelight = new Limelight();
-    double defaultCameraHeight = 33.5;
+    double defaultCameraHeight = 36.5;
     double defaultTargetHeight = 104.0;
     
     SmartDashboard.setDefaultNumber("Vision/CameraHeightInches", defaultCameraHeight);
