@@ -63,6 +63,10 @@ public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
     this.queuingEnabled = false;
   }
 
+  public boolean isShooting() {
+    return shooting;
+  }
+  
   @Override
   public void periodic() {
     double feederSpeed = 0.0;
