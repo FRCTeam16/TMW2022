@@ -51,11 +51,15 @@ public class DefaultDriveCommand extends CommandBase {
              double maxSpeed = SmartDashboard.getNumber("Clamped Shooting Drive Velocity", DRIVE_WHILE_SHOOTING_SPEED);
              double translation = Math.sqrt(translationX*translationX + translationY*translationY);
 
+            //  System.out.println("[ShootDrive Pre] (" + translationX + ", " + translationY + ")");
+
              translation = MathUtil.clamp(translation, -maxSpeed, maxSpeed);
              double angle = Math.atan2(translationY,translationX);
 
-             translationX = translation*Math.cos(angle)*Math.signum(translationX);
-             translationY = translation*Math.sin(angle)*Math.signum(translationY);
+             translationX = translation*Math.cos(angle); //*Math.signum(translationX);
+             translationY = translation*Math.sin(angle); //*Math.signum(translationY);
+
+            //  System.out.println("[ShootDrive Post] (" + translationX + ", " + translationY + ")");
         }
 
         final ChassisSpeeds chassisSpeeds = (m_fieldRelativeSupplier.getAsBoolean()) ?
