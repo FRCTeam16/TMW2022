@@ -18,9 +18,9 @@ import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants;
 import frc.robot.Subsystems;
 
-public class SwervePathStrategy extends SequentialCommandGroup {
+public class DebugSwervePathStrategy extends SequentialCommandGroup {
   /** Creates a new SwervePathStrategy. */
-  public SwervePathStrategy() {
+  public DebugSwervePathStrategy() {
     addCommands(
         new InstantCommand(() -> Subsystems.drivetrainSubsystem.resetOdometry(new Pose2d())),
         generateCommand());

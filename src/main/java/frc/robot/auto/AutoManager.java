@@ -16,7 +16,7 @@ import frc.robot.auto.strategies.LEFT5ball;
 import frc.robot.auto.strategies.RIGHT5ball;
 import frc.robot.auto.strategies.RotateTuneStrategy;
 import frc.robot.auto.strategies.ScrambleHangar;
-import frc.robot.auto.strategies.SwervePathStrategy;
+import frc.robot.auto.strategies.DebugSwervePathStrategy;
 import frc.robot.auto.strategies.ShootFirstBall5Ball;
 
 public class AutoManager {
@@ -82,7 +82,7 @@ public class AutoManager {
                     break;
     
                 case DebugPath:
-                    selected = new SwervePathStrategy();
+                    selected = new DebugSwervePathStrategy();
                     break;
     
                 case DebugRotate:
