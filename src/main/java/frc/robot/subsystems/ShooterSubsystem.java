@@ -236,7 +236,7 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
         shootInfo.hoodOpen = true;
       } else {
         // TODO: Get data for equations
-        shootInfo.shooterRPM = targetRPM;
+        shootInfo.shooterRPM = (3.68*info.distanceToTarget) + 609;
         shootInfo.backspinRPM = backspinTargetRPM;
         shootInfo.hoodOpen = false;
       }
@@ -399,7 +399,7 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
 
   private class ShootInfo {
     public static final double BACKSPIN_THRESHOLD = 80;
-    public static final double HOOD_THRESHOLD = 170;
+    public static final double HOOD_THRESHOLD = 160;
 
     public double shooterRPM = 0;
     public double backspinRPM = 0;
