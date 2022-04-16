@@ -2,56 +2,59 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.Subsystems;
-import frc.robot.subsystems.DrivetrainSubsystem;
 
-@Deprecated /* Use TurnToAngleCommand */
-public class ProfiledTurnToAngleCommand extends TrapezoidProfileCommand {
+public class ProfiledTurnToAngleCommand extends CommandBase {
+  private double targetAngle;
+  private State goal;
+  private State currentState;
+
 
   public ProfiledTurnToAngleCommand(double targetAngle) {
-    this(targetAngle, Subsystems.drivetrainSubsystem);
+    this.targetAngle = targetAngle;
+    this.goal = new State(targetAngle, 0.0);
+
     addRequirements(Subsystems.drivetrainSubsystem);
   }
 
-  public ProfiledTurnToAngleCommand(double targetAngle, DrivetrainSubsystem drivetrain) {
-    this(targetAngle, true, drivetrain);
+  // Called when the command is initially scheduled.
+  @Override
+  public void initialize() {
+    this.currentState = new State(
+      Subsystems.drivetrainSubsystem.getGyroscopeRotation().getDegrees(), 0.0);
   }
 
-  public ProfiledTurnToAngleCommand(double targetAngle, boolean fieldCentric, DrivetrainSubsystem drivetrain) {
-    super(
-        // The motion profile to be executed
-        new TrapezoidProfile(
-            // The motion profile constraints
-            new TrapezoidProfile.Constraints(
-              DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_DEGREES_PER_SECOND / 2, 
-              DrivetrainSubsystem.MAX_ANGULAR_ACCELERATION_DEGREES_PER_SECOND_SQUARED / 2 ),
-            // Goal state
-            new TrapezoidProfile.State(targetAngle, 0),
-            // Initial state
-            new TrapezoidProfile.State(drivetrain.getGyroscopeRotation().getDegrees(), 0)),
-        state -> {
-          // Use current trajectory state here
-          var currentRotation = drivetrain.getGyroscopeRotation();
-          var outputDeg = drivetrain.getRotationController().calculate(currentRotation.getDegrees(), state.position);
-          var outputRad = Math.toRadians(outputDeg);
+  // Called every time the scheduler runs while the command is scheduled.
+  @Override
+  public void execute() {
+    double currentDegrees = Subsystems.drivetrainSubsystem.getGyroscopeRotation().getDegrees();
+    double output = Subsystems.drivetrainSubsystem.getRotationController().calculate(currentDegrees, this.targetAngle);
+    this.currentState = new State(currentDegrees, output);
 
-          System.out.println("[TTAC] S.P= " +  state.position + 
-            " | S.V=" + state.velocity + 
-            " | R=" + currentRotation +
-            " | OR=" + outputRad +
-            " | OD= " + outputDeg);
+    var profile = new TrapezoidProfile(
+      Constants.Auto.ThetaControllerConstraints,
+      this.goal,
+      this.currentState
+    );
 
-          drivetrain.drive(
-            (fieldCentric) ? 
-              ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, outputRad, currentRotation):
-              new ChassisSpeeds(0, 0, outputRad));
-        });
+    var outputRads = Math.toRadians(profile.calculate(0.2).velocity);
+
+    System.out.println("PTTAC: output=" + outputRads);
+    Subsystems.drivetrainSubsystem.drive(
+      ChassisSpeeds.fromFieldRelativeSpeeds(
+        0, 0, outputRads, Subsystems.drivetrainSubsystem.getGyroscopeRotation())
+    );
   }
 
+  // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-      return Subsystems.drivetrainSubsystem.getRotationController().atSetpoint();
+    var finished = Subsystems.drivetrainSubsystem.getRotationController().atSetpoint();
+    System.out.println("PTTAC: isFinished? " + finished);
+    return finished;
   }
- 
 }

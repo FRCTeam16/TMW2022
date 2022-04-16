@@ -21,16 +21,26 @@ public class RotateTuneStrategy extends SequentialCommandGroup {
       new InstantCommand(() -> Subsystems.drivetrainSubsystem.resetOdometry(new Pose2d(0, 0, new Rotation2d()))),
       new InstantCommand(() -> Subsystems.drivetrainSubsystem.zeroGyroscope()),
       new InstantCommand(() -> Subsystems.drivetrainSubsystem.setGyroOffset(offset)),
-      // new InstantCommand(() -> Subsystems.drivetrainSubsystem.resetOdometry(new Pose2d(0, 0, new Rotation2d(offset)))),
-      new TurnToAngleCommand(45),
+
+      new ProfiledTurnToAngleCommand(45),
       new WaitCommand(1.5),
-      new TurnToAngleCommand(135),
+      new ProfiledTurnToAngleCommand(135),
       new WaitCommand(1.5),
-      new TurnToAngleCommand(-135),
+      new ProfiledTurnToAngleCommand(-135),
       new WaitCommand(1.5),
-      new TurnToAngleCommand(-45),
+      new ProfiledTurnToAngleCommand(-45),
       new WaitCommand(1.5),
-      new TurnToAngleCommand(0)
+      new ProfiledTurnToAngleCommand(0)
+
+      // new TurnToAngleCommand(45),
+      // new WaitCommand(1.5),
+      // new TurnToAngleCommand(135),
+      // new WaitCommand(1.5),
+      // new TurnToAngleCommand(-135),
+      // new WaitCommand(1.5),
+      // new TurnToAngleCommand(-45),
+      // new WaitCommand(1.5),
+      // new TurnToAngleCommand(0)
     );
   }
 }
