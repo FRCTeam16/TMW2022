@@ -47,7 +47,7 @@ public class DefaultDriveCommand extends CommandBase {
         double rotationSupplier = m_rotationSupplier.getAsDouble();
         Rotation2d gyroRotation = m_drivetrainSubsystem.getGyroscopeRotation();
 
-        if (shootThresholdSpeedEnabled && Subsystems.feederSubsystem.isShooting()) {
+        if (shootThresholdSpeedEnabled && Subsystems.shooterSubsystem.isShootingDriveSpeedThrottle()) {
              double maxSpeed = SmartDashboard.getNumber("Clamped Shooting Drive Velocity", DRIVE_WHILE_SHOOTING_SPEED);
              double translation = Math.sqrt(translationX*translationX + translationY*translationY);
 

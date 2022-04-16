@@ -181,6 +181,10 @@ public class RobotContainer {
                 Subsystems.shooterSubsystem.disableBadBallDetection();
             }));
 
+        new Button(() -> rightJoy.getRawButton(2))
+            .whenPressed(Subsystems.shooterSubsystem::enableShootingDriveSpeedThrottle)
+            .whenReleased(Subsystems.shooterSubsystem::disableShootingDriveSpeedThrottle);
+
         SmartDashboard.putData("Disable Bad Ball Detection", new InstantCommand(() -> {
             Subsystems.turretSubsystem.disableBadBallDetection();
             Subsystems.shooterSubsystem.disableBadBallDetection();

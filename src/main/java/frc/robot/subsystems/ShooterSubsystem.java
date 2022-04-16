@@ -45,6 +45,9 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
   private boolean closedLoop = true;
   private double targetRPM = 0.0;
 
+  // Just tracks whether we want to throttle drive speed or not, used by default drive command
+  private boolean shootingDriveSpeedThrottle = false;
+
   private double backspinTargetRPM = 0.0;
   private double backspinP = 0.0002;
   private double backspinI = 0.0;
@@ -126,6 +129,7 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
   @Override
   public void teleopInit() {
     this.disable();
+    this.shootingDriveSpeedThrottle = false;
   }
  
   public boolean atMinimumSpeed() {
@@ -158,6 +162,10 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
 
   public void enableBadBallDetection() { this.badBallDetectionEnabled = true; }
   public void disableBadBallDetection() { this.badBallDetectionEnabled = false; }
+
+  public void enableShootingDriveSpeedThrottle() { this.shootingDriveSpeedThrottle = true; }
+  public void disableShootingDriveSpeedThrottle() { this.shootingDriveSpeedThrottle = false; }
+  public boolean isShootingDriveSpeedThrottle() { return this.shootingDriveSpeedThrottle; }
 
   /*
    * 2496.45 RPM works for the corner shot next to the driverstation with hood
