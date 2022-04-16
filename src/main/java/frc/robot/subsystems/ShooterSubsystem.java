@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -60,6 +61,10 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
     followerMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
     rightShooterMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
     followerMotor.follow(rightShooterMotor, true);
+
+    followerMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 100);
+    followerMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 500);
+    followerMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 500);
 
 
     backspinMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);

@@ -221,6 +221,7 @@ public class TurretSubsystem extends SubsystemBase implements Lifecycle{
   /**
    * Bug in here somewhere, turret was only moving one direction
    */
+  /*
   private double visionPIDPeriodic() {
     double maxSpeed = SmartDashboard.getNumber("Turret/Open/DefaultSpeed", DEFAULT_TURRET_SPEED);
     double p = SmartDashboard.getNumber("Turret/Vision/P", vision_kP);
@@ -254,6 +255,7 @@ public class TurretSubsystem extends SubsystemBase implements Lifecycle{
     }
     return speed;
   }
+  */
 
   private void positionPIDPeriodic() {
     var positionPID = turretMotor.getPIDController();

@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -12,7 +13,6 @@ public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
   private boolean shooting = false;
 
   private boolean queuingEnabled = true;
-  private boolean haltWhenQueued = false;
   private static final double QUEUING_FEEDER_SPEED = -0.1;
 
   private final CANSparkMax feederMotor = new CANSparkMax(Constants.SHOOTERFEEDER_MOTOR_ID, MotorType.kBrushless);
@@ -23,6 +23,10 @@ public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
   public ShooterFeederSubsystem() {
     feederMotor.restoreFactoryDefaults();
     feederMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
+
+    feederMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 500);
+    feederMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 500);
+
     SmartDashboard.setDefaultNumber(FEEDER_SPEED_KEY, DEFAULT_FEEDER_SPEED);
     SmartDashboard.setDefaultNumber("Feeder/QueuingSpeed", QUEUING_FEEDER_SPEED);
     SmartDashboard.setDefaultBoolean("Feeder/QueuingEnabled", queuingEnabled);
@@ -73,7 +77,6 @@ public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
     double feederSpeed = 0.0;
 
     if (shooting) {
-      haltWhenQueued = false;
       if (!autoFeeder) {
         feederSpeed = SmartDashboard.getNumber(FEEDER_SPEED_KEY, DEFAULT_FEEDER_SPEED);
         // if (Subsystems.shooterSubsystem.atMinimumSpeed()) {
@@ -87,7 +90,6 @@ public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
     } else if (queuingEnabled == true && Subsystems.detectBallSubsystem.isEnabled()) {
       if (Subsystems.detectBallSubsystem.isBallDetected()) {
         feederSpeed = 0.0;
-        haltWhenQueued = true;
       } else {
         // no ball was detected, just run feeder until we queue a ball
         feederSpeed = SmartDashboard.getNumber("Feeder/QueuingSpeed", QUEUING_FEEDER_SPEED);

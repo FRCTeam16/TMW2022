@@ -5,6 +5,7 @@ import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 import com.revrobotics.SparkMaxLimitSwitch.Type;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -56,15 +57,10 @@ public class ClimberSubsystem extends SubsystemBase implements Lifecycle{
     followerMotor.setIdleMode(IdleMode.kBrake);
     followerMotor.follow(climberMotor, true);
 
+    // Increase follower updates
+    // climberMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 5);
+
     enableLimitSwitches();
-    
-
-    
-    // climberMotor.setSoftLimit(SoftLimitDirection.kForward, 124);
-    // climberMotor.setSoftLimit(SoftLimitDirection.kReverse, 0);
-    // enableSoftLimits();  
-    // disableSoftLimits();  
-
     moveSolenoidsBackward();
 
     OpenLoopClimbCommand.ConfigSmartDashboard();
