@@ -12,13 +12,15 @@ import frc.robot.Subsystems;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 public class DefaultDriveCommand extends CommandBase {
+    private static final double DRIVE_WHILE_SHOOTING_SPEED = 0.2 * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND;
+
     private final DrivetrainSubsystem m_drivetrainSubsystem;
 
     private final DoubleSupplier m_translationXSupplier;
     private final DoubleSupplier m_translationYSupplier;
     private final DoubleSupplier m_rotationSupplier;
     private final BooleanSupplier m_fieldRelativeSupplier;
-    private boolean shootThresholdSpeedEnabled = false;
+    private boolean shootThresholdSpeedEnabled = true;
 
     
 
@@ -32,7 +34,7 @@ public class DefaultDriveCommand extends CommandBase {
         this.m_translationYSupplier = translationYSupplier;
         this.m_rotationSupplier = rotationSupplier;
         this.m_fieldRelativeSupplier = fieldRelativeSupplier;
-        SmartDashboard.setDefaultNumber("Clamped Shooting Drive Velocity", 2*DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND);
+        SmartDashboard.setDefaultNumber("Clamped Shooting Drive Velocity", DRIVE_WHILE_SHOOTING_SPEED);
         addRequirements(drivetrainSubsystem);
     }
 
@@ -46,11 +48,10 @@ public class DefaultDriveCommand extends CommandBase {
         Rotation2d gyroRotation = m_drivetrainSubsystem.getGyroscopeRotation();
 
         if (shootThresholdSpeedEnabled && Subsystems.feederSubsystem.isShooting()) {
-             double maxSpeed = SmartDashboard.getNumber("Clamped Shooting Drive Velocity", .2*DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND);
-             double translation = Math.sqrt(translationX*translationX+translationY*translationY);
+             double maxSpeed = SmartDashboard.getNumber("Clamped Shooting Drive Velocity", DRIVE_WHILE_SHOOTING_SPEED);
+             double translation = Math.sqrt(translationX*translationX + translationY*translationY);
 
              translation = MathUtil.clamp(translation, -maxSpeed, maxSpeed);
-             
              double angle = Math.atan2(translationY,translationX);
 
              translationX = translation*Math.cos(angle)*Math.signum(translationX);
