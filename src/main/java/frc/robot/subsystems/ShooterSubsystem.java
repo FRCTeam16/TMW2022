@@ -423,6 +423,8 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
     }
   }
 
+  ERROR
+
   private class ShootInfo {
     // public static final double BACKSPIN_THRESHOLD = 80;
     // public static final double HOOD_THRESHOLD = 165;
