@@ -32,9 +32,10 @@ public class ScrambleHangar extends SequentialCommandGroup {
     // Parent will run Init/pickup/shoot
 
     addCommands(
-        new InitializeAutoState(robotAngle, ShooterProfile.Short),
+        new InitializeAutoState(robotAngle, ShooterProfile.Dynamic),
         pickupFirstBall(), // this one shoots befor the ball is
         shootLoad(),
+        new InstantCommand(Subsystems.turretSubsystem::disableVisionTracking),
         new DisableBadBallDetectionCommand(),
         getCenterBall(),
         getRightball(),
@@ -72,7 +73,7 @@ public class ScrambleHangar extends SequentialCommandGroup {
       new ProfiledDistanceDriveCommand(-100, 0, 0, 0).withTimeout(0.5),
         CommandGroupBase.parallel(
             new InstantCommand(Subsystems.intakeSubsystem::enable),
-            new ProfiledDistanceDriveCommand(-100, 0.6, -0.8, -2.96).withEndSpeed(.1).withTimeout(2.0))
+            new ProfiledDistanceDriveCommand(-100, 0.6, -1.0, -2.96).withEndSpeed(.1).withTimeout(2.0))
         //new TurnToAngleCommand(80).withTimeout(0.5)
         // new ProfiledDistanceDriveCommand(80, 0, 0, 0).withTimeout(0.5));
     );
@@ -82,7 +83,7 @@ public class ScrambleHangar extends SequentialCommandGroup {
     return CommandGroupBase.sequence(
         new ProfiledDistanceDriveCommand(0, 0.4, 0, 4.1).withTimeout(3.0),
         new InstantCommand(() -> Subsystems.shooterSubsystem.setProfile(ShooterProfile.LowGoal)),
-        new ProfiledDistanceDriveCommand(0, 0.6, 1.7, 0).withTimeout(1.5),
+        new ProfiledDistanceDriveCommand(0, 0.6, 1.9, 0).withTimeout(1.5),
         new ProfiledDistanceDriveCommand(0, 0, 0, 0).withTimeout(0.25)
     );
   }
