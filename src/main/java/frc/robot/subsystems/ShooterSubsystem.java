@@ -45,15 +45,18 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
 
   private boolean closedLoop = true;
   private double targetRPM = 0.0;
+  private double lastTargetRPM = 0.0;
 
   // Just tracks whether we want to throttle drive speed or not, used by default drive command
   private boolean shootingDriveSpeedThrottle = false;
 
   private double backspinTargetRPM = 0.0;
-  private double backspinP = 0.0002;
+  private double backspinP = 0.0004;
   private double backspinI = 0.0;
   private double backspinD = 0.0;
   private double backspinFF = 0.000193;
+
+  private ShooterDynamicDistance dynamicDistance = new ShooterDynamicDistance();
   
 
   public ShooterSubsystem() {
@@ -70,7 +73,6 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
     followerMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 500);
     followerMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 500);
 
-
     backspinMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
     backspinMotor.setInverted(true);
 
@@ -84,7 +86,7 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
     SmartDashboard.setDefaultNumber("Shooter/Profile/Downtown", ShooterProfile.Downtown.value);
     SmartDashboard.setDefaultNumber("Shooter/Profile/AutoCenterEdge", ShooterProfile.AutoCenterEdge.value);
 
-    kP = 0.00028;
+    kP = 0.0005;
     kI = 0;
     kD = 0;
     kIz = 0;
@@ -240,26 +242,27 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
   public ShootInfo calculateDynamicRPM() {
     var shootInfo = new ShootInfo();
     var info = Subsystems.visionSubsystem.getVisionInfo();
-    if (info.distanceToTarget > 0) {
+    var range = dynamicDistance.getCurrentShootingRange(info.distanceToTarget);
 
+    if (info.distanceToTarget > 0) {
       // Hood Open Profiles
-      if (info.distanceToTarget < ShootInfo.BACKSPIN_THRESHOLD) {
+      if (ShooterDynamicDistance.Range.Short == range) {
         shootInfo.shooterRPM = 1400;
         shootInfo.backspinRPM = 1000;
         shootInfo.hoodOpen = true;
       }
-      else if (info.distanceToTarget < ShootInfo.HOOD_THRESHOLD) {
+      else if (ShooterDynamicDistance.Range.Middle == range) {
         shootInfo.shooterRPM = (3.1 * info.distanceToTarget) + 497;
         shootInfo.backspinRPM = 4800;
         shootInfo.hoodOpen = true;
-      } else {
-        // TODO: Get data for equations
+      } 
+      else if (ShooterDynamicDistance.Range.Long == range) {
         shootInfo.shooterRPM = (9.99*info.distanceToTarget) -584;
-        shootInfo.backspinRPM = 4800; // backspinTargetRPM;
+        shootInfo.backspinRPM = 4800;
         shootInfo.hoodOpen = false;
       }
     } else {
-      // No target detected, return current state
+      // Range was unknonw,  No target detected, return current state
       shootInfo.shooterRPM = targetRPM;
       shootInfo.backspinRPM = backspinTargetRPM;
       shootInfo.hoodOpen = shooterHood.get();
@@ -271,11 +274,12 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
   @Override
   public void periodic() {
 
-    if (!enabled) {
-      rightShooterMotor.set(0.0);
-      backspinMotor.set(0.0);
-      return;
-    }
+    // FIXME:
+    // if (!enabled) {
+    //   rightShooterMotor.set(0.0);
+    //   backspinMotor.set(0.0);
+    //   return;
+    // }
 
     if (closedLoop) {
 
@@ -292,32 +296,32 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
       double rpm = SmartDashboard.getNumber("Shooter/TargetRPM", 0);
 
       // if PID coefficients on SmartDashboard have changed, write new values to
-      var pidController = rightShooterMotor.getPIDController();
-      if ((p != kP)) {
-        pidController.setP(p);
-        kP = p;
-      }
-      if ((i != kI)) {
-        pidController.setI(i);
-        kI = i;
-      }
-      if ((d != kD)) {
-        pidController.setD(d);
-        kD = d;
-      }
-      if ((iz != kIz)) {
-        pidController.setIZone(iz);
-        kIz = iz;
-      }
-      if ((ff != kFF)) {
-        pidController.setFF(ff);
-        kFF = ff;
-      }
-      if ((max != kMaxOutput) || (min != kMinOutput)) {
-        pidController.setOutputRange(min, max);
-        kMinOutput = min;
-        kMaxOutput = max;
-      }
+      // var pidController = rightShooterMotor.getPIDController();
+      // if ((p != kP)) {
+      //   pidController.setP(p);
+      //   kP = p;
+      // }
+      // if ((i != kI)) {
+      //   pidController.setI(i);
+      //   kI = i;
+      // }
+      // if ((d != kD)) {
+      //   pidController.setD(d);
+      //   kD = d;
+      // }
+      // if ((iz != kIz)) {
+      //   pidController.setIZone(iz);
+      //   kIz = iz;
+      // }
+      // if ((ff != kFF)) {
+      //   pidController.setFF(ff);
+      //   kFF = ff;
+      // }
+      // if ((max != kMaxOutput) || (min != kMinOutput)) {
+      //   pidController.setOutputRange(min, max);
+      //   kMinOutput = min;
+      //   kMaxOutput = max;
+      // }
 
       // If our target RPM was overridden by the smart dashboard, update it
       if (targetRPM != rpm) {
@@ -393,7 +397,12 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
       SmartDashboard.putNumber("Shooter/Backspin/TargetRPM", backspinTargetRPM);
 
       // System.out.println("SHOOTER: " + targetRPM + " | BACK: " + backspinTargetRPM);
-      rightShooterMotor.getPIDController().setReference(targetRPM, ControlType.kVelocity);
+      if ( Math.abs(targetRPM - lastTargetRPM) > 1) {
+        System.out.println("CHANGING RPM");
+        lastTargetRPM = targetRPM;
+        rightShooterMotor.getPIDController().setReference(targetRPM, ControlType.kVelocity);
+      }
+
       backspinMotor.getPIDController().setReference(backspinTargetRPM, ControlType.kVelocity);
 
       SmartDashboard.putNumber("Actual RPM", rightShooterMotor.getEncoder().getVelocity());
@@ -403,21 +412,21 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
       //
       // Handle Open Loop Control
       //
-      double rightShooterSpeed = 0.0;
-      if (enabled) {
-        rightShooterSpeed = SmartDashboard.getNumber(SHOOTER_SPEED_KEY, DEFAULT_SHOOTER_SPEED);
-        rightShooterMotor.set(rightShooterSpeed);
+      // double rightShooterSpeed = 0.0;
+      // if (enabled) {
+      //   rightShooterSpeed = SmartDashboard.getNumber(SHOOTER_SPEED_KEY, DEFAULT_SHOOTER_SPEED);
+      //   rightShooterMotor.set(rightShooterSpeed);
 
-        double backspinPercent = SmartDashboard.getNumber("Shooter/Backspin/Percent", 0.0);
-        SmartDashboard.putNumber("Shooter/Backspin/ActualRPM", backspinMotor.getEncoder().getVelocity());
-        backspinMotor.set(backspinPercent);
-      }
+      //   double backspinPercent = SmartDashboard.getNumber("Shooter/Backspin/Percent", 0.0);
+      //   SmartDashboard.putNumber("Shooter/Backspin/ActualRPM", backspinMotor.getEncoder().getVelocity());
+      //   backspinMotor.set(backspinPercent);
+      // }
     }
   }
 
   private class ShootInfo {
-    public static final double BACKSPIN_THRESHOLD = 80;
-    public static final double HOOD_THRESHOLD = 165;
+    // public static final double BACKSPIN_THRESHOLD = 80;
+    // public static final double HOOD_THRESHOLD = 165;
 
     public double shooterRPM = 0;
     public double backspinRPM = 0;

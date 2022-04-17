@@ -187,6 +187,7 @@ public class TurretSubsystem extends SubsystemBase implements Lifecycle{
       // Open Loop Approaches
       double speed = 0.0;
       if (runState == RunState.OpenLoop) {
+        System.out.println("Setting turret open loop speed: " + openLoopSpeed);
         speed = openLoopSpeed;
       } else if (runState == RunState.Vision) {
         speed = simpleVisionPeriodic();

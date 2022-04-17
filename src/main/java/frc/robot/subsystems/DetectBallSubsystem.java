@@ -10,8 +10,6 @@ import frc.robot.sensor.RapidReactColorMatcher;
 public class DetectBallSubsystem extends SubsystemBase implements Lifecycle {
   private final ColorSensorV3 colorSensor = new ColorSensorV3(Port.kMXP);
   public final RapidReactColorMatcher detector = new RapidReactColorMatcher(colorSensor);
-
-  
   
   public DetectBallSubsystem() {}
 

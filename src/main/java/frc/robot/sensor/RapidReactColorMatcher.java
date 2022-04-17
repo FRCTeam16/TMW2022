@@ -27,6 +27,9 @@ public class RapidReactColorMatcher {
     private MatchedColor matchedColor;
     private double matchedConfidence;
 
+    // just a flag to emit a single sysout when we detect mismatched alliance
+    private boolean badBallDetected = false;    
+
 
     public RapidReactColorMatcher(ColorSensorV3 colorSensor) {
         this.colorSensor = colorSensor;
@@ -94,7 +97,13 @@ public class RapidReactColorMatcher {
         // Currently allow unknown as a pass-thru
         if (allianceColor == MatchedColor.Unknown ||
             allianceColor == this.getMatchedColor()) {
+            badBallDetected = false;
             return true;
+        }
+
+        if (badBallDetected == false) {
+            System.out.println("!!! MISMATCHED BALL DETECTED !!!");
+            badBallDetected = true;
         }
         return false;
     }
