@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Subsystems;
+import frc.robot.commands.DisableBadBallDetectionCommand;
 import frc.robot.commands.TurnToAngleCommand;
 import frc.robot.commands.auto.InitializeAutoState;
 import frc.robot.commands.testing.ProfiledDistanceDriveCommand;
@@ -34,7 +35,7 @@ public class ScrambleHangarOneOnly extends SequentialCommandGroup {
     // Parent will run Init/pickup/shoot
 
     addCommands(
-        new InitializeAutoState(robotAngle, ShooterProfile.Short),
+        new InitializeAutoState(robotAngle, ShooterProfile.Dynamic),
         pickupFirstBall(), // this one shoots befor the ball is
         shootLoad(),
         getWallBall(),
@@ -74,19 +75,19 @@ public class ScrambleHangarOneOnly extends SequentialCommandGroup {
     // 120 x
     return CommandGroupBase.sequence(
       new TurnToAngleCommand(angle).withTimeout(1.0),
-        new ProfiledDistanceDriveCommand(angle, 0.4, 1.1, .94).withTimeout(2.0),
-        new InstantCommand(() -> Subsystems.shooterSubsystem.setProfile(ShooterProfile.HangerDump)),
-        new TurnToAngleCommand(zero).withTimeout(1.0),
-        new WaitCommand(1.0)
+      new InstantCommand(Subsystems.turretSubsystem::disableVisionTracking),
+      new DisableBadBallDetectionCommand(),
+      new ProfiledDistanceDriveCommand(angle, 0.6, 1.3, .94).withTimeout(2.0),
+      new InstantCommand(() -> Subsystems.shooterSubsystem.setProfile(ShooterProfile.LowGoal)),
+      new TurnToAngleCommand(zero).withTimeout(1.0)
     );
   }
 
   private CommandGroupBase shootHangar() {
     return CommandGroupBase.sequence(
-     // new ProfiledDistanceDriveCommand(0, 0.4, -2, 0),
       new InstantCommand(() -> Subsystems.turretSubsystem.centerTurret()),
-      new WaitCommand(0.1),
-      new InstantCommand(Subsystems.feederSubsystem::pull),
+      new WaitCommand(0.2),
+      new InstantCommand(() -> Subsystems.feederSubsystem.pull(true)),
       new WaitCommand(2.0)
     );
   }

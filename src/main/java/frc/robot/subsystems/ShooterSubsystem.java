@@ -31,8 +31,8 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
   private boolean minimumSpeedCheckEnabled = true;
 
   public enum ShooterProfile {
-    Short(1650), Long(2055), LowGoal(800), TarmacEdge(2200), AutoCenterEdge(1700), Downtown(2500), 
-    Dynamic(0), Off(0), HangerDump(1000);
+    Short(1650), Long(2055), LowGoal(500), TarmacEdge(2200), AutoCenterEdge(1700), Downtown(2500), 
+    Dynamic(0), Off(0);
 
     private double value;
 
@@ -88,7 +88,7 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
     kI = 0;
     kD = 0;
     kIz = 0;
-    kFF = 0.00017;
+    kFF = 0.00019;
     kMaxOutput = 1;
     kMinOutput = -1;
     maxRPM = 2500;
@@ -131,6 +131,7 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
   public void teleopInit() {
     this.disable();
     this.shootingDriveSpeedThrottle = false;
+    this.enableBadBallDetection();
   }
  
   public boolean atMinimumSpeed() {
@@ -216,19 +217,18 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
         break;
       case LowGoal:
         rpm = SmartDashboard.getNumber("Shooter/Profile/LowGoal", ShooterProfile.LowGoal.value);
+        backRpm = 4800;
         shooterHood.set(true);
         break;
       case TarmacEdge:
         rpm = SmartDashboard.getNumber("Shooter/Profile/TarmacEdge", ShooterProfile.TarmacEdge.value);
         shooterHood.set(true);
         break;
-      case HangerDump:
-        rpm = ShooterProfile.HangerDump.value;
-        shooterHood.set(false);
-        backRpm = 3000;
     }
     this.enable();
     this.currentProfile = profile;
+    SmartDashboard.putNumber("Shooter/TargetRPM", rpm);
+    SmartDashboard.putNumber("Shooter/Backspin/TargetRPM", backRpm);
     this.targetRPM = rpm;
     this.backspinTargetRPM = backRpm;
   }

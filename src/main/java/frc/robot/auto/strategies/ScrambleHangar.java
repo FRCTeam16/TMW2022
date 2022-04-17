@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Subsystems;
+import frc.robot.commands.DisableBadBallDetectionCommand;
 import frc.robot.commands.TurnToAngleCommand;
 import frc.robot.commands.auto.InitializeAutoState;
 import frc.robot.commands.testing.ProfiledDistanceDriveCommand;
@@ -34,6 +35,7 @@ public class ScrambleHangar extends SequentialCommandGroup {
         new InitializeAutoState(robotAngle, ShooterProfile.Short),
         pickupFirstBall(), // this one shoots befor the ball is
         shootLoad(),
+        new DisableBadBallDetectionCommand(),
         getCenterBall(),
         getRightball(),
         shootHangar()
@@ -79,7 +81,7 @@ public class ScrambleHangar extends SequentialCommandGroup {
   private Command getRightball() {
     return CommandGroupBase.sequence(
         new ProfiledDistanceDriveCommand(0, 0.4, 0, 4.1).withTimeout(3.0),
-        new InstantCommand(() -> Subsystems.shooterSubsystem.setProfile(ShooterProfile.HangerDump)),
+        new InstantCommand(() -> Subsystems.shooterSubsystem.setProfile(ShooterProfile.LowGoal)),
         new ProfiledDistanceDriveCommand(0, 0.6, 1.7, 0).withTimeout(1.5),
         new ProfiledDistanceDriveCommand(0, 0, 0, 0).withTimeout(0.25)
     );
