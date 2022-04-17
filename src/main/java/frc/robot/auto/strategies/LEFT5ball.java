@@ -17,7 +17,7 @@ public class LEFT5ball extends SequentialCommandGroup {
   public LEFT5ball() {
 
     addCommands(
-        new InitializeAutoState(-90.0, ShooterProfile.Short),
+        new InitializeAutoState(-90.0, ShooterProfile.Dynamic),
         shootFirstBall(1.3),
         pickupFirstBallAndReturn(),
         //pickupIntakeAndMoveBack(),

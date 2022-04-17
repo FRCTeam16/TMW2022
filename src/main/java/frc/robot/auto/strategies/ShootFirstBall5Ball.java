@@ -17,7 +17,7 @@ public class ShootFirstBall5Ball extends SequentialCommandGroup {
   public ShootFirstBall5Ball() {
 
     addCommands(
-        new InitializeAutoState(-90.0, ShooterProfile.Short),
+        new InitializeAutoState(-90.0, ShooterProfile.Dynamic),
         shootFirstBall(1.3),
         pickupFirstBallAndReturn(),
         //pickupIntakeAndMoveBack(),
@@ -78,21 +78,6 @@ public class ShootFirstBall5Ball extends SequentialCommandGroup {
   }
   
 
-  
-  private Command pickupSecondBall() {
-    double robotAngle = -180.0;
-    double speed = 0.5;
-    double distX = -2.95;
-    double distY = 0.0;
-
-    return CommandGroupBase.sequence(
-      new InstantCommand(() -> System.out.println("==> pickupSecondBall")),
-      new InstantCommand(() -> Subsystems.shooterSubsystem.setProfile(ShooterProfile.Dynamic)),
-      new ProfiledDistanceDriveCommand(robotAngle, speed, distX, distY),
-      stop(robotAngle)
-    );
-  }
-
   private Command pickupSecondBallAngle() {
     double robotAngle = 140.0;
     double speed = 1.0;
@@ -103,7 +88,8 @@ public class ShootFirstBall5Ball extends SequentialCommandGroup {
       CommandGroupBase.parallel(
         new InstantCommand(() -> System.out.println("==> pickupSecondBall")),
         new InstantCommand(Subsystems.intakeSubsystem::enable),
-        new InstantCommand(() -> Subsystems.shooterSubsystem.setProfile(ShooterProfile.Dynamic))
+        new InstantCommand(() -> Subsystems.shooterSubsystem.setProfile(ShooterProfile.Dynamic)),
+        new InstantCommand(Subsystems.feederSubsystem::dontPull)
       ),
       new ProfiledDistanceDriveCommand(robotAngle, speed, distX, distY).withEndSpeed(0.2).withTimeout(3),
       stop(robotAngle),
