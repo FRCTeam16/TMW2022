@@ -85,6 +85,7 @@ public class TurretSubsystem extends SubsystemBase implements Lifecycle{
   @Override
   public void teleopInit() {
     this.enableVisionTracking();
+    this.enableBadBallDetection();
     this.runState = RunState.Vision;
   }
 

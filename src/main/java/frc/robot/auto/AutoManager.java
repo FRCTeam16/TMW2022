@@ -7,12 +7,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.auto.strategies.AbstractTwoBallStrategy;
-
+import frc.robot.auto.strategies.BlockOpponentOneBallStrategy;
 import frc.robot.auto.strategies.DebugAuto;
 import frc.robot.auto.strategies.FiveBallStragety;
 import frc.robot.auto.strategies.FiveBallStrategyPartDeux;
 import frc.robot.auto.strategies.JustShoot;
 import frc.robot.auto.strategies.LEFT5ball;
+import frc.robot.auto.strategies.OneBallStrategy;
 import frc.robot.auto.strategies.RIGHT5ball;
 import frc.robot.auto.strategies.RotateTuneStrategy;
 import frc.robot.auto.strategies.ScrambleHangar;
@@ -22,10 +23,12 @@ import frc.robot.auto.strategies.ShootFirstBall5Ball;
 
 public class AutoManager {
     public enum AutoStrategies {
-        DebugAuto, DebugTimed, DebugPath, DebugRotate, 
-        FiveBall, TwoBallRight, TwoBallHangar, TwoBallCenter, JustShoot,
-        FiveBallStrategyPartDeux,ShootFirstBall5Ball,RIGHT5ball,LEFT5ball,
-        ScrambleHangar, ScrambleHangarOneBall
+        DebugAuto, DebugTimed, DebugPath, DebugRotate,
+        TwoBallRight, TwoBallHangar, TwoBallCenter, 
+        JustShoot,
+        ShootFirstBall5Ball, FiveBall, FiveBallStrategyPartDeux,RIGHT5ball,LEFT5ball,
+        ScrambleHangar, ScrambleHangarOneBall,
+        OneBall, BlockOpponentOneBall
     }
 
     private final SendableChooser<AutoStrategies> chooser = new SendableChooser<>();
@@ -48,6 +51,8 @@ public class AutoManager {
         // chooser.addOption("Left Side 5 Ball Auto", AutoStrategies.LEFT5ball);
         chooser.addOption("Scramble Hanger", AutoStrategies.ScrambleHangar);
         chooser.addOption("Scramble Hanger 1 Ball", AutoStrategies.ScrambleHangarOneBall);
+        chooser.addOption("One Ball", AutoStrategies.OneBall);
+        chooser.addOption("Block Oppo One Ball", AutoStrategies.BlockOpponentOneBall);
 
         // Send selector Dashboard.  If it doesn't show in SD, you may need to change the name here.
         SmartDashboard.putData("Auto Selector", chooser);
@@ -66,6 +71,8 @@ public class AutoManager {
         strategyLookup.put(AutoStrategies.LEFT5ball, new LEFT5ball());
         strategyLookup.put(AutoStrategies.ScrambleHangar, new ScrambleHangar());
         strategyLookup.put(AutoStrategies.ScrambleHangarOneBall, new ScrambleHangarOneOnly());
+        strategyLookup.put(AutoStrategies.OneBall, new OneBallStrategy());
+        strategyLookup.put(AutoStrategies.BlockOpponentOneBall, new BlockOpponentOneBallStrategy());
     }
 
     public Command getSelectedCommand() {
