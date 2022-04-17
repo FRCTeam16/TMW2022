@@ -32,24 +32,25 @@ public class AutoManager {
     private final HashMap<AutoStrategies, Command> strategyLookup = new HashMap<>();
 
     public AutoManager() {
-        chooser.addOption("Debug Auto", AutoStrategies.DebugAuto);
-        chooser.addOption("Debug Timed", AutoStrategies.DebugTimed);
-        chooser.addOption("Debug Path", AutoStrategies.DebugPath);
-        chooser.addOption("Debug Rotate", AutoStrategies.DebugRotate);
+        // chooser.addOption("Debug Auto", AutoStrategies.DebugAuto);
+        // chooser.addOption("Debug Timed", AutoStrategies.DebugTimed);
+        // chooser.addOption("Debug Path", AutoStrategies.DebugPath);
+        // chooser.addOption("Debug Rotate", AutoStrategies.DebugRotate);
 
-        chooser.addOption("Five Ball", AutoStrategies.FiveBall);
+        // chooser.addOption("Five Ball", AutoStrategies.FiveBall);
         chooser.addOption("TwoBall Right", AutoStrategies.TwoBallRight);
         chooser.addOption("TwoBall Center", AutoStrategies.TwoBallCenter);
         chooser.addOption("TwoBall Hangar", AutoStrategies.TwoBallHangar);
-        chooser.addOption("JustShoot", AutoStrategies.JustShoot);
-        chooser.addOption("5BS Part Deux", AutoStrategies.FiveBallStrategyPartDeux);
+        // chooser.addOption("JustShoot", AutoStrategies.JustShoot);
+        // chooser.addOption("5BS Part Deux", AutoStrategies.FiveBallStrategyPartDeux);
         chooser.setDefaultOption("First Ball 5 Ball", AutoStrategies.ShootFirstBall5Ball);
-        chooser.addOption("Right side 5 Ball Auto", AutoStrategies.RIGHT5ball);
-        chooser.addOption("Left Side 5 Ball Auto", AutoStrategies.LEFT5ball);
+        // chooser.addOption("Right side 5 Ball Auto", AutoStrategies.RIGHT5ball);
+        // chooser.addOption("Left Side 5 Ball Auto", AutoStrategies.LEFT5ball);
         chooser.addOption("Scramble Hanger", AutoStrategies.ScrambleHangar);
         chooser.addOption("Scramble Hanger 1 Ball", AutoStrategies.ScrambleHangarOneBall);
-        SmartDashboard.putData("Auto Selector", chooser);
 
+        // Send selector Dashboard.  If it doesn't show in SD, you may need to change the name here.
+        SmartDashboard.putData("Auto Selector", chooser);
         initializeAuto();
     }
 

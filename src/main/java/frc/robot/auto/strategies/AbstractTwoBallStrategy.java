@@ -25,7 +25,7 @@ public class AbstractTwoBallStrategy extends SequentialCommandGroup {
         this.driveY = driveY;
 
         addCommands(
-            new InitializeAutoState(robotAngle, ShooterProfile.Short),
+            new InitializeAutoState(robotAngle, ShooterProfile.Dynamic),
             pickupFirstBall(), // this one shoots befor the ball is
             shootLoad()
         );
