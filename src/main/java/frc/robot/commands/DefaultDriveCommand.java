@@ -12,7 +12,7 @@ import frc.robot.Subsystems;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 public class DefaultDriveCommand extends CommandBase {
-    private static final double DRIVE_WHILE_SHOOTING_SPEED = 0.2 * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND;
+    private static final double DRIVE_WHILE_SHOOTING_SPEED = 0.075 * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND;
 
     private final DrivetrainSubsystem m_drivetrainSubsystem;
 

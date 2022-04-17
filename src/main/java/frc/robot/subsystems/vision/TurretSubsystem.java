@@ -170,31 +170,31 @@ public class TurretSubsystem extends SubsystemBase implements Lifecycle{
     SmartDashboard.putString("Turret/RunState", runState.name());
     SmartDashboard.putBoolean("Turret/AtZero", this.atZero());
 
-    // Preempt turret control for mismatched balls
-    if (badBallDetectionEnabled) {
-      if (Subsystems.detectBallSubsystem.isBallDetected() && !Subsystems.detectBallSubsystem.doesBallMatchAlliance()) {
-        setTurretPosition(TurretPositions.Center);
-        positionPIDPeriodic();
-        return;
-      } else {
-        runState = RunState.Vision;
-      }
-    }
-    
-    if (runState == RunState.ClosedLoop) {
-      positionPIDPeriodic();
+    // System.out.println("[Turret] start runState: " + runState);
+
+    double speed = 0.0;
+    if (runState == RunState.OpenLoop) {
+      speed = openLoopSpeed;
     } else {
-      // Open Loop Approaches
-      double speed = 0.0;
-      if (runState == RunState.OpenLoop) {
-        System.out.println("Setting turret open loop speed: " + openLoopSpeed);
-        speed = openLoopSpeed;
+
+      if (badBallDetectionEnabled) {
+        if (Subsystems.detectBallSubsystem.isBallDetected() && !Subsystems.detectBallSubsystem.doesBallMatchAlliance()) {
+          setTurretPosition(TurretPositions.Center);
+          positionPIDPeriodic();
+          return;
+        } else {
+          runState = RunState.Vision;
+        }
+      }
+
+      if (runState == RunState.ClosedLoop) {
+        positionPIDPeriodic();
       } else if (runState == RunState.Vision) {
         speed = simpleVisionPeriodic();
-        // speed = visionPIDPeriodic();
       }
-      turretMotor.set(speed);
-    } 
+    }
+    turretMotor.set(speed);
+
   }
 
   /**

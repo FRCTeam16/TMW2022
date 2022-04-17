@@ -162,6 +162,7 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
   public void disable() {
     this.enabled = false;
     targetRPM = 0;
+    backspinTargetRPM = 0.0;
   }
 
   public void enableBadBallDetection() { this.badBallDetectionEnabled = true; }
@@ -274,12 +275,11 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
   @Override
   public void periodic() {
 
-    // FIXME:
-    // if (!enabled) {
-    //   rightShooterMotor.set(0.0);
-    //   backspinMotor.set(0.0);
-    //   return;
-    // }
+    if (!enabled) {
+      rightShooterMotor.set(0.0);
+      backspinMotor.set(0.0);
+      return;
+    }
 
     if (closedLoop) {
 
@@ -296,32 +296,32 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
       double rpm = SmartDashboard.getNumber("Shooter/TargetRPM", 0);
 
       // if PID coefficients on SmartDashboard have changed, write new values to
-      // var pidController = rightShooterMotor.getPIDController();
-      // if ((p != kP)) {
-      //   pidController.setP(p);
-      //   kP = p;
-      // }
-      // if ((i != kI)) {
-      //   pidController.setI(i);
-      //   kI = i;
-      // }
-      // if ((d != kD)) {
-      //   pidController.setD(d);
-      //   kD = d;
-      // }
-      // if ((iz != kIz)) {
-      //   pidController.setIZone(iz);
-      //   kIz = iz;
-      // }
-      // if ((ff != kFF)) {
-      //   pidController.setFF(ff);
-      //   kFF = ff;
-      // }
-      // if ((max != kMaxOutput) || (min != kMinOutput)) {
-      //   pidController.setOutputRange(min, max);
-      //   kMinOutput = min;
-      //   kMaxOutput = max;
-      // }
+      var pidController = rightShooterMotor.getPIDController();
+      if ((p != kP)) {
+        pidController.setP(p);
+        kP = p;
+      }
+      if ((i != kI)) {
+        pidController.setI(i);
+        kI = i;
+      }
+      if ((d != kD)) {
+        pidController.setD(d);
+        kD = d;
+      }
+      if ((iz != kIz)) {
+        pidController.setIZone(iz);
+        kIz = iz;
+      }
+      if ((ff != kFF)) {
+        pidController.setFF(ff);
+        kFF = ff;
+      }
+      if ((max != kMaxOutput) || (min != kMinOutput)) {
+        pidController.setOutputRange(min, max);
+        kMinOutput = min;
+        kMaxOutput = max;
+      }
 
       // If our target RPM was overridden by the smart dashboard, update it
       if (targetRPM != rpm) {
@@ -398,7 +398,6 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
 
       // System.out.println("SHOOTER: " + targetRPM + " | BACK: " + backspinTargetRPM);
       if ( Math.abs(targetRPM - lastTargetRPM) > 1) {
-        System.out.println("CHANGING RPM");
         lastTargetRPM = targetRPM;
         rightShooterMotor.getPIDController().setReference(targetRPM, ControlType.kVelocity);
       }
@@ -409,18 +408,18 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
       SmartDashboard.putNumber("Actual Backspin RPM", backspinMotor.getEncoder().getVelocity());
       SmartDashboard.putNumber("Shooter/Backspin/ActualRPM", backspinMotor.getEncoder().getVelocity());
     } else {
-      //
+      
       // Handle Open Loop Control
-      //
-      // double rightShooterSpeed = 0.0;
-      // if (enabled) {
-      //   rightShooterSpeed = SmartDashboard.getNumber(SHOOTER_SPEED_KEY, DEFAULT_SHOOTER_SPEED);
-      //   rightShooterMotor.set(rightShooterSpeed);
+      
+      double rightShooterSpeed = 0.0;
+      if (enabled) {
+        rightShooterSpeed = SmartDashboard.getNumber(SHOOTER_SPEED_KEY, DEFAULT_SHOOTER_SPEED);
+        rightShooterMotor.set(rightShooterSpeed);
 
-      //   double backspinPercent = SmartDashboard.getNumber("Shooter/Backspin/Percent", 0.0);
-      //   SmartDashboard.putNumber("Shooter/Backspin/ActualRPM", backspinMotor.getEncoder().getVelocity());
-      //   backspinMotor.set(backspinPercent);
-      // }
+        double backspinPercent = SmartDashboard.getNumber("Shooter/Backspin/Percent", 0.0);
+        SmartDashboard.putNumber("Shooter/Backspin/ActualRPM", backspinMotor.getEncoder().getVelocity());
+        backspinMotor.set(backspinPercent);
+      }
     }
   }
 
