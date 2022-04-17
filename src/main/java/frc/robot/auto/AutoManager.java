@@ -16,6 +16,7 @@ import frc.robot.auto.strategies.LEFT5ball;
 import frc.robot.auto.strategies.RIGHT5ball;
 import frc.robot.auto.strategies.RotateTuneStrategy;
 import frc.robot.auto.strategies.ScrambleHangar;
+import frc.robot.auto.strategies.ScrambleHangarOneOnly;
 import frc.robot.auto.strategies.DebugSwervePathStrategy;
 import frc.robot.auto.strategies.ShootFirstBall5Ball;
 
@@ -24,7 +25,7 @@ public class AutoManager {
         DebugAuto, DebugTimed, DebugPath, DebugRotate, 
         FiveBall, TwoBallRight, TwoBallHangar, TwoBallCenter, JustShoot,
         FiveBallStrategyPartDeux,ShootFirstBall5Ball,RIGHT5ball,LEFT5ball,
-        ScrambleHangar
+        ScrambleHangar, ScrambleHangarOneBall
     }
 
     private final SendableChooser<AutoStrategies> chooser = new SendableChooser<>();
@@ -46,7 +47,7 @@ public class AutoManager {
         chooser.addOption("Right side 5 Ball Auto", AutoStrategies.RIGHT5ball);
         chooser.addOption("Left Side 5 Ball Auto", AutoStrategies.LEFT5ball);
         chooser.addOption("Scramble Hanger", AutoStrategies.ScrambleHangar);
-
+        chooser.addOption("Scramble Hanger 1 Ball", AutoStrategies.ScrambleHangarOneBall);
         SmartDashboard.putData("Auto Selector", chooser);
 
         initializeAuto();
@@ -63,6 +64,7 @@ public class AutoManager {
         strategyLookup.put(AutoStrategies.RIGHT5ball, new RIGHT5ball());
         strategyLookup.put(AutoStrategies.LEFT5ball, new LEFT5ball());
         strategyLookup.put(AutoStrategies.ScrambleHangar, new ScrambleHangar());
+        strategyLookup.put(AutoStrategies.ScrambleHangarOneBall, new ScrambleHangarOneOnly());
     }
 
     public Command getSelectedCommand() {

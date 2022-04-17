@@ -17,13 +17,16 @@ import frc.robot.commands.testing.ProfiledDistanceDriveCommand;
 import frc.robot.commands.vision.TrackVisionTargetWithTurretCommand;
 import frc.robot.subsystems.ShooterSubsystem.ShooterProfile;
 
-public class ScrambleHangar extends SequentialCommandGroup {
+/**
+ * Scramble only the hanger side ball in case our alliance can't get out of the way
+ */
+public class ScrambleHangarOneOnly extends SequentialCommandGroup {
 
   private double robotAngle;
   private double driveX;
   private double driveY;
 
-  public ScrambleHangar()  {
+  public ScrambleHangarOneOnly()  {
     this.robotAngle = 136;
     this.driveX = -1.27;
     this.driveY = 1.27;
@@ -34,8 +37,7 @@ public class ScrambleHangar extends SequentialCommandGroup {
         new InitializeAutoState(robotAngle, ShooterProfile.Short),
         pickupFirstBall(), // this one shoots befor the ball is
         shootLoad(),
-        getCenterBall(),
-        getRightball(),
+        getWallBall(),
         shootHangar()
         );
   }
@@ -47,7 +49,7 @@ public class ScrambleHangar extends SequentialCommandGroup {
     return CommandGroupBase.sequence(
         new WaitCommand(0.5), // wait for RPM speedup?
         CommandGroupBase.parallel(
-            new InstantCommand(Subsystems.feederSubsystem::dontPull), // FIXME would rather queue
+            new InstantCommand(Subsystems.feederSubsystem::dontPull),
             new InstantCommand(() -> Subsystems.intakeSubsystem.DropIntake()),
             new InstantCommand(Subsystems.intakeSubsystem::enable),
             new ProfiledDistanceDriveCommand(this.robotAngle, 0.3, driveX, driveY).withThreshold(0.03)
@@ -62,30 +64,22 @@ public class ScrambleHangar extends SequentialCommandGroup {
         new InstantCommand(() -> Subsystems.feederSubsystem.pull(true)),
         new WaitCommand(1.5),
         new InstantCommand(Subsystems.feederSubsystem::dontPull)
-        ); // maybe don't pull if the wrong direction
+        );
   }
 
-  private Command getCenterBall() {
+  private Command getWallBall() {
+    double angle = 45.0;
+    double zero = 0.0;
+    // 180 y
+    // 120 x
     return CommandGroupBase.sequence(
-      new ProfiledDistanceDriveCommand(-100, 0, 0, 0).withTimeout(0.5),
-        CommandGroupBase.parallel(
-            new InstantCommand(Subsystems.intakeSubsystem::enable),
-            new ProfiledDistanceDriveCommand(-100, 0.6, -0.8, -2.96).withEndSpeed(.1).withTimeout(2.0))
-        //new TurnToAngleCommand(80).withTimeout(0.5)
-        // new ProfiledDistanceDriveCommand(80, 0, 0, 0).withTimeout(0.5));
-    );
-  }
-
-  private Command getRightball() {
-    return CommandGroupBase.sequence(
-        new ProfiledDistanceDriveCommand(0, 0.4, 0, 4.1).withTimeout(3.0),
+      new TurnToAngleCommand(angle).withTimeout(1.0),
+        new ProfiledDistanceDriveCommand(angle, 0.4, 1.1, .94).withTimeout(2.0),
         new InstantCommand(() -> Subsystems.shooterSubsystem.setProfile(ShooterProfile.HangerDump)),
-        new ProfiledDistanceDriveCommand(0, 0.6, 1.7, 0).withTimeout(1.5),
-        new ProfiledDistanceDriveCommand(0, 0, 0, 0).withTimeout(0.25)
+        new TurnToAngleCommand(zero).withTimeout(1.0),
+        new WaitCommand(1.0)
     );
   }
-
-  
 
   private CommandGroupBase shootHangar() {
     return CommandGroupBase.sequence(

@@ -31,7 +31,8 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
   private boolean minimumSpeedCheckEnabled = true;
 
   public enum ShooterProfile {
-    Short(1650), Long(2055), LowGoal(800), TarmacEdge(2200), AutoCenterEdge(1700), Downtown(2500), Dynamic(0), Off(0);
+    Short(1650), Long(2055), LowGoal(800), TarmacEdge(2200), AutoCenterEdge(1700), Downtown(2500), 
+    Dynamic(0), Off(0), HangerDump(1000);
 
     private double value;
 
@@ -221,6 +222,10 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
         rpm = SmartDashboard.getNumber("Shooter/Profile/TarmacEdge", ShooterProfile.TarmacEdge.value);
         shooterHood.set(true);
         break;
+      case HangerDump:
+        rpm = ShooterProfile.HangerDump.value;
+        shooterHood.set(false);
+        backRpm = 3000;
     }
     this.enable();
     this.currentProfile = profile;
@@ -239,18 +244,18 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
 
       // Hood Open Profiles
       if (info.distanceToTarget < ShootInfo.BACKSPIN_THRESHOLD) {
-        shootInfo.shooterRPM = 1300;
-        shootInfo.backspinRPM = 2000;
+        shootInfo.shooterRPM = 1400;
+        shootInfo.backspinRPM = 1000;
         shootInfo.hoodOpen = true;
       }
       else if (info.distanceToTarget < ShootInfo.HOOD_THRESHOLD) {
-        shootInfo.shooterRPM = (4.55 * info.distanceToTarget) + 432;
+        shootInfo.shooterRPM = (3.1 * info.distanceToTarget) + 497;
         shootInfo.backspinRPM = 4800;
         shootInfo.hoodOpen = true;
       } else {
         // TODO: Get data for equations
-        shootInfo.shooterRPM = (3.68*info.distanceToTarget) + 609;
-        shootInfo.backspinRPM = backspinTargetRPM;
+        shootInfo.shooterRPM = (9.99*info.distanceToTarget) -584;
+        shootInfo.backspinRPM = 4800; // backspinTargetRPM;
         shootInfo.hoodOpen = false;
       }
     } else {
@@ -412,7 +417,7 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
 
   private class ShootInfo {
     public static final double BACKSPIN_THRESHOLD = 80;
-    public static final double HOOD_THRESHOLD = 160;
+    public static final double HOOD_THRESHOLD = 165;
 
     public double shooterRPM = 0;
     public double backspinRPM = 0;
