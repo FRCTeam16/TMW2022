@@ -193,7 +193,7 @@ public class ClimberSubsystem extends SubsystemBase implements Lifecycle{
   public void periodic() {
 
     // Check if we need to zero climber due to limit switch detection
-    if (backwardLimitSwitch.isPressed()) {
+    if (forwardLimitSwitch.isPressed()) {
       climberMotor.getEncoder().setPosition(0.0);
     }
 
