@@ -11,6 +11,7 @@ import frc.robot.auto.strategies.BlockOpponentOneBallStrategy;
 import frc.robot.auto.strategies.DebugAuto;
 import frc.robot.auto.strategies.FiveBallStragety;
 import frc.robot.auto.strategies.FiveBallStrategyPartDeux;
+import frc.robot.auto.strategies.FourBallStrategy;
 import frc.robot.auto.strategies.JustShoot;
 import frc.robot.auto.strategies.LEFT5ball;
 import frc.robot.auto.strategies.OneBallStrategy;
@@ -28,7 +29,8 @@ public class AutoManager {
         JustShoot,
         ShootFirstBall5Ball, FiveBall, FiveBallStrategyPartDeux,RIGHT5ball,LEFT5ball,
         ScrambleHangar, ScrambleHangarOneBall,
-        OneBall, BlockOpponentOneBall
+        OneBall, BlockOpponentOneBall,
+        FourBall
     }
 
     private final SendableChooser<AutoStrategies> chooser = new SendableChooser<>();
@@ -53,6 +55,7 @@ public class AutoManager {
         chooser.addOption("Scramble Hanger 1 Ball", AutoStrategies.ScrambleHangarOneBall);
         chooser.addOption("One Ball", AutoStrategies.OneBall);
         chooser.addOption("Block Oppo One Ball", AutoStrategies.BlockOpponentOneBall);
+        chooser.addOption("Four Ball", AutoStrategies.FourBall);
 
         // Send selector Dashboard.  If it doesn't show in SD, you may need to change the name here.
         SmartDashboard.putData("Auto Selector", chooser);
@@ -73,6 +76,7 @@ public class AutoManager {
         strategyLookup.put(AutoStrategies.ScrambleHangarOneBall, new ScrambleHangarOneOnly());
         strategyLookup.put(AutoStrategies.OneBall, new OneBallStrategy());
         strategyLookup.put(AutoStrategies.BlockOpponentOneBall, new BlockOpponentOneBallStrategy());
+        strategyLookup.put(AutoStrategies.FourBall, new FourBallStrategy());
     }
 
     public Command getSelectedCommand() {
