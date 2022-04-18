@@ -40,7 +40,7 @@ public class AutoManager {
         // chooser.addOption("Debug Auto", AutoStrategies.DebugAuto);
         // chooser.addOption("Debug Timed", AutoStrategies.DebugTimed);
         // chooser.addOption("Debug Path", AutoStrategies.DebugPath);
-        // chooser.addOption("Debug Rotate", AutoStrategies.DebugRotate);
+        chooser.addOption("Debug Rotate", AutoStrategies.DebugRotate);
 
         // chooser.addOption("Five Ball", AutoStrategies.FiveBall);
         chooser.addOption("TwoBall Right", AutoStrategies.TwoBallRight);

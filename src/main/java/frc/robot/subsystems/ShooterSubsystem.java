@@ -6,6 +6,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -25,7 +26,7 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
   private static final String SHOOTER_SPEED_KEY = "Shooter Speed";
   public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM;
   private final Solenoid shooterHood = new Solenoid(PneumaticsModuleType.REVPH, 3);
-  //private LinearFilter filter = LinearFilter.singlePoleIIR(0.1, 0.02);
+  private LinearFilter distanceFilter = LinearFilter.singlePoleIIR(0.05, 0.02);
   private boolean badBallDetectionEnabled = true;
 
   private boolean minimumSpeedCheckEnabled = true;
@@ -86,7 +87,7 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
     SmartDashboard.setDefaultNumber("Shooter/Profile/Downtown", ShooterProfile.Downtown.value);
     SmartDashboard.setDefaultNumber("Shooter/Profile/AutoCenterEdge", ShooterProfile.AutoCenterEdge.value);
 
-    kP = 0.0005;
+    kP = 0.0003;
     kI = 0;
     kD = 0;
     kIz = 0;
@@ -214,6 +215,7 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
         shooterHood.set(false);
         break;
       case Dynamic:
+        distanceFilter.reset(); // reset if we are coming back into Dynamic
         var dynamicInfo = calculateDynamicRPM();
         rpm = dynamicInfo.shooterRPM;
         backRpm = dynamicInfo.backspinRPM;
@@ -243,7 +245,9 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
   public ShootInfo calculateDynamicRPM() {
     var shootInfo = new ShootInfo();
     var info = Subsystems.visionSubsystem.getVisionInfo();
-    var range = dynamicDistance.getCurrentShootingRange(info.distanceToTarget);
+
+    var filteredRange = distanceFilter.calculate(info.distanceToTarget);
+    var range = dynamicDistance.getCurrentShootingRange(filteredRange);
 
     if (info.distanceToTarget > 0) {
       // Hood Open Profiles

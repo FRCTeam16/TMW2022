@@ -17,17 +17,18 @@ import frc.robot.subsystems.ShooterSubsystem.ShooterProfile;
  */
 public class FourBallStrategy extends SequentialCommandGroup {
   
-  private double initialAngle = -170.0;
+  private double initialAngle = -154.0;
 
   //-170, -1.77, -0.31
 
   public FourBallStrategy() {
     addCommands(
-      new InitializeAutoState(-170, ShooterProfile.Dynamic),
+      new InitializeAutoState(initialAngle, ShooterProfile.Dynamic),
       pickupFirstBall(),
       shootLoad(2.0),
       pickupThirdAndFourthBalls(),
-      shootLoad(2.0)
+      RollToShootingPosition(),
+      shootLoad(4.0)
     );
   }
 
@@ -42,7 +43,7 @@ public class FourBallStrategy extends SequentialCommandGroup {
 
   private Command pickupFirstBall() {
     double driveX = -1.77;
-    double driveY = -0.31;
+    double driveY = -0.75;
 
     return CommandGroupBase.sequence(
       new WaitCommand(0.5), // wait for RPM speedup?
@@ -56,19 +57,30 @@ public class FourBallStrategy extends SequentialCommandGroup {
   }
 
   private Command pickupThirdAndFourthBalls() {
-    double robotAngle = -160.0;
+    double robotAngle = initialAngle;
     double speed = 1.0;
-    double distX = -4.25;
-    double distY = -0.35;
+    double distX = -4.7;
+    double distY = -1.5;
 
-    double distX2 = 2.25;
+    double distX2 = 0.5;
     double distY2 = 0.35;
 
     return CommandGroupBase.sequence(
-      new ProfiledDistanceDriveCommand(robotAngle, speed, distX, distY).withEndSpeed(0.2).withThreshold(0.03),
+      new ProfiledDistanceDriveCommand(robotAngle, speed, distX, distY).withEndSpeed(0.2).withThreshold(0.03).withTimeout(5.0),
       stop(robotAngle),
-      new WaitCommand(0.5),
-      new ProfiledDistanceDriveCommand(robotAngle, speed, distX2, distY2).withEndSpeed(0.2)
+      new ProfiledDistanceDriveCommand(robotAngle, speed, distX2, distY2).withThreshold(0.05).withTimeout(3.0),
+      new WaitCommand(2.0)
+    );
+  }
+
+  private Command RollToShootingPosition() {
+    double robotAngle = initialAngle;
+    double speed = 1.0;
+    double distX = 2.5;
+    double distY = 0.45;
+    return CommandGroupBase.sequence(
+      new ProfiledDistanceDriveCommand(robotAngle, speed, distX, distY)
+        .withThreshold(0.05).withTimeout(5.0)
     );
   }
 

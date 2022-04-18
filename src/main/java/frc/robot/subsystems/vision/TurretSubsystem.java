@@ -19,7 +19,7 @@ import frc.robot.subsystems.vision.VisionSubsystem.VisionInfo;
 public class TurretSubsystem extends SubsystemBase implements Lifecycle{
   private final CANSparkMax turretMotor = new CANSparkMax(Constants.TURRET_MOTOR_ID, MotorType.kBrushless);
   private final double DEFAULT_TURRET_SPEED = -0.2;
-  private final double VISION_THRESHOLD = 1.0;
+  private final double VISION_THRESHOLD = 0.5;
   private final PIDController visionpPID;
   private final float SOFT_LIMIT = 16.30f;
 
