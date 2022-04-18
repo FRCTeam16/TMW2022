@@ -32,7 +32,8 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
   private boolean minimumSpeedCheckEnabled = true;
 
   public enum ShooterProfile {
-    Short(1650), Long(2055), LowGoal(500), TarmacEdge(2200), AutoCenterEdge(1700), Downtown(2500), 
+    Short(1200), Long(2055), HangerDump(500), LowGoal(500),
+    TarmacEdge(2200), AutoCenterEdge(1700), Downtown(2500), 
     Dynamic(0), Off(0);
 
     private double value;
@@ -82,6 +83,7 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
     SmartDashboard.setDefaultNumber(SHOOTER_SPEED_KEY, DEFAULT_SHOOTER_SPEED);
     SmartDashboard.setDefaultNumber("Shooter/Profile/Short", ShooterProfile.Short.value);
     SmartDashboard.setDefaultNumber("Shooter/Profile/Long", ShooterProfile.Long.value);
+    SmartDashboard.setDefaultNumber("Shooter/Profile/HangerDump", ShooterProfile.HangerDump.value);
     SmartDashboard.setDefaultNumber("Shooter/Profile/LowGoal", ShooterProfile.LowGoal.value);
     SmartDashboard.setDefaultNumber("Shooter/Profile/TarmacEdge", ShooterProfile.TarmacEdge.value);
     SmartDashboard.setDefaultNumber("Shooter/Profile/Downtown", ShooterProfile.Downtown.value);
@@ -200,6 +202,7 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
     switch (profile) {
       case Short:
         rpm = SmartDashboard.getNumber("Shooter/Profile/Short", ShooterProfile.Short.value);
+        backRpm = 2000;
         shooterHood.set(true);
         break;
       case Long:
@@ -220,9 +223,14 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
         rpm = dynamicInfo.shooterRPM;
         backRpm = dynamicInfo.backspinRPM;
         break;
-      case LowGoal:
-        rpm = SmartDashboard.getNumber("Shooter/Profile/LowGoal", ShooterProfile.LowGoal.value);
+      case HangerDump:
+        rpm = SmartDashboard.getNumber("Shooter/Profile/HangerDump", ShooterProfile.HangerDump.value);
         backRpm = 4800;
+        shooterHood.set(true);
+        break;
+      case LowGoal:
+        rpm = SmartDashboard.getNumber("Shooter/Profile/LowGoal", ShooterProfile.HangerDump.value);
+        backRpm = 2000;
         shooterHood.set(true);
         break;
       case TarmacEdge:
@@ -246,23 +254,26 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
     var shootInfo = new ShootInfo();
     var info = Subsystems.visionSubsystem.getVisionInfo();
 
-    var filteredRange = distanceFilter.calculate(info.distanceToTarget);
-    var range = dynamicDistance.getCurrentShootingRange(filteredRange);
+    // if (info.distanceToTarget > 0) {
+    //   var distance = distanceFilter.calculate(info.distanceToTarget);
+    // }
+    var distance = info.distanceToTarget;
+    var range = dynamicDistance.getCurrentShootingRange(distance);
 
     if (info.distanceToTarget > 0) {
       // Hood Open Profiles
       if (ShooterDynamicDistance.Range.Short == range) {
-        shootInfo.shooterRPM = 1400;
-        shootInfo.backspinRPM = 1000;
+        shootInfo.shooterRPM = 1200;
+        shootInfo.backspinRPM = 2000;
         shootInfo.hoodOpen = true;
       }
       else if (ShooterDynamicDistance.Range.Middle == range) {
-        shootInfo.shooterRPM = (3.1 * info.distanceToTarget) + 497;
+        shootInfo.shooterRPM = (.0487 * (distance * distance)) - (5.50 * distance) + 845;
         shootInfo.backspinRPM = 4800;
         shootInfo.hoodOpen = true;
       } 
       else if (ShooterDynamicDistance.Range.Long == range) {
-        shootInfo.shooterRPM = (9.99*info.distanceToTarget) -584;
+        shootInfo.shooterRPM = (6.76 * distance) + 81;
         shootInfo.backspinRPM = 4800;
         shootInfo.hoodOpen = false;
       }
@@ -390,7 +401,7 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
       if (badBallDetectionEnabled && Subsystems.detectBallSubsystem.isEnabled() && 
           Subsystems.detectBallSubsystem.isBallDetected() && 
           !Subsystems.detectBallSubsystem.doesBallMatchAlliance()) {
-        targetRPM = ShooterProfile.LowGoal.value;
+        targetRPM = ShooterProfile.HangerDump.value;
       }
 
       // Apply safety RPMs

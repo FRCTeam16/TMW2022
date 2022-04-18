@@ -64,7 +64,7 @@ public class BlockOpponentOneBallStrategy extends SequentialCommandGroup {
     return CommandGroupBase.sequence(
       CommandGroupBase.parallel(
         new WaitCommand(0.5),
-        new InstantCommand(() -> Subsystems.shooterSubsystem.setProfile(ShooterProfile.LowGoal)),
+        new InstantCommand(() -> Subsystems.shooterSubsystem.setProfile(ShooterProfile.HangerDump)),
         new InstantCommand(Subsystems.intakeSubsystem::disable)
       ),
       new InstantCommand(Subsystems.turretSubsystem::disableBadBallDetection),

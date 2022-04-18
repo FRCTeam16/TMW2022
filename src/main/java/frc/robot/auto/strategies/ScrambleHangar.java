@@ -82,7 +82,7 @@ public class ScrambleHangar extends SequentialCommandGroup {
   private Command getRightball() {
     return CommandGroupBase.sequence(
         new ProfiledDistanceDriveCommand(0, 0.4, 0, 4.1).withTimeout(3.0),
-        new InstantCommand(() -> Subsystems.shooterSubsystem.setProfile(ShooterProfile.LowGoal)),
+        new InstantCommand(() -> Subsystems.shooterSubsystem.setProfile(ShooterProfile.HangerDump)),
         new ProfiledDistanceDriveCommand(0, 0.6, 1.9, 0).withTimeout(1.5),
         new ProfiledDistanceDriveCommand(0, 0, 0, 0).withTimeout(0.25)
     );

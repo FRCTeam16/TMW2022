@@ -159,10 +159,10 @@ public class RobotContainer {
                 .whenPressed(() -> m_shooterSubsystem.setProfile(ShooterProfile.Short));
 
         new Button(() -> rightJoy.getPOV() == 0)
-                .whenPressed(() -> m_shooterSubsystem.setProfile(ShooterProfile.Long));
-
-        new Button(() -> rightJoy.getPOV() == 270)
                 .whenPressed(() -> m_shooterSubsystem.setProfile(ShooterProfile.LowGoal));
+                
+        new Button(() -> rightJoy.getPOV() == 270)
+                .whenPressed(() -> m_shooterSubsystem.setProfile(ShooterProfile.HangerDump));
 
         new Button(() -> rightJoy.getPOV() == 180)
                 .whenPressed(() -> m_shooterSubsystem.setProfile(ShooterProfile.Dynamic));
@@ -197,7 +197,7 @@ public class RobotContainer {
         SmartDashboard.putData("Shooter Short", new InstantCommand(() -> m_shooterSubsystem.setProfile(ShooterProfile.Short)).withName("Shoot Short"));
         SmartDashboard.putData("Shooter Long", new InstantCommand(() -> m_shooterSubsystem.setProfile(ShooterProfile.Long)).withName("Shoot Long"));
         SmartDashboard.putData("Shooter Off", new InstantCommand(() -> m_shooterSubsystem.setProfile(ShooterProfile.Dynamic)).withName("Shoot Off"));
-        SmartDashboard.putData("Shooter Low Goal", new InstantCommand(() -> m_shooterSubsystem.setProfile(ShooterProfile.LowGoal)).withName("Shoot Low Goal"));
+        SmartDashboard.putData("Shooter Low Goal", new InstantCommand(() -> m_shooterSubsystem.setProfile(ShooterProfile.HangerDump)).withName("Shoot Low Goal"));
 
     }
 

@@ -4,8 +4,8 @@ import edu.wpi.first.wpilibj.Timer;
 
 /** Add your docs here. */
 public class ShooterDynamicDistance {
-    public static final double SHORT_THRESHOLD = 80;
-    public static final double MIDDLE_THRESHOLD = 165;
+    public static final double SHORT_THRESHOLD = 85;
+    public static final double MIDDLE_THRESHOLD = 150;
 
     private Range currentRange = Range.Unknown;
 

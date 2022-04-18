@@ -13,6 +13,7 @@ import frc.robot.Constants;
 import frc.robot.Subsystems;
 import frc.robot.subsystems.Lifecycle;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.ShooterSubsystem.ShooterProfile;
 import frc.robot.subsystems.vision.Limelight.LEDMode;
 import frc.robot.subsystems.vision.VisionSubsystem.VisionInfo;
 
@@ -181,6 +182,11 @@ public class TurretSubsystem extends SubsystemBase implements Lifecycle{
 
       if (badBallDetectionEnabled) {
         if (Subsystems.detectBallSubsystem.isBallDetected() && !Subsystems.detectBallSubsystem.doesBallMatchAlliance()) {
+          setTurretPosition(TurretPositions.Center);
+          positionPIDPeriodic();
+          return;
+        } else if (Subsystems.shooterSubsystem.getProfile() == ShooterProfile.HangerDump ||
+                   Subsystems.shooterSubsystem.getProfile() == ShooterProfile.LowGoal) {
           setTurretPosition(TurretPositions.Center);
           positionPIDPeriodic();
           return;

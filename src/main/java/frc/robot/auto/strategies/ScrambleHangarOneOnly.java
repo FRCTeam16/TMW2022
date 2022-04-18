@@ -78,7 +78,7 @@ public class ScrambleHangarOneOnly extends SequentialCommandGroup {
       new InstantCommand(Subsystems.turretSubsystem::disableVisionTracking),
       new DisableBadBallDetectionCommand(),
       new ProfiledDistanceDriveCommand(angle, 0.6, 1.3, .94).withTimeout(2.0),
-      new InstantCommand(() -> Subsystems.shooterSubsystem.setProfile(ShooterProfile.LowGoal)),
+      new InstantCommand(() -> Subsystems.shooterSubsystem.setProfile(ShooterProfile.HangerDump)),
       new TurnToAngleCommand(zero).withTimeout(1.0)
     );
   }
