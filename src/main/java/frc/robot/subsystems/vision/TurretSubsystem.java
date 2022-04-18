@@ -62,6 +62,7 @@ public class TurretSubsystem extends SubsystemBase implements Lifecycle{
     SmartDashboard.setDefaultNumber("Turret/Vision/P", vision_kP);
     SmartDashboard.setDefaultNumber("Turret/Vision/I", vision_kI);
     SmartDashboard.setDefaultNumber("Turret/Vision/D", vision_kD);
+    SmartDashboard.setDefaultNumber("Turret/Vision/Clamp", 0.4);
 
     SmartDashboard.putNumber("Turret/Vision/Threshold", VISION_THRESHOLD);
     visionpPID = new PIDController(vision_kP, vision_kI, vision_kD);
@@ -198,6 +199,7 @@ public class TurretSubsystem extends SubsystemBase implements Lifecycle{
 
   }
 
+
   /**
    * Basic p-gain correction
    * @return
@@ -213,7 +215,8 @@ public class TurretSubsystem extends SubsystemBase implements Lifecycle{
     }
     if (info.hasTarget && (Math.abs(visionOffset) > threshold)) {
       double p = SmartDashboard.getNumber("Turret/Vision/P", vision_kP);
-      speed = MathUtil.clamp(visionOffset * -p, -0.4 , 0.4);
+      double clamp = SmartDashboard.getNumber("Turret/Vision/Clamp", 1.0);
+      speed = MathUtil.clamp(visionOffset * -p, -clamp , clamp);
     } else {
       // No target or within threshold
       speed = 0.0;
