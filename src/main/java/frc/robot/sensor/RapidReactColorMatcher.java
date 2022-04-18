@@ -96,7 +96,8 @@ public class RapidReactColorMatcher {
 
         // Currently allow unknown as a pass-thru
         if (allianceColor == MatchedColor.Unknown ||
-            allianceColor == this.getMatchedColor()) {
+            allianceColor == this.getMatchedColor() ||
+            MatchedColor.Unknown == this.getMatchedColor()) {
             badBallDetected = false;
             return true;
         }
