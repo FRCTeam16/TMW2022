@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Subsystems;
 import frc.robot.commands.DisableBadBallDetectionCommand;
+import frc.robot.commands.ProfiledTurnToAngleCommand;
 import frc.robot.commands.TurnToAngleCommand;
 import frc.robot.commands.auto.InitializeAutoState;
 import frc.robot.commands.testing.ProfiledDistanceDriveCommand;
@@ -93,6 +94,7 @@ public class ScrambleHangar extends SequentialCommandGroup {
   private CommandGroupBase shootHangar() {
     return CommandGroupBase.sequence(
      // new ProfiledDistanceDriveCommand(0, 0.4, -2, 0),
+      new ProfiledTurnToAngleCommand(15),
       new InstantCommand(() -> Subsystems.turretSubsystem.centerTurret()),
       new WaitCommand(0.1),
       new InstantCommand(Subsystems.feederSubsystem::pull),
