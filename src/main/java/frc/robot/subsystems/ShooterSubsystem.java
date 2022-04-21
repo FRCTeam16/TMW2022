@@ -30,6 +30,9 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
   private boolean badBallDetectionEnabled = true;
 
   private boolean minimumSpeedCheckEnabled = true;
+  
+  
+  
 
   public enum ShooterProfile {
     Short(1200), Long(2055), HangerDump(500), LowGoal(500),
@@ -123,6 +126,9 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
     SmartDashboard.setDefaultNumber("Shooter/Backspin/D Gain", backspinD);
     SmartDashboard.setDefaultNumber("Shooter/Backspin/Feed Forward", backspinFF);
     SmartDashboard.setDefaultNumber("Shooter/Backspin/TargetRPM", backspinTargetRPM);
+    SmartDashboard.setDefaultNumber("Short Shot Adjust", .96);
+    SmartDashboard.setDefaultNumber("Mid Shot Adjust", .95);
+    SmartDashboard.setDefaultNumber("Long Shot Adjust", .985);
     
     var backspinPID = backspinMotor.getPIDController();
     backspinPID.setP(backspinP);
@@ -254,26 +260,36 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
     var shootInfo = new ShootInfo();
     var info = Subsystems.visionSubsystem.getVisionInfo();
 
+    double shortShotAdjust = 0.96;
+    double midShotAdjust = 0.95;
+    double longShotAdjust = 0.985;
+
+
     // if (info.distanceToTarget > 0) {
     //   var distance = distanceFilter.calculate(info.distanceToTarget);
     // }
     var distance = info.distanceToTarget;
     var range = dynamicDistance.getCurrentShootingRange(distance);
 
+    shortShotAdjust = SmartDashboard.getNumber("Short Shot Adjust", shortShotAdjust);
+    midShotAdjust = SmartDashboard.getNumber("Mid Shot Adjust", midShotAdjust);
+    longShotAdjust = SmartDashboard.getNumber("Long Shot Adjust", longShotAdjust);
+
     if (info.distanceToTarget > 0) {
+    
       // Hood Open Profiles
       if (ShooterDynamicDistance.Range.Short == range) {
-        shootInfo.shooterRPM = 1200;
-        shootInfo.backspinRPM = 2000;
+        shootInfo.shooterRPM = 1400;
+        shootInfo.backspinRPM = 1200;
         shootInfo.hoodOpen = true;
       }
       else if (ShooterDynamicDistance.Range.Middle == range) {
-        shootInfo.shooterRPM = (.0487 * (distance * distance)) - (5.50 * distance) + 845;
+        shootInfo.shooterRPM = midShotAdjust * ((.0487 * (distance * distance)) - (5.50 * distance) + 845);
         shootInfo.backspinRPM = 4800;
         shootInfo.hoodOpen = true;
       } 
       else if (ShooterDynamicDistance.Range.Long == range) {
-        shootInfo.shooterRPM = .96*((6.76 * distance) + 81);
+        shootInfo.shooterRPM = longShotAdjust * ((6.76 * distance) + 81);
         shootInfo.backspinRPM = 4800;
         shootInfo.hoodOpen = false;
       }
