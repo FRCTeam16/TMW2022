@@ -93,7 +93,7 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
     kI = 0;
     kD = 0;
     kIz = 0;
-    kFF = 0.00019;
+    kFF = 0.00021;
     kMaxOutput = 1;
     kMinOutput = -1;
     maxRPM = 2500;
@@ -146,7 +146,7 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
     boolean retVal = false;
     if (targetRPM != 0) {
       double speedRatio = rightShooterMotor.getEncoder().getVelocity() / targetRPM;
-      if (speedRatio >= .95) {
+      if (speedRatio >= .85) {
         retVal = true;
       }
     }
@@ -273,7 +273,7 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
         shootInfo.hoodOpen = true;
       } 
       else if (ShooterDynamicDistance.Range.Long == range) {
-        shootInfo.shooterRPM = (6.76 * distance) + 81;
+        shootInfo.shooterRPM = .9*((6.76 * distance) + 81);
         shootInfo.backspinRPM = 4800;
         shootInfo.hoodOpen = false;
       }
