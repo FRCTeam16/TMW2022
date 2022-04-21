@@ -82,7 +82,7 @@ public class ShootFirstBall5Ball extends SequentialCommandGroup {
     double robotAngle = 140.0;
     double speed = 1.0;
     double distX = -3.3;
-    double distY = 1.2;
+    double distY = 1;
 
     return CommandGroupBase.sequence(
       CommandGroupBase.parallel(
