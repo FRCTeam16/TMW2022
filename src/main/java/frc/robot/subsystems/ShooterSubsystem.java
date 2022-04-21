@@ -93,7 +93,7 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
     kI = 0;
     kD = 0;
     kIz = 0;
-    kFF = 0.00021;
+    kFF = 0.00019;
     kMaxOutput = 1;
     kMinOutput = -1;
     maxRPM = 2500;
@@ -273,7 +273,7 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
         shootInfo.hoodOpen = true;
       } 
       else if (ShooterDynamicDistance.Range.Long == range) {
-        shootInfo.shooterRPM = .9*((6.76 * distance) + 81);
+        shootInfo.shooterRPM = .96*((6.76 * distance) + 81);
         shootInfo.backspinRPM = 4800;
         shootInfo.hoodOpen = false;
       }
