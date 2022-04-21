@@ -16,6 +16,7 @@ import frc.robot.Subsystems;
 
 public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
 
+  private double clampLongShot = .9;
   private boolean enabled = false;
 
   private final CANSparkMax rightShooterMotor = new CANSparkMax(Constants.SHOOTERWHEELRIGHT_MOTOR_ID, MotorType.kBrushless);
@@ -146,7 +147,7 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
     boolean retVal = false;
     if (targetRPM != 0) {
       double speedRatio = rightShooterMotor.getEncoder().getVelocity() / targetRPM;
-      if (speedRatio >= .95) {
+      if (speedRatio >= .85) {
         retVal = true;
       }
     }
@@ -273,7 +274,8 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
         shootInfo.hoodOpen = true;
       } 
       else if (ShooterDynamicDistance.Range.Long == range) {
-        shootInfo.shooterRPM = (6.76 * distance) + 81;
+        SmartDashboard.putNumber("Clamping the long shot", clampLongShot);
+        shootInfo.shooterRPM = (clampLongShot * (6.76 * distance)) + 81;
         shootInfo.backspinRPM = 4800;
         shootInfo.hoodOpen = false;
       }
