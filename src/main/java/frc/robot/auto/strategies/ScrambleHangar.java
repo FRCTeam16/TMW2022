@@ -97,8 +97,9 @@ public class ScrambleHangar extends SequentialCommandGroup {
       new ProfiledTurnToAngleCommand(15),
       new InstantCommand(() -> Subsystems.turretSubsystem.centerTurret()),
       new WaitCommand(0.1),
-      new InstantCommand(Subsystems.feederSubsystem::pull),
-      new WaitCommand(2.0)
+      new InstantCommand(() -> Subsystems.feederSubsystem.pull(true)),
+      new WaitCommand(2.0),
+      new InstantCommand(Subsystems.turretSubsystem::enableVisionTracking)
     );
   }
 }
