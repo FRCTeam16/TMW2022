@@ -46,9 +46,12 @@ public class ShooterFeederSubsystem extends SubsystemBase implements Lifecycle {
   }
 
   public void pull(boolean override) {
-    if (override || Subsystems.shooterSubsystem.atMinimumSpeed()) {
-      this.shooting = true;
-    }
+    // don't prevent shooting
+    // if (override || Subsystems.shooterSubsystem.atMinimumSpeed()) {
+    //   this.shooting = true;
+    // }
+    this.shooting = true;
+
   }
 
   public void pull() {

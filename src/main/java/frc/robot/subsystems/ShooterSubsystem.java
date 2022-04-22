@@ -230,7 +230,8 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
         backRpm = dynamicInfo.backspinRPM;
         break;
       case HangerDump:
-        rpm = SmartDashboard.getNumber("Shooter/Profile/HangerDump", ShooterProfile.HangerDump.value);
+        //rpm = SmartDashboard.getNumber("Shooter/Profile/HangerDump", ShooterProfile.HangerDump.value);
+        rpm = ShooterProfile.HangerDump.value;
         backRpm = 4800;
         shooterHood.set(true);
         break;
