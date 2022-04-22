@@ -320,90 +320,90 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
       // ------------------- Main PID --------------------//
 
       // read PID coefficients from SmartDashboard
-      // double p = SmartDashboard.getNumber("Shooter/P Gain", 0);
-      // double i = SmartDashboard.getNumber("Shooter/I Gain", 0);
-      // double d = SmartDashboard.getNumber("Shooter/D Gain", 0);
-      // double iz = SmartDashboard.getNumber("Shooter/I Zone", 0);
-      // double ff = SmartDashboard.getNumber("Shooter/Feed Forward", 0);
-      // double max = SmartDashboard.getNumber("Shooter/Max Output", 0);
-      // double min = SmartDashboard.getNumber("Shooter/Min Output", 0);
-      // double rpm = SmartDashboard.getNumber("Shooter/TargetRPM", 0);
+      double p = SmartDashboard.getNumber("Shooter/P Gain", 0);
+      double i = SmartDashboard.getNumber("Shooter/I Gain", 0);
+      double d = SmartDashboard.getNumber("Shooter/D Gain", 0);
+      double iz = SmartDashboard.getNumber("Shooter/I Zone", 0);
+      double ff = SmartDashboard.getNumber("Shooter/Feed Forward", 0);
+      double max = SmartDashboard.getNumber("Shooter/Max Output", 0);
+      double min = SmartDashboard.getNumber("Shooter/Min Output", 0);
+      double rpm = SmartDashboard.getNumber("Shooter/TargetRPM", 0);
 
-      // // if PID coefficients on SmartDashboard have changed, write new values to
-      // var pidController = rightShooterMotor.getPIDController();
-      // if ((p != kP)) {
-      //   pidController.setP(p);
-      //   kP = p;
-      // }
-      // if ((i != kI)) {
-      //   pidController.setI(i);
-      //   kI = i;
-      // }
-      // if ((d != kD)) {
-      //   pidController.setD(d);
-      //   kD = d;
-      // }
-      // if ((iz != kIz)) {
-      //   pidController.setIZone(iz);
-      //   kIz = iz;
-      // }
-      // if ((ff != kFF)) {
-      //   pidController.setFF(ff);
-      //   kFF = ff;
-      // }
-      // if ((max != kMaxOutput) || (min != kMinOutput)) {
-      //   pidController.setOutputRange(min, max);
-      //   kMinOutput = min;
-      //   kMaxOutput = max;
-      // }
+      // if PID coefficients on SmartDashboard have changed, write new values to
+      var pidController = rightShooterMotor.getPIDController();
+      if ((p != kP)) {
+        pidController.setP(p);
+        kP = p;
+      }
+      if ((i != kI)) {
+        pidController.setI(i);
+        kI = i;
+      }
+      if ((d != kD)) {
+        pidController.setD(d);
+        kD = d;
+      }
+      if ((iz != kIz)) {
+        pidController.setIZone(iz);
+        kIz = iz;
+      }
+      if ((ff != kFF)) {
+        pidController.setFF(ff);
+        kFF = ff;
+      }
+      if ((max != kMaxOutput) || (min != kMinOutput)) {
+        pidController.setOutputRange(min, max);
+        kMinOutput = min;
+        kMaxOutput = max;
+      }
 
-      // // If our target RPM was overridden by the smart dashboard, update it
-      // if (targetRPM != rpm) {
-      //   targetRPM = rpm;
-      // }
+      // If our target RPM was overridden by the smart dashboard, update it
+      if (targetRPM != rpm) {
+        targetRPM = rpm;
+      }
 
       // ------------------- Backspin PID --------------------//
 
-    //   double bp = SmartDashboard.getNumber("Shooter/Backspin/P Gain", 0);
-    //   double bi = SmartDashboard.getNumber("Shooter/Backspin/I Gain", 0);
-    //   double bd = SmartDashboard.getNumber("Shooter/Backspin/D Gain", 0);
-    //   // double biz = SmartDashboard.getNumber("Shooter/Backspin/I Zone", 0);
-    //   // double bff = SmartDashboard.getNumber("Shooter/Backspin/Feed Forward", 0);
-    //   // double bmax = SmartDashboard.getNumber("Shooter/Backspin/Max Output", 0);
-    //   // double bmin = SmartDashboard.getNumber("Shooter/Backspin/Min Output", 0);
-    //   double brpm = SmartDashboard.getNumber("Shooter/Backspin/TargetRPM", 0);
+      double bp = SmartDashboard.getNumber("Shooter/Backspin/P Gain", 0);
+      double bi = SmartDashboard.getNumber("Shooter/Backspin/I Gain", 0);
+      double bd = SmartDashboard.getNumber("Shooter/Backspin/D Gain", 0);
+      // double biz = SmartDashboard.getNumber("Shooter/Backspin/I Zone", 0);
+      // double bff = SmartDashboard.getNumber("Shooter/Backspin/Feed Forward", 0);
+      // double bmax = SmartDashboard.getNumber("Shooter/Backspin/Max Output", 0);
+      // double bmin = SmartDashboard.getNumber("Shooter/Backspin/Min Output", 0);
+      double brpm = SmartDashboard.getNumber("Shooter/Backspin/TargetRPM", 0);
 
-    //  var bpidController = backspinMotor.getPIDController();
-    //  if ((bp != backspinP)) {
-    //   bpidController.setP(bp);
-    //   backspinP = bp;
+     var bpidController = backspinMotor.getPIDController();
+     if ((bp != backspinP)) {
+      bpidController.setP(bp);
+      backspinP = bp;
+    }
+    if ((bi != backspinI)) {
+      bpidController.setI(bi);
+      backspinI = bi;
+    }
+    if ((bd != backspinD)) {
+      bpidController.setD(bd);
+      backspinD = bd;
+    }
+    // if ((biz != kIz)) {
+    //   bpidController.setIZone(iz);
+    //   kIz = iz;
     // }
-    // if ((bi != backspinI)) {
-    //   bpidController.setI(bi);
-    //   backspinI = bi;
+    // if ((bff != backspinFF)) {
+    //   bpidController.setFF(bff);
+    //   backspinFF = ff;
     // }
-    // if ((bd != backspinD)) {
-    //   bpidController.setD(bd);
-    //   backspinD = bd;
+    // if ((bmax != kMaxOutput) || (bmin != kMinOutput)) {
+    //   bpidController.setOutputRange(bmin, bmax);
+    //   kMinOutput = bmin;
+    //   kMaxOutput = bmax;
     // }
-    // // if ((biz != kIz)) {
-    // //   bpidController.setIZone(iz);
-    // //   kIz = iz;
-    // // }
-    // // if ((bff != backspinFF)) {
-    // //   bpidController.setFF(bff);
-    // //   backspinFF = ff;
-    // // }
-    // // if ((bmax != kMaxOutput) || (bmin != kMinOutput)) {
-    // //   bpidController.setOutputRange(bmin, bmax);
-    // //   kMinOutput = bmin;
-    // //   kMaxOutput = bmax;
-    // // }
 
-    // // If our target RPM was overridden by the smart dashboard, update it
-    // if (backspinTargetRPM != brpm) {
-    //   backspinTargetRPM = brpm;
-    // }
+    // If our target RPM was overridden by the smart dashboard, update it
+    if (backspinTargetRPM != brpm) {
+      backspinTargetRPM = brpm;
+    }
 
 
       // ------------------- Dynamic Override --------------------//
