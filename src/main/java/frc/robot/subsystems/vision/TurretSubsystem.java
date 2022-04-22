@@ -195,6 +195,13 @@ public class TurretSubsystem extends SubsystemBase implements Lifecycle{
         }
       }
 
+      // Hanger Dump explicit override mainly for auto
+      if (Subsystems.shooterSubsystem.getProfile() == ShooterProfile.HangerDump) {
+        setTurretPosition(TurretPositions.Center);
+        positionPIDPeriodic();
+        return;
+      }
+
       if (runState == RunState.ClosedLoop) {
         positionPIDPeriodic();
       } else if (runState == RunState.Vision) {
