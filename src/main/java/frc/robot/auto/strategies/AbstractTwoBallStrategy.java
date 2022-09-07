@@ -20,9 +20,9 @@ public class AbstractTwoBallStrategy extends SequentialCommandGroup {
     private double driveY;
 
     public AbstractTwoBallStrategy(double robotAngle, double driveX, double driveY) {
-        this.robotAngle = robotAngle;
-        this.driveX = driveX;
-        this.driveY = driveY;
+        this.robotAngle = -90;
+        this.driveX = 0;
+        this.driveY = -1.2;
 
         addCommands(
             new InitializeAutoState(robotAngle, ShooterProfile.Dynamic),

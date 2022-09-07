@@ -104,7 +104,7 @@ public class ShootFirstBall5Ball extends SequentialCommandGroup {
   private Command pickupThirdBall() {
     double robotAngle = -155.0;
     double speed = 1.0;
-    double distX = -4.25;  // -4.5
+    double distX = -4.2;  // -4.5
     double distY = -0.35;  // -1.0
 
     return CommandGroupBase.sequence(

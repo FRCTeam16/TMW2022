@@ -94,7 +94,6 @@ public class ScrambleHangar extends SequentialCommandGroup {
   private CommandGroupBase shootHangar() {
     return CommandGroupBase.sequence(
      // new ProfiledDistanceDriveCommand(0, 0.4, -2, 0),
-      // new TurnToAngleCommand(15),
       new InstantCommand(() -> Subsystems.turretSubsystem.centerTurret()),
       new WaitCommand(0.1),
       new InstantCommand(() -> Subsystems.feederSubsystem.pull(true)),
