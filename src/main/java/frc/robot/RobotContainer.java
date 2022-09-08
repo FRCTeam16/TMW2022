@@ -194,6 +194,15 @@ public class RobotContainer {
             Subsystems.shooterSubsystem.enableBadBallDetection();
         }));
 
+        SmartDashboard.putData("OMB Disable Ball Color Match", new InstantCommand(() -> {
+            Subsystems.turretSubsystem.disableMismatchBallDetection();
+            Subsystems.shooterSubsystem.disableMismatchBallDetection();
+        }));
+        SmartDashboard.putData("OMB Enable Ball Color Match", new InstantCommand(() -> {
+            Subsystems.turretSubsystem.enableMismatchBallDetection();
+            Subsystems.shooterSubsystem.enableMismatchBallDetection();
+        }));
+
         SmartDashboard.putData("Shooter Short", new InstantCommand(() -> m_shooterSubsystem.setProfile(ShooterProfile.Short)).withName("Shoot Short"));
         SmartDashboard.putData("Shooter Long", new InstantCommand(() -> m_shooterSubsystem.setProfile(ShooterProfile.Long)).withName("Shoot Long"));
         SmartDashboard.putData("Shooter Off", new InstantCommand(() -> m_shooterSubsystem.setProfile(ShooterProfile.Dynamic)).withName("Shoot Off"));

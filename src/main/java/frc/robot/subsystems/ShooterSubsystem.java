@@ -28,6 +28,7 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
   private final Solenoid shooterHood = new Solenoid(PneumaticsModuleType.REVPH, 3);
   private LinearFilter distanceFilter = LinearFilter.singlePoleIIR(0.05, 0.02);
   private boolean badBallDetectionEnabled = true;
+  private boolean mismatchBallDetectionEnabled = true;
 
   private boolean minimumSpeedCheckEnabled = true;
   
@@ -143,6 +144,7 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
     this.disable();
     this.shootingDriveSpeedThrottle = false;
     this.enableBadBallDetection();
+    this.enableMismatchBallDetection();
   }
  
   public boolean atMinimumSpeed() {
@@ -176,6 +178,9 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
 
   public void enableBadBallDetection() { this.badBallDetectionEnabled = true; }
   public void disableBadBallDetection() { this.badBallDetectionEnabled = false; }
+
+  public void enableMismatchBallDetection() { this.mismatchBallDetectionEnabled = true; }
+  public void disableMismatchBallDetection() { this.mismatchBallDetectionEnabled = false; }
 
   public void enableShootingDriveSpeedThrottle() { this.shootingDriveSpeedThrottle = true; }
   public void disableShootingDriveSpeedThrottle() { this.shootingDriveSpeedThrottle = false; }
@@ -419,6 +424,7 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
       // Finally do a check about alliance matching
       if (badBallDetectionEnabled && Subsystems.detectBallSubsystem.isEnabled() && 
           Subsystems.detectBallSubsystem.isBallDetected() && 
+          mismatchBallDetectionEnabled &&
           !Subsystems.detectBallSubsystem.doesBallMatchAlliance()) {
         targetRPM = ShooterProfile.HangerDump.value;
       }
@@ -441,6 +447,9 @@ public class ShooterSubsystem extends SubsystemBase implements Lifecycle {
       SmartDashboard.putNumber("Actual RPM", rightShooterMotor.getEncoder().getVelocity());
       SmartDashboard.putNumber("Actual Backspin RPM", backspinMotor.getEncoder().getVelocity());
       SmartDashboard.putNumber("Shooter/Backspin/ActualRPM", backspinMotor.getEncoder().getVelocity());
+
+      SmartDashboard.putBoolean("Shooter/BallDetection", this.badBallDetectionEnabled);
+      SmartDashboard.putBoolean("Shooter/MismatchBallDetection", this.mismatchBallDetectionEnabled);
     } else {
       
       // Handle Open Loop Control

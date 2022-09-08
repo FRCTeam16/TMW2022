@@ -49,7 +49,8 @@ public class TurretSubsystem extends SubsystemBase implements Lifecycle{
   private double position_kD = 0.0;
   private double targetPosition = 0.0;
 
-  private boolean badBallDetectionEnabled = true;
+  private boolean badBallDetectionEnabled = true;         // General purpose on/off for ball detection
+  private boolean mismatchBallDetectionEnabled = true;    // mismatch specific toggle
 
   /** How many units left/right the turret can be and be considered zeroed for climbing */
   private final double TURRET_ZERO_THRESHOLD = 1;
@@ -88,6 +89,7 @@ public class TurretSubsystem extends SubsystemBase implements Lifecycle{
   public void teleopInit() {
     this.enableVisionTracking();
     this.enableBadBallDetection();
+    this.enableMismatchBallDetection();
     this.runState = RunState.Vision;
   }
 
@@ -167,11 +169,17 @@ public class TurretSubsystem extends SubsystemBase implements Lifecycle{
   public void enableBadBallDetection() { this.badBallDetectionEnabled = true; }
   public void disableBadBallDetection() { this.badBallDetectionEnabled = false; }
 
+  public void enableMismatchBallDetection() { this.mismatchBallDetectionEnabled = true; }
+  public void disableMismatchBallDetection() { this.mismatchBallDetectionEnabled = false; }
+  public boolean isMismatchBallDetectionEnabled() { return this.mismatchBallDetectionEnabled; }
+
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Turret/EncPosition", turretMotor.getEncoder().getPosition());
     SmartDashboard.putString("Turret/RunState", runState.name());
     SmartDashboard.putBoolean("Turret/AtZero", this.atZero());
+    SmartDashboard.putBoolean("Turret/BallDetection", this.badBallDetectionEnabled);
+    SmartDashboard.putBoolean("Turret/MismatchBallDetection", this.mismatchBallDetectionEnabled);
 
     // System.out.println("[Turret] start runState: " + runState);
 
@@ -181,7 +189,9 @@ public class TurretSubsystem extends SubsystemBase implements Lifecycle{
     } else {
 
       if (badBallDetectionEnabled) {
-        if (Subsystems.detectBallSubsystem.isBallDetected() && !Subsystems.detectBallSubsystem.doesBallMatchAlliance()) {
+        if (Subsystems.detectBallSubsystem.isBallDetected() && 
+            this.mismatchBallDetectionEnabled && 
+            !Subsystems.detectBallSubsystem.doesBallMatchAlliance()) {
           setTurretPosition(TurretPositions.Center);
           positionPIDPeriodic();
           return;
